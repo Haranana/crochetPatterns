@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="#{addedPost.name}"></title>
+  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+<p>
+  <span th:text = "#{addedPost.text}"></span>
+</p>
+<a th:href="@{/main}" th:text="#{addedPost.menuReturn}"></a>
+</body>
+</html>

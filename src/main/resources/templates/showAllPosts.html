@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{showAllPosts.name}"></title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+<p>
+    <ul>
+        <li th:each="mapEntry: ${posts}">
+          <span th:text="#{showAllPosts.postTitle}"></span>: <span th:text="${mapEntry.key}"></span> <br> <br>
+            <span th:text="${mapEntry.value.subject}"></span> <br>
+            <span th:text="${mapEntry.value.text}"></span> <br> <br>
+
+        </li>
+    </ul>
+</p>
+<a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}"></a>
+</body>
+</html>

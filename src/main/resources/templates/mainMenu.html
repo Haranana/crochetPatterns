@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{mainMenu.name}"></title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainMenu.en}" onclick="window.location.href='http://localhost:8080/main?lang=en'"></button>
+    <button type="button" th:text="#{mainMenu.pl}" onclick="window.location.href='http://localhost:8080/main?lang=pl'"></button>
+
+</head>
+<body>
+<h1 th:text="#{mainMenu.chooseAction}"/>
+<button type="button" th:text="#{mainMenu.actionShowAllPosts}"
+        onclick="window.location.href='http://localhost:8080/allPosts'"></button>
+<button type="button" th:text="#{mainMenu.actionAddPost}"
+        onclick="window.location.href='http://localhost:8080/addPost'"></button>
+</body>
+</html>
