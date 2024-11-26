@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="#{showPost.name}"></title>
+  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+<strong th:text="${post.subject}"></strong> <br>
+<span th:text="${post.text}"></span> <br>
+<span th:text="${post.showableDate}"></span> <br> <br>
+
+<a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}"></a>
+</body>
+</html>

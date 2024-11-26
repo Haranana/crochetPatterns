@@ -1,4 +1,4 @@
-package com.example.crochetPatterns;
+package com.example.crochetPatterns.others;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

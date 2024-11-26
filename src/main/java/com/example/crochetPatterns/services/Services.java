@@ -1,5 +1,6 @@
-package com.example.crochetPatterns;
+package com.example.crochetPatterns.services;
 
+import com.example.crochetPatterns.entities.Post;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 @Service
 public class Services {
+    /*
     private Map<Integer , Post> dataTable = new HashMap<>(Map.of(
             0 , new Post("Temat1" , "Lorem Ipsum itp"),
             1 , new Post("Temat2" , "Jakis tam tekst")
@@ -29,5 +31,5 @@ public class Services {
     public Map<Integer , Post> getPosts(){
         return dataTable;
     }
-
+*/
 }

@@ -6,16 +6,50 @@
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
-<p>
-    <ul>
-        <li th:each="mapEntry: ${posts}">
-          <span th:text="#{showAllPosts.postTitle}"></span>: <span th:text="${mapEntry.key}"></span> <br> <br>
-            <span th:text="${mapEntry.value.subject}"></span> <br>
-            <span th:text="${mapEntry.value.text}"></span> <br> <br>
 
+    <ul>
+        <li th:each="post: ${posts}">
+            <!-- Button linking to a different site using post.subject as the button text -->
+            <a th:href="@{/showPost(postId=${post.id})}">
+                <strong th:text="${post.subject}"></strong> <br>
+                <span th:text="${post.text}"></span> <br>
+                <span th:text="${post.id}"></span> <br>
+                <span>
+        <span th:text="${post.creationTimeValue}"></span>
+        <span th:switch="${post.creationTimeValueType}">
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}"></span>
+            <span th:case="*">Unknown</span>
+        </span>
+    </span>
+            </a>
+            <br>
         </li>
     </ul>
-</p>
+
+
+<form class="default" action="/allPosts" method="get">
+    <span class="default" th:text="#{showAllPosts.sort}"></span>
+    <select name="sort">
+        <option value="none" th:text="#{showAllPosts.sortNone}"></option>
+        <option value="sub" th:text="#{showAllPosts.sortSub}"></option>
+        <option value="date" th:text="#{showAllPosts.sortDate}"></option>
+    </select>
+    <input type="submit">
+</form>
+
+<span th:each="number : ${numbers}">
+    <a th:if="${number} != -1"
+       th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort})}"
+       th:text="${number + 1}">
+    </a>
+    <span th:unless="${number} != -1">...</span>
+</span>
 <a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}"></a>
 </body>
 </html>
