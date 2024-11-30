@@ -28,10 +28,10 @@ public class Controllers {
 
     @RequestMapping("/main")
     public String returnMainMenu() {
-        //return "mainMenu";
-        return "debug";
+        return "mainMenu";
+       // return "debug";
     }
-
+/*
     @RequestMapping("/allPosts")
     public String returnAllPosts(@RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "5") int size,
@@ -72,5 +72,7 @@ public class Controllers {
     public String showUserProfile(@RequestParam int userId , Model model){
         return "showUserProfile";
     }
+    */
+
 }
 

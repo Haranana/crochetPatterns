@@ -1,4 +1,4 @@
-package com.example.crochetPatterns.others;
+package com.example.crochetPatterns;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

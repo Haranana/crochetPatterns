@@ -30,7 +30,7 @@ public class PostService {
 
     public Post getPostDTO(int id){
         Post examplePost = new Post();
-        examplePost.setId(id);
+        examplePost.setId(Integer.toUnsignedLong(id));
 
         return postRepository.findAll(Example.of(examplePost)).get(0);
     }

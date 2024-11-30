@@ -11,12 +11,11 @@ import java.sql.Timestamp;
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString(exclude = {"post" , "author"})
 @AllArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
@@ -26,11 +25,10 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private User author;
 
-    @Column(name = "text" , nullable = false)
-    private String title;
+    @Column(name = "text", nullable = false)
+    private String text;
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
     private Timestamp creationDate;
-
 }

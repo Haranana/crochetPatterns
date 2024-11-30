@@ -16,8 +16,9 @@ public class PostDTO {
     private long id;
     private String title;
     private String description;
-    private Timestamp creationDate;
     private String pdfFile;
+    private Timestamp creationDate;
+
     private String showableDate;
     private int creationTimeValue;
     private CreationTimeValueType  creationTimeValueType = CreationTimeValueType.HOUR;

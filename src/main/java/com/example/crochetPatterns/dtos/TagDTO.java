@@ -1,7 +1,5 @@
 package com.example.crochetPatterns.dtos;
 
-import com.example.crochetPatterns.entities.PostTag;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -18,5 +16,5 @@ public class TagDTO {
 
     private String name;
 
-    private List<PostTag> post_tags = new ArrayList<>();
+
 }

@@ -5,23 +5,29 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tags")
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString(exclude = {"post_tags"})
 @AllArgsConstructor
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @JoinColumn(name = "name" , nullable = false)
+    @Column(name = "name" , nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "post_tags", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PostTag> post_tags = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            },
+            mappedBy = "tags")
+    private Set<Post> posts = new HashSet<>();
 }

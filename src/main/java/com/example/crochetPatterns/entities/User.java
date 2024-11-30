@@ -19,46 +19,34 @@ import java.util.Set;
 @AllArgsConstructor
 public class User {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Column(name = "username" , nullable = false , length = 30)
-        private String username;
+    @Column(name = "username" , nullable = false , length = 30)
+    private String username;
 
-        @Column(name = "email" , nullable = false , length = 100)
-        private String email;
+    @Column(name = "email" , nullable = false , length = 100)
+    private String email;
 
-        @Column(name = "password_hash" , nullable = false)
-        private String password_hash;
+    @Column(name = "password_hash" , nullable = false)
+    private String password_hash;
 
-        @Column(name = "avatar" , nullable = true)
-        private String avatar;
+    @Column(name = "avatar" , nullable = true)
+    private String avatar;
 
-        @Column(name = "bio" , nullable = true , columnDefinition = "TEXT")
-        private String bio;
+    @Column(name = "bio" , nullable = true , columnDefinition = "TEXT")
+    private String bio;
 
-        @CreationTimestamp
-        @Column(name = "creation_date", updatable = false, nullable = false)
-        private Timestamp creationDate;
+    @CreationTimestamp
+    @Column(name = "creation_date", updatable = false, nullable = false)
+    private Timestamp creationDate;
 
-        @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 
-        @OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
-        public User(String username, String email, String password_hash, String avatar, String bio) {
-            this.username = username;
-            this.email = email;
-            this.password_hash = password_hash;
-            this.avatar = avatar;
-            this.bio = bio;
-        }
-
-        public User(String username, String email, String password_hash) {
-            this.username = username;
-            this.email = email;
-            this.password_hash = password_hash;
-        }
+    // Konstruktorzy...
 }
