@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <title th:text="#{showPost.name}"></title>
   <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
 </head>
 <body>
-<a th:href="@{/main}">Main Page </a> <br> <br>
 <strong th:text="${post.title}"></strong> <br>
 <a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a> <br>
 <span th:text="${post.description}"></span> <br>
@@ -25,7 +25,7 @@
             <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}"></span>
             <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}"></span>
             <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}"></span>
-            <span th:case="*">Unknown</span>
+            <span th:case="*"></span>
         </span>
     <br> <br>
 </span>

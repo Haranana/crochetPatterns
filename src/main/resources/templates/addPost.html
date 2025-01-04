@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title th:text = "#{addPost.name}"></title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
 </head>
 <body>
-<a th:href="@{/main}">Main Page </a> <br> <br>
 <form action="/addingPost"  method="POST">
     <label th:text="#{addPost.newPostSubject}"></label>
     <input type="text" name="newPostSubject"><br>

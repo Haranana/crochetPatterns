@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <title th:text="#{showAllPosts.name}"></title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
 </head>
 <body>
-<a th:href="@{/main}">Main Page </a> <br> <br>
-
     <ul>
         <li th:each="post: ${posts}">
             <!-- Button linking to a different site using post.subject as the button text -->
@@ -25,7 +24,7 @@
             <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}"></span>
             <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}"></span>
             <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}"></span>
-            <span th:case="*">Unknown</span>
+            <span th:case="*"></span>
         </span>
     </span>
             </a>

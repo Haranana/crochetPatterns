@@ -4,22 +4,20 @@
     <meta charset="UTF-8">
     <title th:text="#{mainMenu.name}"></title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
     <button type="button" th:text="#{mainMenu.en}" onclick="window.location.href='http://localhost:8080/main?lang=en'"></button>
     <button type="button" th:text="#{mainMenu.pl}" onclick="window.location.href='http://localhost:8080/main?lang=pl'"></button>
+    <hr>
 
 </head>
 <body>
-<a th:href="@{/main}">Main Page </a> <br> <br>
 <h1 th:text="#{mainMenu.chooseAction}"/>
 <button type="button" th:text="#{mainMenu.actionShowAllPosts}"
-        onclick="window.location.href='http://localhost:8080/allPosts'"></button>
+        onclick="window.location.href='http://localhost:8080/allPosts'"></button> <br>
 <button type="button" th:text="#{mainMenu.actionAddPost}"
-        onclick="window.location.href='http://localhost:8080/addPost'"></button>
+        onclick="window.location.href='http://localhost:8080/addPost'"></button> <br>
 
-<a
-   th:href="@{/userProfile(userId=${userId})}"
-   >Profile
-</a>
+<a th:href="@{/userProfile(userId=${userId})}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
 
 </body>
 </html>
