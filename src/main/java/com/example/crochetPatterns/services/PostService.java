@@ -1,18 +1,33 @@
 package com.example.crochetPatterns.services;
 
+import com.example.crochetPatterns.entities.Comment;
+import com.example.crochetPatterns.entities.Tag;
+import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.mappers.PostConverter;
 import com.example.crochetPatterns.repositories.PostRepository;
 import com.example.crochetPatterns.dtos.PostDTO;
 import com.example.crochetPatterns.entities.Post;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
-    int numbers = 3;
+
+
+    public enum PostSortType{
+        NEWEST,
+        OLDEST,
+        NAME,
+        DEFAULT
+    }
 
     private final PostRepository postRepository;
 
@@ -23,23 +38,30 @@ public class PostService {
         this.postConverter = postConverter;
     }
 
-    public void addNewTask(PostDTO postDTO) {
+    public void addNewPost(PostDTO postDTO){
         Post post = postConverter.createPost(postDTO);
         postRepository.save(post);
     }
 
-    public Post getPostDTO(int id){
-        Post examplePost = new Post();
-        examplePost.setId(Integer.toUnsignedLong(id));
-
-        return postRepository.findAll(Example.of(examplePost)).get(0);
+    public Page<Post> getPostDTOPage(int pageId, int pageSize, PostSortType postSortType){
+        Sort sort = createSortObject(postSortType);
+        Pageable pageable = PageRequest.of(pageId, pageSize, sort);
+        return postRepository.findAll(pageable);
     }
 
-    public List<Post> getAll() {
-        return postRepository.findAll();
+    public Post getPostDTO(int id){
+        Optional<Post> returnPost = postRepository.findById(Integer.toUnsignedLong(id));
+        return returnPost.orElse(null);
+    }
+
+    public Page<Post> getPostDTOPageByUser(int pageId, int pageSize, PostSortType postSortType, int userId){
+        Sort sort = createSortObject(postSortType);
+        Pageable pageable = PageRequest.of(pageId, pageSize, sort);
+        return postRepository.findByAuthorId( Integer.toUnsignedLong(userId), pageable);
     }
 
     public List<Integer> createPageNumbers(int page, int totalPages) {
+        int numbers = 3;
         List<Integer> pageNumbers = new ArrayList<>();
         if(totalPages <= numbers * 2) {
             for(int i = 0; i < totalPages; ++i) {
@@ -90,23 +112,15 @@ public class PostService {
         return pageNumbers;
     }
 
-    public Page<Post> getAllDTO(int page, int size) {
-        Pageable pageable  = PageRequest.of(page, size, Sort.by("id").ascending());
-        System.out.printf(postRepository.findAll(pageable).getContent().toString());
-        return postRepository.findAll(pageable);
-    }
-
-    public Page<Post> getAllDTO(int page, int size, String sort) {
-        Pageable pageable;
-        Sort sortowanie;
-        if("none".equals(sort)) {
-            sortowanie = Sort.by("id").ascending();;
-        } else if("sub".equals(sort)) {
-            sortowanie = Sort.by("subject").ascending();
-        } else {
-            sortowanie = Sort.by("creationDate").descending();
+    private Sort createSortObject(PostSortType postSortType) {
+        Sort returnSort = Sort.by("id").ascending();
+        switch (postSortType){
+            case NAME -> returnSort = Sort.by("title").ascending();
+            case NEWEST -> returnSort = Sort.by("creation_date").descending();
+            case OLDEST -> returnSort = Sort.by("creation_date").ascending();
+            case DEFAULT -> returnSort = Sort.by("id").ascending();
         }
-        pageable = PageRequest.of(page, size, sortowanie);
-        return postRepository.findAll(pageable);
+        return returnSort;
     }
 }
+

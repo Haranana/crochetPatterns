@@ -13,8 +13,7 @@ import java.util.List;
 public class TagDTO {
 
     private long id;
-
     private String name;
 
-
+    private List<Long> postIds = new ArrayList<>();
 }

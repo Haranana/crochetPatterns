@@ -6,9 +6,29 @@
   <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
-<strong th:text="${post.subject}"></strong> <br>
-<span th:text="${post.text}"></span> <br>
+<a th:href="@{/main}">Main Page </a> <br> <br>
+<strong th:text="${post.title}"></strong> <br>
+<a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a> <br>
+<span th:text="${post.description}"></span> <br>
 <span th:text="${post.showableDate}"></span> <br> <br>
+
+<span th:each="comment , iterStat : ${postComments}">
+    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
+    <span th:text="${comment.text}"></span> <br>
+    <span th:text="${comment.showableDate}"></span> <br>
+    <span th:text="${comment.creationTimeValue}"></span>
+    <span th:switch="${comment.creationTimeValueType}">
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}"></span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}"></span>
+            <span th:case="*">Unknown</span>
+        </span>
+    <br> <br>
+</span>
 
 <a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}"></a>
 </body>

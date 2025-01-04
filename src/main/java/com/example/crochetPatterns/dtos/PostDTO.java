@@ -5,6 +5,8 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,11 +21,15 @@ public class PostDTO {
     private String pdfFile;
     private Timestamp creationDate;
 
+    private Long authorId;
+    private List<Long> tagIds = new ArrayList<>();
+    private List<Long> commentIds = new ArrayList<>();
+
     private String showableDate;
     private int creationTimeValue;
     private CreationTimeValueType  creationTimeValueType = CreationTimeValueType.HOUR;
 
-    public enum CreationTimeValueType{
+    private enum CreationTimeValueType{
         YEAR,
         MONTH,
         WEEK,

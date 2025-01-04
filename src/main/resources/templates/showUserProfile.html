@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{showPost.name}"></title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+<a th:href="@{/main}">Main Page </a> <br> <br>
+    <span th:text = "${user.username}" ></span>
+    <hr>
+    <span th:text = "${user.bio}" ></span>
+    <hr>
+    <a th:href="@{/userPosts(userId=${user.id})}">Posts</a>
+    <a th:href="@{/userComments(userId=${user.id})}">Comments</a>
+
+
+</body>
+</html>

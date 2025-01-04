@@ -9,10 +9,17 @@
 
 </head>
 <body>
+<a th:href="@{/main}">Main Page </a> <br> <br>
 <h1 th:text="#{mainMenu.chooseAction}"/>
 <button type="button" th:text="#{mainMenu.actionShowAllPosts}"
         onclick="window.location.href='http://localhost:8080/allPosts'"></button>
 <button type="button" th:text="#{mainMenu.actionAddPost}"
         onclick="window.location.href='http://localhost:8080/addPost'"></button>
+
+<a
+   th:href="@{/userProfile(userId=${userId})}"
+   >Profile
+</a>
+
 </body>
 </html>
