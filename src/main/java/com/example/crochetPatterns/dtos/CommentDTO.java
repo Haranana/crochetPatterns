@@ -2,6 +2,7 @@ package com.example.crochetPatterns.dtos;
 
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -14,10 +15,23 @@ import java.time.Instant;
 @AllArgsConstructor
 public class CommentDTO {
 
+    @NotNull
+    @Positive(message = "{number.positive}")
     private Long id;
+
+    @NotEmpty(message = "{comment.empty}")
+    @Size(max = 1000, message = "{comment.tooLong}")
     private String text;
+
+    @PastOrPresent(message = "{comment.dateIsFuture}")
     private Timestamp creationDate;
+
+    @NotNull
+    @Positive(message = "{number.positive}")
     private Long postId;
+
+    @NotNull
+    @Positive(message = "{number.positive}")
     private Long authorId;
 
     public enum CreationTimeValueType{

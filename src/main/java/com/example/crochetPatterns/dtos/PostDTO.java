@@ -1,12 +1,15 @@
 package com.example.crochetPatterns.dtos;
 
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,13 +19,24 @@ import java.util.List;
 public class PostDTO {
 
     private long id;
+
+    @NotEmpty(message = "{post.titleEmpty}")
+    @Size(max = 100 , message = "{post.titleTooLong}")
     private String title;
+
+    @Size(max = 10000 , message = "{post.descriptionTooLong}")
     private String description;
+
+    @NotEmpty(message = "{post.emptyURL}")
     private String pdfFile;
+
+    @PastOrPresent(message = "{post.dateIsFuture}")
     private Timestamp creationDate;
 
+    @NotNull
+    @Positive(message = "{number.positive}")
     private Long authorId;
-    private List<Long> tagIds = new ArrayList<>();
+    private Set<Long> tagIds = new HashSet<>();
     private List<Long> commentIds = new ArrayList<>();
 
     private String showableDate;
@@ -39,9 +53,18 @@ public class PostDTO {
         SECOND
     }
 
+    public PostDTO(String title, String description, String pdfFile ,  Long authorId) {
+        this.title = title;
+        this.description = description;
+        this.pdfFile = pdfFile;
+        this.authorId = authorId;
+    }
+
     public PostDTO(String title, String description) {
         this.title = title;
         this.description = description;
+        this.pdfFile = "Lorem Ipsum";
+        this.authorId = (long)1;
     }
 
     public void setCreationTime(){

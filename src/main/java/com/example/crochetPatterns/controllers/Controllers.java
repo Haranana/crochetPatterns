@@ -12,12 +12,16 @@ import com.example.crochetPatterns.mappers.TagConverter;
 import com.example.crochetPatterns.mappers.UserConverter;
 import com.example.crochetPatterns.others.LoginSystem;
 import com.example.crochetPatterns.services.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -82,14 +86,28 @@ public class Controllers {
     }
 
     @RequestMapping("/addPost")
-    public String addPost(Post post) {
+    public String addPost(Model model) {
+        PostDTO newPostDto = new PostDTO();
+        newPostDto.setPdfFile("mock pdf");
+        newPostDto.setAuthorId((long)loginSystem.getLoggedUserId());
+        model.addAttribute("postDTO", newPostDto );
         return "addPost";
     }
 
-    @RequestMapping("/addingPost")
-    public String addPost(@RequestParam String newPostSubject , @RequestParam String newPostText) {
-        //postService.addNewTask(new PostDTO(newPostSubject , newPostText));
-        //postService.addNewPost(new PostDTO(n));
+    @PostMapping("/addingPost")
+    public String addPostSubmit(
+            @Valid @ModelAttribute("postDTO") PostDTO postDTO,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            System.out.println("Some errors have been found:");
+            bindingResult.getAllErrors().forEach(error -> {
+                System.out.println(error.toString());
+            });
+            return "addPost";
+        }
+
+        postService.addNewPost(postDTO);
         return "successfulPost";
     }
 

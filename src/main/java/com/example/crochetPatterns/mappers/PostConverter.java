@@ -34,7 +34,9 @@ public class PostConverter {
         User author = userRepository.findById(postDTO.getAuthorId()).get();
         post.setAuthor(author);
 
-        post.setTags((Set<Tag>) tagRepository.findAllById(postDTO.getTagIds()));
+        Set<Tag> tags =new HashSet<>(tagRepository.findAllById(postDTO.getTagIds()));
+        post.setTags(tags);
+        //post.setTags((Set<Tag>) tagRepository.findAllById(postDTO.getTagIds()));
         return post;
     }
 
@@ -47,7 +49,8 @@ public class PostConverter {
         postDTO.setCreationDate(post.getCreationDate());
         postDTO.setAuthorId(post.getAuthor().getId());
         postDTO.setCommentIds(post.getComments().stream().map(Comment::getId).collect(Collectors.toList()));
-        postDTO.setTagIds(post.getTags().stream().map(Tag::getId).collect(Collectors.toList()));
+        //postDTO.setTagIds(post.getTags().stream().map(Tag::getId).collect(Collectors.toList()));
+        postDTO.setTagIds(post.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
 
         postDTO.setCreationTime();
         return postDTO;

@@ -7,11 +7,23 @@
     <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
 </head>
 <body>
-<form action="/addingPost"  method="POST">
-    <label th:text="#{addPost.newPostSubject}"></label>
-    <input type="text" name="newPostSubject"><br>
-    <label th:text="#{addPost.newPostText}"></label>
-    <input type="text" name="newPostText"><br>
+<form th:action="@{/addingPost}" th:object="${postDTO}" method="post">
+    <p>
+        <label th:text="#{addPost.newPostSubject}"></label>
+        <input type="text" th:field="*{title}"/>
+        <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+    </p>
+
+    <p>
+        <label th:text="#{addPost.newPostText}"></label>
+        <input type="text" th:field="*{description}"/>
+        <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+    </p>
+
+    <input type="hidden" th:field="*{pdfFile}" />
+
+    <input type="hidden" th:field="*{authorId}" />
+
     <input type="submit">
 </form>
 </body>

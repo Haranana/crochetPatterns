@@ -3,6 +3,7 @@ package com.example.crochetPatterns.dtos;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -17,12 +18,28 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDTO {
 
+    @NotNull
+    @Positive(message = "{number.positive}")
     private long id;
+
+    @NotEmpty(message = "{user.usernameEmpty}")
+    @Size(max = 50 , message = "{user.usernameTooLong}")
     private String username;
+
+    @Column(name = "email" , nullable = false , length = 100)
+    @Email(message = "{user.emailIncorrect}")
     private String email;
+
+    @NotEmpty(message =  "{user.passwordHashEmpty}")
     private String password_hash;
+
+
     private String avatar;
+
+    @Size(max = 4000 , message = "{user.bioTooLong}")
     private String bio;
+
+    @PastOrPresent(message = "{user.dateIsFuture}")
     private Timestamp creationDate;
 
     private List<Long> postIds = new ArrayList<>();
