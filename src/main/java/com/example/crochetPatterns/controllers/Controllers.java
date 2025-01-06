@@ -2,6 +2,7 @@ package com.example.crochetPatterns.controllers;
 
 import com.example.crochetPatterns.dtos.CommentDTO;
 import com.example.crochetPatterns.dtos.PostDTO;
+import com.example.crochetPatterns.dtos.PostFormDTO;
 import com.example.crochetPatterns.dtos.UserDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
@@ -14,17 +15,18 @@ import com.example.crochetPatterns.others.LoginSystem;
 import com.example.crochetPatterns.services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,20 +87,49 @@ public class Controllers {
         return "showAllPosts";
     }
 
+    @GetMapping("/posts/{id}/pdf")
+    public ResponseEntity<Resource> getPostPdf(@PathVariable Long id) {
+        Post post = postService.getPostDTO(Math.toIntExact(id)); // pobieramy z bazy
+        String pathStr = post.getPdfFilePath();
+        if (pathStr == null) {
+            // brak PDF
+            return ResponseEntity.notFound().build();
+        }
+        Path path = Paths.get(pathStr);
+        Resource resource = new FileSystemResource(path);
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Ustawiamy nagłówki Content-Type, itp.
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(resource);
+    }
+
     @RequestMapping("/addPost")
     public String addPost(Model model) {
+        /*
         PostDTO newPostDto = new PostDTO();
-        newPostDto.setPdfFile("mock pdf");
+        newPostDto.setPdfFilePath("mock pdf");
         newPostDto.setAuthorId((long)loginSystem.getLoggedUserId());
         model.addAttribute("postDTO", newPostDto );
         return "addPost";
+        */
+
+        PostFormDTO postFormDTO = new PostFormDTO();
+        postFormDTO.setAuthorId((long)loginSystem.getLoggedUserId());
+
+        model.addAttribute("postFormDTO", postFormDTO );
+        return "addPost";
+
     }
 
     @PostMapping("/addingPost")
     public String addPostSubmit(
-            @Valid @ModelAttribute("postDTO") PostDTO postDTO,
+            @Valid @ModelAttribute("postFormDTO") PostFormDTO postFormDTO,
             BindingResult bindingResult) {
-
+        System.out.println("1");
         if (bindingResult.hasErrors()) {
             System.out.println("Some errors have been found:");
             bindingResult.getAllErrors().forEach(error -> {
@@ -106,9 +137,16 @@ public class Controllers {
             });
             return "addPost";
         }
+        System.out.println("2");
+        String pdfFilePath = postService.savePostPDF(postFormDTO);
+        if(!pdfFilePath.isEmpty()) {
+            System.out.println("3");
+            postService.addNewPost(postFormDTO , pdfFilePath);
+            System.out.println("4");
+            return "successfulPost";
 
-        postService.addNewPost(postDTO);
-        return "successfulPost";
+        }
+        return "mainMenu";
     }
 
     @RequestMapping("/showPost")

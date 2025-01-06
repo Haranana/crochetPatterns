@@ -1,5 +1,6 @@
 package com.example.crochetPatterns.services;
 
+import com.example.crochetPatterns.dtos.PostFormDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.entities.User;
@@ -13,7 +14,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +48,31 @@ public class PostService {
     public void addNewPost(PostDTO postDTO){
         Post post = postConverter.createPost(postDTO);
         postRepository.save(post);
+    }
+
+    public void addNewPost(PostFormDTO postFormDTO , String pdfFilePath){
+        Post post = postConverter.createPost(postFormDTO , pdfFilePath);
+        postRepository.save(post);
+    }
+
+    public String savePostPDF(PostFormDTO postFormDTO){
+        MultipartFile pdf = postFormDTO.getPdfFile();
+        String pdfFilePath = "";
+        try {
+            String originalFilename = pdf.getOriginalFilename();
+            String uniqueName = System.currentTimeMillis() + "-" + originalFilename;
+            Path uploadDir = Paths.get("uploads");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+            Path filePath = uploadDir.resolve(uniqueName);
+            Files.copy(pdf.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            pdfFilePath = filePath.toString();
+            return pdfFilePath;
+        } catch (IOException e) {
+            System.out.println("Błąd przy zapisie pliku.");
+            return "";
+        }
     }
 
     public Page<Post> getPostDTOPage(int pageId, int pageSize, PostSortType postSortType){

@@ -10,6 +10,11 @@
 <strong th:text="${post.title}"></strong> <br>
 <a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a> <br>
 <span th:text="${post.description}"></span> <br>
+<a th:if="${post.pdfFilePath != null}"
+   th:href="@{/posts/{id}/pdf(id=${post.id})}"
+   target="_blank">
+    Pobierz PDF
+</a><br>
 <span th:text="${post.showableDate}"></span> <br> <br>
 
 <span th:each="comment , iterStat : ${postComments}">

@@ -28,7 +28,7 @@ public class PostDTO {
     private String description;
 
     @NotEmpty(message = "{post.emptyURL}")
-    private String pdfFile;
+    private String pdfFilePath;
 
     @PastOrPresent(message = "{post.dateIsFuture}")
     private Timestamp creationDate;
@@ -53,17 +53,17 @@ public class PostDTO {
         SECOND
     }
 
-    public PostDTO(String title, String description, String pdfFile ,  Long authorId) {
+    public PostDTO(String title, String description, String pdfFilePath, Long authorId) {
         this.title = title;
         this.description = description;
-        this.pdfFile = pdfFile;
+        this.pdfFilePath = pdfFilePath;
         this.authorId = authorId;
     }
 
     public PostDTO(String title, String description) {
         this.title = title;
         this.description = description;
-        this.pdfFile = "Lorem Ipsum";
+        this.pdfFilePath = "Lorem Ipsum";
         this.authorId = (long)1;
     }
 

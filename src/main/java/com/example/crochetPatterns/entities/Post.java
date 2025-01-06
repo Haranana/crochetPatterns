@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +33,7 @@ public class Post {
 
     @Column(name = "content_pdf" , nullable = true)
     @NotEmpty(message = "{post.emptyURL}")
-    private String pdfFile;
+    private String pdfFilePath;
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
