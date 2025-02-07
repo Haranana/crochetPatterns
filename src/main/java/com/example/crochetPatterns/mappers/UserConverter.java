@@ -1,19 +1,16 @@
 package com.example.crochetPatterns.mappers;
 
-import com.example.crochetPatterns.dtos.PostDTO;
 import com.example.crochetPatterns.dtos.UserDTO;
+import com.example.crochetPatterns.dtos.UserRegistrationDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
-import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.repositories.CommentRepository;
 import com.example.crochetPatterns.repositories.PostRepository;
-import com.example.crochetPatterns.repositories.UserRepository;
+import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -30,11 +27,23 @@ public class UserConverter {
         this.commentRepository = commentRepository;
     }
 
+    public User createUser(UserRegistrationDTO userDTO , String encodedPassword){
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(encodedPassword);
+        //user.setAvatar(); Avatar is NULL by default
+        user.setBio("");
+        user.setPosts(new ArrayList<>());
+        user.setComments(new ArrayList<>());
+        return user;
+    }
+
     public User createUser(UserDTO userDTO) {
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
-        user.setPassword_hash(userDTO.getPassword_hash());
+        user.setPassword(userDTO.getPassword());
         user.setAvatar(userDTO.getAvatar());
         user.setBio(userDTO.getBio());
         user.setPosts(postRepository.findAllById(userDTO.getPostIds()));
@@ -47,7 +56,7 @@ public class UserConverter {
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setEmail(user.getEmail());
-        userDTO.setPassword_hash(user.getPassword_hash());
+        userDTO.setPassword(user.getPassword());
         userDTO.setAvatar(user.getAvatar());
         userDTO.setBio(user.getBio());
         userDTO.setPostIds(user.getPosts().stream().map(Post::getId).collect(Collectors.toList()));

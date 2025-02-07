@@ -11,6 +11,7 @@ import com.example.crochetPatterns.mappers.CommentConverter;
 import com.example.crochetPatterns.mappers.PostConverter;
 import com.example.crochetPatterns.mappers.TagConverter;
 import com.example.crochetPatterns.mappers.UserConverter;
+import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.others.LoginSystem;
 import com.example.crochetPatterns.services.*;
 import jakarta.validation.Valid;
@@ -20,6 +21,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,14 +46,14 @@ public class Controllers {
     private final CommentService commentService;
     private final TagConverter tagConverter;
     private final TagService tagService;
-    private final LoginSystem loginSystem;
+    //private final LoginSystem loginSystem;
 
     @Autowired
     public Controllers(PostService postService, PostConverter postConverter,
                        UserConverter userConverter, UserService userService,
                        CommentConverter commentConverter, CommentService commentService,
-                       TagConverter tagConverter, TagService tagService,
-                       LoginSystem loginSystem) {
+                       TagConverter tagConverter, TagService tagService/*,
+                       LoginSystem loginSystem*/) {
         this.postService = postService;
         this.postConverter = postConverter;
         this.userConverter = userConverter;
@@ -59,13 +62,17 @@ public class Controllers {
         this.commentService = commentService;
         this.tagConverter = tagConverter;
         this.tagService = tagService;
-        this.loginSystem = loginSystem;
+        //this.loginSystem = loginSystem;
     }
 
 
     @RequestMapping("/main")
     public String returnMainMenu(Model model) {
-        model.addAttribute("userId" , loginSystem.getLoggedUserId());
+
+       // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        //LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+
+       // model.addAttribute("userId" , userDetails.getId());
         return "mainMenu";
     }
 
@@ -109,16 +116,12 @@ public class Controllers {
 
     @RequestMapping("/addPost")
     public String addPost(Model model) {
-        /*
-        PostDTO newPostDto = new PostDTO();
-        newPostDto.setPdfFilePath("mock pdf");
-        newPostDto.setAuthorId((long)loginSystem.getLoggedUserId());
-        model.addAttribute("postDTO", newPostDto );
-        return "addPost";
-        */
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
 
         PostFormDTO postFormDTO = new PostFormDTO();
-        postFormDTO.setAuthorId((long)loginSystem.getLoggedUserId());
+        postFormDTO.setAuthorId(userDetails.getId());
 
         model.addAttribute("postFormDTO", postFormDTO );
         return "addPost";
@@ -172,12 +175,36 @@ public class Controllers {
         return "showPost";
     }
 
+    @RequestMapping("/myProfile")
+    public String showLoggedUserProfile(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+            return "login";
+        }
+        else {
+            LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+            model.addAttribute("user", userConverter.createDTO(userService.getUserDTO(userDetails.getId())));
+            return "showUserProfile";
+        }
+    }
+
+    /*
+    @RequestMapping("/userProfile/{userId}")
+    public String showUserProfile(@PathVariable int userId, Model model) {
+        UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        model.addAttribute("user", user);
+        return "showUserProfile";
+    }
+    */
+
     @RequestMapping("/userProfile")
     public String showUserProfile(@RequestParam int userId , Model model){
         UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
         model.addAttribute("user" , user);
         return "showUserProfile";
     }
+
 
     @RequestMapping("/userPosts")
     public String showUserPosts(@RequestParam int userId , Model model){

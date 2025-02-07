@@ -7,9 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -22,7 +20,6 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     @Positive(message = "{number.positive}")
     private Long id;
 
@@ -37,7 +34,7 @@ public class User {
 
     @Column(name = "password_hash" , nullable = false)
     @NotEmpty(message =  "{user.passwordHashEmpty}")
-    private String password_hash;
+    private String password;
 
     @Column(name = "avatar" , nullable = true)
     private String avatar;

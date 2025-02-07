@@ -18,6 +18,10 @@
 <span th:text="${post.showableDate}"></span> <br> <br>
 
 <span th:each="comment , iterStat : ${postComments}">
+    <!---
+    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
+    <a th:href="@{/userProfile/{userId}(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a>
+    --->
     <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
     <span th:text="${comment.text}"></span> <br>
     <span th:text="${comment.showableDate}"></span> <br>

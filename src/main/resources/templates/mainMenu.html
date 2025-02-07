@@ -17,7 +17,13 @@
 <button type="button" th:text="#{mainMenu.actionAddPost}"
         onclick="window.location.href='http://localhost:8080/addPost'"></button> <br>
 
+<!---
 <a th:href="@{/userProfile(userId=${userId})}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
+--->
+<a th:href="@{/myProfile}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Wyloguj się</button>
+</form>
 
 </body>
 </html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{showPost.name}"></title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+</head>
+<body>
+<h1>Logowanie</h1>
+<form th:action="@{/login/process}" method="post">
+    <div>
+        <label for="username">Nazwa użytkownika:</label>
+        <input type="text" id="username" name="username" required autofocus>
+    </div>
+    <div>
+        <label for="password">Hasło:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+        <button type="submit">Zaloguj</button>
+    </div>
+</form>
+<div th:if="${param.error}">
+    <p style="color:red;">Nieprawidłowe dane logowania!</p>
+</div>
+<div th:if="${param.logout}">
+    <p style="color:green;">Pomyślnie wylogowano!</p>
+</div>
+</body>
+
+</html>

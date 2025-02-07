@@ -1,11 +1,8 @@
 package com.example.crochetPatterns.dtos;
 
-import com.example.crochetPatterns.entities.Comment;
-import com.example.crochetPatterns.entities.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -31,7 +28,7 @@ public class UserDTO {
     private String email;
 
     @NotEmpty(message =  "{user.passwordHashEmpty}")
-    private String password_hash;
+    private String password;
 
 
     private String avatar;

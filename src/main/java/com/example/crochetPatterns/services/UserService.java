@@ -1,8 +1,11 @@
 package com.example.crochetPatterns.services;
 
 import com.example.crochetPatterns.dtos.CommentDTO;
+import com.example.crochetPatterns.dtos.PostFormDTO;
 import com.example.crochetPatterns.dtos.UserDTO;
+import com.example.crochetPatterns.dtos.UserRegistrationDTO;
 import com.example.crochetPatterns.entities.Comment;
+import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.mappers.CommentConverter;
 import com.example.crochetPatterns.mappers.UserConverter;
@@ -32,12 +35,34 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void removeComment(int userId){
-        userRepository.deleteById(Integer.toUnsignedLong(userId));
+    public void addNewUser(UserRegistrationDTO userDTO , String encodedPassword){
+        User user = userConverter.createUser(userDTO , encodedPassword);
+        userRepository.save(user);
+    }
+
+    public User getUserByUsername(String username){
+        return getUserDTO(userRepository.findUserIdByUsername(username));
+    }
+
+    public User getUserDTO(Long id){
+        Optional<User> returnUser = userRepository.findById(id);
+        return returnUser.orElse(null);
     }
 
     public User getUserDTO(int id){
         Optional<User> returnUser = userRepository.findById(Integer.toUnsignedLong(id));
         return returnUser.orElse(null);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 }
