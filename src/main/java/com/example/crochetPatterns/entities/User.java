@@ -20,7 +20,6 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Positive(message = "{number.positive}")
     private Long id;
 
     @Column(name = "username" , nullable = false , length = 30)
@@ -47,6 +46,9 @@ public class User {
     @Column(name = "creation_date", updatable = false, nullable = false)
     @PastOrPresent(message = "{user.dateIsFuture}")
     private Timestamp creationDate;
+
+    @Column(nullable = false)
+    private boolean enabled;  // domyslnie false (automatycznie w bazie danych)
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();

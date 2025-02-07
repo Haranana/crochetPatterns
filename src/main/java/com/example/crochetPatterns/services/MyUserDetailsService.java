@@ -34,7 +34,8 @@ public class MyUserDetailsService implements UserDetailsService {
         return new LoggedUserDetails(
                 user.getId(),
                 user.getUsername(),
-                user.getPassword()
+                user.getPassword(),
+                user.isEnabled()
         );
     }
 }

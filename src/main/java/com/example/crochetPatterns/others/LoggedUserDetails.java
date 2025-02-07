@@ -12,11 +12,13 @@ public class LoggedUserDetails implements UserDetails {
     private final Long id;
     private final String username;
     private final String password;
+    private final boolean enabled;
 
-    public LoggedUserDetails(Long id, String username, String password) {
+    public LoggedUserDetails(Long id, String username, String password, boolean enabled) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.enabled = enabled;
     }
 
     @Override
@@ -36,6 +38,11 @@ public class LoggedUserDetails implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }

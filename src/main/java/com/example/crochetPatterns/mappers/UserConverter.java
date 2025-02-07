@@ -33,6 +33,7 @@ public class UserConverter {
         user.setEmail(userDTO.getEmail());
         user.setPassword(encodedPassword);
         //user.setAvatar(); Avatar is NULL by default
+        user.setEnabled(false); //set enabled is false by default
         user.setBio("");
         user.setPosts(new ArrayList<>());
         user.setComments(new ArrayList<>());
@@ -46,6 +47,7 @@ public class UserConverter {
         user.setPassword(userDTO.getPassword());
         user.setAvatar(userDTO.getAvatar());
         user.setBio(userDTO.getBio());
+        user.setEnabled(userDTO.isEnabled());
         user.setPosts(postRepository.findAllById(userDTO.getPostIds()));
         user.setComments(commentRepository.findAllById(userDTO.getCommentIds()));
         return user;
@@ -59,6 +61,7 @@ public class UserConverter {
         userDTO.setPassword(user.getPassword());
         userDTO.setAvatar(user.getAvatar());
         userDTO.setBio(user.getBio());
+        userDTO.setEnabled(user.isEnabled());
         userDTO.setPostIds(user.getPosts().stream().map(Post::getId).collect(Collectors.toList()));
         userDTO.setCommentIds(user.getComments().stream().map(Comment::getId).collect(Collectors.toList()));
 

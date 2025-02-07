@@ -30,7 +30,6 @@ public class UserDTO {
     @NotEmpty(message =  "{user.passwordHashEmpty}")
     private String password;
 
-
     private String avatar;
 
     @Size(max = 4000 , message = "{user.bioTooLong}")
@@ -38,6 +37,8 @@ public class UserDTO {
 
     @PastOrPresent(message = "{user.dateIsFuture}")
     private Timestamp creationDate;
+
+    private boolean enabled;
 
     private List<Long> postIds = new ArrayList<>();
     private List<Long> commentIds = new ArrayList<>();

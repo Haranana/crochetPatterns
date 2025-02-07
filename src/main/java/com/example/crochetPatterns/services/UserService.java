@@ -35,9 +35,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void addNewUser(UserRegistrationDTO userDTO , String encodedPassword){
+    public User addNewUser(UserRegistrationDTO userDTO , String encodedPassword){
         User user = userConverter.createUser(userDTO , encodedPassword);
         userRepository.save(user);
+        return user;
     }
 
     public User getUserByUsername(String username){
