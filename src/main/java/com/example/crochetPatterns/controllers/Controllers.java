@@ -180,8 +180,15 @@ public class Controllers {
     }
 
     @RequestMapping("/deletePost")
-    public String deletePost(){
-        return "deletePost";
+    public String deletePost(@RequestParam int postId , Model model){
+        model.addAttribute("postId" , postId);
+        return "deletePostConfirm";
+    }
+
+    @PostMapping("/deletePostConfirmed")
+    public String deletePostSuccess(@RequestParam int postId){
+        postService.deletePost((long) postId);
+        return "deletePostConfirmed";
     }
 
     @RequestMapping("/showPost")

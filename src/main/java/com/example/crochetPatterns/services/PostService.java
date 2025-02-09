@@ -60,6 +60,14 @@ public class PostService {
 
     }
 
+    public void deletePost(Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new RuntimeException("Post not found: " + postId);
+        }
+
+        postRepository.deleteById(postId);
+    }
+
     public String savePostPDF(PostFormDTO postFormDTO){
         MultipartFile pdf = postFormDTO.getPdfFile();
         String pdfFilePath = "";
