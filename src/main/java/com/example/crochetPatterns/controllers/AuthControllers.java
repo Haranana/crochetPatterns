@@ -32,8 +32,10 @@ public class AuthControllers {
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+
     @Autowired
-    public AuthControllers(UserService userService, PasswordEncoder passwordEncoder , VerificationTokenRepository verificationTokenRepository,
+    public AuthControllers(UserService userService, PasswordEncoder passwordEncoder,
+                           VerificationTokenRepository verificationTokenRepository,
                            UserRepository userRepository,
                            EmailService emailService) {
         this.userService = userService;
@@ -59,7 +61,7 @@ public class AuthControllers {
             @Valid @ModelAttribute("userRegistrationDTO") UserRegistrationDTO registrationDTO,
             BindingResult bindingResult, Model model) {
 
-        // Sprawdź czy email lub username są już zajęte
+        // Sprawdź, czy nazwa użytkownika lub email są już zajęte
         if (userService.existsByUsername(registrationDTO.getUsername())) {
             bindingResult.rejectValue("username", "error.username", "Ta nazwa użytkownika jest już zajęta");
         }
@@ -70,31 +72,17 @@ public class AuthControllers {
         if (bindingResult.hasErrors()) {
             return "register";
         }
-        User user = userService.addNewUser(registrationDTO , passwordEncoder.encode(registrationDTO.getPassword()));
-        // Utwórz nowego użytkownika
-        //User user = new User();
-        //user.setUsername(registrationDTO.getUsername());
-        //user.setEmail(registrationDTO.getEmail());
-        // Zakoduj hasło
-        //user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
-        // Wersja podstawowa – użytkownik od razu aktywny
-        // Możesz ustawić domyślnie enabled = true, jeżeli taka kolumna istnieje
 
-       // user.setEnabled(true);
+        // Zakoduj hasło i utwórz użytkownika
+        User user = userService.addNewUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword()));
 
-        //userService.saveUser(user);
-
-        // Po udanej rejestracji możesz przekierować do strony logowania lub automatycznie zalogować użytkownika
-
-        // 2) Generujesz token aktywacyjny (zwykle do linku)
+        // Generuj token weryfikacyjny (ważny np. 1 dzień)
         String token = UUID.randomUUID().toString();
-        Timestamp expiryDate = Timestamp.from(
-                LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC) // token ważny np. 1 dzień
-        );
+        Timestamp expiryDate = Timestamp.from(LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC));
         VerificationToken verificationToken = new VerificationToken(token, user, expiryDate);
         verificationTokenRepository.save(verificationToken);
 
-        // 3) Wyślij mail z linkiem
+        // Wyślij email z linkiem weryfikacyjnym
         String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
         emailService.sendConfirmationEmail(user.getEmail(), confirmationUrl);
 
@@ -103,31 +91,26 @@ public class AuthControllers {
 
     @GetMapping("/confirm")
     public String confirmRegistration(@RequestParam("token") String token, Model model) {
-        // 1) Szukamy tokenu
         Optional<VerificationToken> optionalToken = verificationTokenRepository.findByToken(token);
         if (optionalToken.isEmpty()) {
             model.addAttribute("message", "Niepoprawny token");
-            return "error"; // lub inny widok
+            return "error";
         }
 
         VerificationToken verificationToken = optionalToken.get();
 
-        // 2) Sprawdzamy datę ważności
         if (verificationToken.getExpiryDate().before(new Timestamp(System.currentTimeMillis()))) {
             model.addAttribute("message", "Token wygasł");
             return "error";
         }
 
-        // 3) Aktywujemy użytkownika
         User user = verificationToken.getUser();
         user.setEnabled(true);
         userRepository.save(user);
 
-        // 4) Usuwamy token, żeby nie można było go użyć ponownie (opcjonalnie)
         verificationTokenRepository.delete(verificationToken);
 
         model.addAttribute("message", "Konto aktywowane. Możesz się zalogować.");
-        // Przekierowanie lub widok z potwierdzeniem
         return "login";
     }
 }
