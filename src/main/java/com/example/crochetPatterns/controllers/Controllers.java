@@ -81,18 +81,26 @@ public class Controllers {
     }
 
     @RequestMapping("/allPosts")
-    public String returnAllPosts(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "2") int size,
-                                 @RequestParam(defaultValue = "none") String sort,
-                                 Model model) {
+    public String returnAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "none") String sort,
+            @RequestParam(defaultValue = "") String search, // nowy parametr wyszukiwania
+            Model model) {
 
-        Page<Post> result = postService.getPostDTOPage(page, size , PostService.PostSortType.NAME);
-
+        Page<Post> result;
+        // Jeśli wprowadzono tekst do wyszukiwania, użyj metody searchPosts; w przeciwnym wypadku findAll
+        if (search != null && !search.trim().isEmpty()) {
+            result = postService.searchPosts(search, page, size, PostService.PostSortType.NAME);
+        } else {
+            result = postService.getPostDTOPage(page, size, PostService.PostSortType.NAME);
+        }
 
         model.addAttribute("posts", postConverter.createDTO(result.getContent()));
-        model.addAttribute("page" , page);
-        model.addAttribute("sort" , sort);
-        model.addAttribute("size" , size);
+        model.addAttribute("page", page);
+        model.addAttribute("sort", sort);
+        model.addAttribute("size", size);
+        model.addAttribute("search", search); // przekazujemy aktualny tekst wyszukiwania do widoku
         model.addAttribute("numbers", postService.createPageNumbers(page, result.getTotalPages()));
 
         return "showAllPosts";

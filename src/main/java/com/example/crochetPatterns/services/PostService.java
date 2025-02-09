@@ -229,5 +229,15 @@ public class PostService {
         }
         return returnSort;
     }
+
+    public Page<Post> searchPosts(String keyword, int pageId, int pageSize, PostSortType postSortType) {
+        Sort sort = createSortObject(postSortType);
+        Pageable pageable = PageRequest.of(pageId, pageSize, sort);
+        // Jeśli keyword jest pusty lub null, zwróć wszystkie posty:
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return postRepository.findAll(pageable);
+        }
+        return postRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+    }
 }
 

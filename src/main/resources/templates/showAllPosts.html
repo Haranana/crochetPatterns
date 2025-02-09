@@ -2,54 +2,54 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{showAllPosts.name}"></title>
+    <title th:text="#{showAllPosts.name}">Wszystkie wpisy</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <button type="button" onclick="window.location.href='http://localhost:8080/main'">Strona główna</button>
+    <hr>
 </head>
 <body>
-    <ul>
-        <li th:each="post: ${posts}">
-            <!-- Button linking to a different site using post.subject as the button text -->
-            <a th:href="@{/showPost(postId=${post.id})}">
-                <strong th:text="${post.title}"></strong> <br>
-                <span th:text="${post.description}"></span> <br>
-                <span th:text="${post.id}"></span> <br>
-                <span>
-        <span th:text="${post.creationTimeValue}"></span>
-        <span th:switch="${post.creationTimeValueType}">
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}"></span>
-            <span th:case="*"></span>
-        </span>
-    </span>
-            </a>
-            <br>
-        </li>
-    </ul>
 
-
-<form class="default" action="/allPosts" method="get">
-    <span class="default" th:text="#{showAllPosts.sort}"></span>
-    <select name="sort">
-        <option value="none" th:text="#{showAllPosts.sortNone}"></option>
-        <option value="sub" th:text="#{showAllPosts.sortSub}"></option>
-        <option value="date" th:text="#{showAllPosts.sortDate}"></option>
-    </select>
-    <input type="submit">
+<!-- Formularz wyszukiwania -->
+<form action="/allPosts" method="get">
+    <input type="text" name="search" placeholder="Szukaj w tytule..." th:value="${search}" />
+    <!-- Możesz również przekazać parametry sort, size, page, jeśli chcesz je zachować -->
+    <input type="hidden" name="sort" th:value="${sort}" />
+    <input type="hidden" name="size" th:value="${size}" />
+    <button type="submit">Szukaj</button>
 </form>
 
+<ul>
+    <li th:each="post: ${posts}">
+        <a th:href="@{/showPost(postId=${post.id})}">
+            <strong th:text="${post.title}">Tytuł wpisu</strong> <br>
+            <span th:text="${post.description}">Opis wpisu</span> <br>
+            <span th:text="${post.id}">ID wpisu</span> <br>
+            <span>
+                <span th:text="${post.creationTimeValue}">0</span>
+                <span th:switch="${post.creationTimeValueType}">
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}">lat</span>
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}">miesięcy</span>
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}">tygodni</span>
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}">dni</span>
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}">godzin</span>
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}">minut</span>
+                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}">sekund</span>
+                    <span th:case="*"></span>
+                </span>
+            </span>
+        </a>
+        <br>
+    </li>
+</ul>
+
+<!-- Nawigacja stron -->
 <span th:each="number : ${numbers}">
     <a th:if="${number} != -1"
-       th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort})}"
+       th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort}, search=${search})}"
        th:text="${number + 1}">
     </a>
     <span th:unless="${number} != -1">...</span>
 </span>
-<a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}"></a>
+<a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}">Powrót do menu</a>
 </body>
 </html>
