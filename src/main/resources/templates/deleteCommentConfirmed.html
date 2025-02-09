@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{showPost.name}"></title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+</head>
+<body>
+<p>Komentarz zostal usuniety</p>
+<a th:href="@{/showPost(postId=${postId})}">Ok</a>
+</body>
+</html>

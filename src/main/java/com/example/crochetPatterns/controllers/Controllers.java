@@ -10,6 +10,7 @@ import com.example.crochetPatterns.mappers.TagConverter;
 import com.example.crochetPatterns.mappers.UserConverter;
 import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.others.LoginSystem;
+import com.example.crochetPatterns.repositories.CommentRepository;
 import com.example.crochetPatterns.services.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
@@ -43,6 +44,7 @@ public class Controllers {
     private final CommentConverter commentConverter;
     private final CommentService commentService;
     private final AuthService authService;
+    private final CommentRepository commentRepository;
     private final TagConverter tagConverter;
     private final TagService tagService;
     //private final LoginSystem loginSystem;
@@ -51,7 +53,8 @@ public class Controllers {
     public Controllers(PostService postService, PostConverter postConverter,
                        UserConverter userConverter, UserService userService,
                        CommentConverter commentConverter, CommentService commentService,
-                       TagConverter tagConverter, TagService tagService , AuthService authService/*,
+                       TagConverter tagConverter, TagService tagService , AuthService authService ,
+                       CommentRepository commentRepository/*,
                        LoginSystem loginSystem*/) {
         this.postService = postService;
         this.postConverter = postConverter;
@@ -62,6 +65,7 @@ public class Controllers {
         this.tagConverter = tagConverter;
         this.tagService = tagService;
         this.authService = authService;
+        this.commentRepository = commentRepository;
         //this.loginSystem = loginSystem;
     }
 
@@ -209,11 +213,53 @@ public class Controllers {
 
         model.addAttribute("isViewedByAuthor" , authService.isLogged() && authService.getLoggedUserDetails().getId() == postAuthor.getId());
         model.addAttribute("isLogged" , authService.isLogged());
+        if(authService.isLogged()) model.addAttribute("userID" , authService.getLoggedUserDetails().getId());
+        else model.addAttribute("userID" , -1);
         model.addAttribute("post" , postDTO);
         model.addAttribute("postAuthor" , postAuthor);
         model.addAttribute("postComments" , postComments);
         model.addAttribute("commentsAuthors" , commentsAuthors);
         return "showPost";
+    }
+
+    @RequestMapping("/editComment")
+    public String editComment(@RequestParam int commentId , Model model){
+        Comment existingComment = commentService.getCommentDTO(commentId);
+        if (existingComment == null) {
+            return "redirect:/allPosts";
+        }
+
+        CommentEditDTO commentEditDTO = commentConverter.createEditDTOFromComment(existingComment);
+
+        model.addAttribute("commentEditDTO", commentEditDTO);
+        return "editComment";
+    }
+
+    @PostMapping("/confirmEditComment")
+    public String submitEditComment(@Valid @ModelAttribute("commentEditDTO") CommentEditDTO commentEditDTO,
+                                    BindingResult bindingResult ){
+        if (bindingResult.hasErrors()) {
+            return "editComment";
+        } //TODO to chyba potrzebuje tez id nw
+
+        commentService.updateExistingComment(commentEditDTO);
+
+        return "redirect:/showPost?postId=" + commentEditDTO.getPostId();
+    }
+
+    @RequestMapping("/deleteComment")
+    public String deleteComment(@RequestParam int commentId , @RequestParam int postId, Model model){
+        model.addAttribute("commentId" , commentId);
+        model.addAttribute("postId" , postId);
+        return "deleteCommentConfirm";
+    }
+
+    @PostMapping("/deleteCommentConfirmed")
+    public String deleteCommentSuccess(@RequestParam int commentId ,@RequestParam int postId, Model model){
+        commentRepository.deleteById((long) commentId);
+        model.addAttribute("postId" , postId);
+
+        return "deleteCommentConfirmed";
     }
 
     @RequestMapping("/writeComment")
@@ -231,7 +277,6 @@ public class Controllers {
         model.addAttribute("commentFormDTO" , commentFormDTO);
         return "writeComment";
     }
-
 
     //TODO dodac Valid do komentarza
     @PostMapping("/addingComment")
@@ -270,7 +315,6 @@ public class Controllers {
         model.addAttribute("user" , user);
         return "showUserProfile";
     }
-
 
     @RequestMapping("/userPosts")
     public String showUserPosts(@RequestParam int userId , Model model){

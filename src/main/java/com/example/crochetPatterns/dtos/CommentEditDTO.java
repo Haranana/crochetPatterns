@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.dtos;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,9 +14,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentEditDTO {
+
     private Long id;
+
+    private Long postId;
 
     @NotEmpty(message = "{comment.empty}")
     @Size(max = 1000, message = "{comment.tooLong}")
     private String text;
+
+
+
 }

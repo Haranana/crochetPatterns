@@ -37,7 +37,17 @@
     <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
     <a th:href="@{/userProfile/{userId}(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a>
     --->
+
+
     <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
+        <a th:if="${isLogged and (userID == commentsAuthors[iterStat.index].id)}"
+           th:href="@{/editComment(commentId=${comment.id})}">
+        Edytuj komentarz
+    </a><br>
+        <a th:if="${isLogged and (userID == commentsAuthors[iterStat.index].id)}"
+           th:href="@{/deleteComment(commentId=${comment.id} , postId=${post.id})}">
+        Usun komentarz
+    </a><br>
     <span th:text="${comment.text}"></span> <br>
     <span th:text="${comment.showableDate}"></span> <br>
     <span th:text="${comment.creationTimeValue}"></span>

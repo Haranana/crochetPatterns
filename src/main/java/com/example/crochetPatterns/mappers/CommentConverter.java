@@ -1,8 +1,6 @@
 package com.example.crochetPatterns.mappers;
 
-import com.example.crochetPatterns.dtos.CommentDTO;
-import com.example.crochetPatterns.dtos.CommentFormDTO;
-import com.example.crochetPatterns.dtos.PostDTO;
+import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
@@ -52,6 +50,14 @@ public class CommentConverter {
         commentDTO.setCreationDate(comment.getCreationDate());
 
         return commentDTO;
+    }
+
+    public CommentEditDTO createEditDTOFromComment(Comment comment){
+        CommentEditDTO dto = new CommentEditDTO();
+        dto.setId(comment.getId());
+        dto.setPostId(comment.getPost().getId());
+        dto.setText(comment.getText());
+        return dto;
     }
 
     public List<CommentDTO> createDTO(List<Comment> comments){

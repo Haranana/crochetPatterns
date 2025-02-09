@@ -1,8 +1,6 @@
 package com.example.crochetPatterns.services;
 
-import com.example.crochetPatterns.dtos.CommentDTO;
-import com.example.crochetPatterns.dtos.CommentFormDTO;
-import com.example.crochetPatterns.dtos.PostDTO;
+import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
@@ -16,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -129,6 +128,15 @@ public class CommentService {
             }
         }
         return pageNumbers;
+    }
+
+    public void updateExistingComment(CommentEditDTO commentEditDTO){
+        Comment existingComment = commentRepository.findById(commentEditDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Comment not found: " + commentEditDTO.getId()));
+
+        existingComment.setText(commentEditDTO.getText());
+
+        commentRepository.save(existingComment);
     }
 
     public void updateDTOShowableDate(CommentDTO commentDTO){
