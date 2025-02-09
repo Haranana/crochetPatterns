@@ -2,20 +2,23 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{showPost.name}"></title>
-    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <title th:text="#{showPost.name}">Wpisy użytkownika</title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
+    <hr>
 </head>
 <body>
-<span th:text = "${user.username}" ></span>
+<!-- Wyświetlenie profilu użytkownika z avatarem -->
+<div class="user-profile">
+    <img th:src="@{/${user.avatar}}" alt="Avatar" style="max-width:100px; max-height:100px;"/>
+    <span th:text="${user.username}">Nazwa użytkownika</span>
+</div>
 <hr>
 <span th:each="post : ${userPosts}">
-    <a th:href="@{/showPost(postId=${post.id})}"
-        th:text = "${post.title}"></a>
-<hr>
-<a th:href="@{/userComments(userId=${user.id})}" th:text = "#{userProfile.comments}"></a>
-<a th:href="@{/userProfile(userId=${user.id})}" th:text = "#{userProfile.bio}"></a>
-
+    <a th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}">Tytuł wpisu</a>
+    <hr>
+    <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze</a>
+    <a th:href="@{/userProfile(userId=${user.id})}" th:text="#{userProfile.bio}">Biografia</a>
 </span>
 </body>
 </html>

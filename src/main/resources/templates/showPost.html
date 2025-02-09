@@ -1,69 +1,59 @@
 <!DOCTYPE html>
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="#{showPost.name}"></title>
-  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <meta charset="UTF-8">
+    <title th:text="#{showPost.name}">Wpis</title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
+    <hr>
 </head>
 <body>
-
 <div th:if="${isViewedByAuthor}">
     <a th:href="@{/editPost(postId=${post.id})}">Edytuj Post</a>
-    <a th:href="@{/deletePost(postId=${post.id})}">Usun Post</a>
+    <a th:href="@{/deletePost(postId=${post.id})}">Usuń Post</a>
 </div>
-
-
-<strong th:text="${post.title}"></strong> <br>
-<a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a> <br>
-<span th:text="${post.description}"></span> <br>
+<!-- Wyświetlenie tytułu oraz avatara autora -->
+<strong th:text="${post.title}">Tytuł wpisu</strong> <br>
+<a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}">Autor</a>
+<!-- Dodajemy avatar autora – zakładamy, że UserDTO zawiera avatar -->
+<img th:src="@{/${postAuthor.avatar}}" alt="Avatar autora" style="max-width:50px; max-height:50px;"/>
+<br>
+<span th:text="${post.description}">Opis wpisu</span> <br>
 <a th:if="${post.pdfFilePath != null}"
    th:href="@{/posts/{id}/pdf(id=${post.id})}"
    target="_blank">
     Pobierz PDF
-</a><br>
-<span th:text="${post.showableDate}"></span> <br> <br>
-
+</a>
+<br>
+<span th:text="${post.showableDate}">Data</span>
+<br><br>
 <div th:if="${isLogged}">
     <a th:href="@{/writeComment(postId=${post.id})}">Dodaj komentarz</a>
 </div>
-
 <div th:unless="${isLogged}">
-    <a th:href="@{/login}">Zaloguj się aby dodac komentarz</a>
+    <a th:href="@{/login}">Zaloguj się, aby dodać komentarz</a>
 </div>
-
-<span th:each="comment , iterStat : ${postComments}">
-    <!---
-    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
-    <a th:href="@{/userProfile/{userId}(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a>
-    --->
-
-
-    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}"></a> <br>
-        <a th:if="${isLogged and (userID == commentsAuthors[iterStat.index].id)}"
-           th:href="@{/editComment(commentId=${comment.id})}">
-        Edytuj komentarz
-    </a><br>
-        <a th:if="${isLogged and (userID == commentsAuthors[iterStat.index].id)}"
-           th:href="@{/deleteComment(commentId=${comment.id} , postId=${post.id})}">
-        Usun komentarz
-    </a><br>
-    <span th:text="${comment.text}"></span> <br>
-    <span th:text="${comment.showableDate}"></span> <br>
-    <span th:text="${comment.creationTimeValue}"></span>
+<!-- Lista komentarzy -->
+<span th:each="comment, iterStat : ${postComments}">
+    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
+    <!-- Wyświetlamy avatar komentatora -->
+    <img th:src="@{/${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
+    <br>
+    <span th:text="${comment.text}">Tekst komentarza</span><br>
+    <span th:text="${comment.showableDate}">Data</span><br>
+    <span th:text="${comment.creationTimeValue}">0</span>
     <span th:switch="${comment.creationTimeValueType}">
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}"></span>
-            <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}"></span>
-            <span th:case="*"></span>
-        </span>
-    <br> <br>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}">lat</span>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}">miesięcy</span>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}">tygodni</span>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}">dni</span>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}">godzin</span>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}">minut</span>
+        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}">sekund</span>
+        <span th:case="*"></span>
+    </span>
+    <br><br>
 </span>
-
-<a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}"></a>
+<a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}">Powrót do listy wpisów</a>
 </body>
 </html>

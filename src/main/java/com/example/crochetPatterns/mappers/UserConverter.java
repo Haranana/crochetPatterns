@@ -27,13 +27,15 @@ public class UserConverter {
         this.commentRepository = commentRepository;
     }
 
-    public User createUser(UserRegistrationDTO userDTO , String encodedPassword){
+    // Ustaw domyślny avatar dla nowych użytkowników
+    public User createUser(UserRegistrationDTO userDTO, String encodedPassword) {
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPassword(encodedPassword);
-        //user.setAvatar(); Avatar is NULL by default
-        user.setEnabled(false); //set enabled is false by default
+        // Ustawiamy domyślny avatar (ścieżka względna – upewnij się, że plik istnieje)
+        user.setAvatar("uploads/default-avatar.png");
+        user.setEnabled(false); // Nowe konta domyślnie nie są aktywne
         user.setBio("");
         user.setPosts(new ArrayList<>());
         user.setComments(new ArrayList<>());
