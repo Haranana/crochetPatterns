@@ -1,9 +1,6 @@
 package com.example.crochetPatterns.controllers;
 
-import com.example.crochetPatterns.dtos.CommentDTO;
-import com.example.crochetPatterns.dtos.PostDTO;
-import com.example.crochetPatterns.dtos.PostFormDTO;
-import com.example.crochetPatterns.dtos.UserDTO;
+import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
@@ -15,6 +12,7 @@ import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.others.LoginSystem;
 import com.example.crochetPatterns.services.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -44,6 +42,7 @@ public class Controllers {
     private final UserService userService;
     private final CommentConverter commentConverter;
     private final CommentService commentService;
+    private final AuthService authService;
     private final TagConverter tagConverter;
     private final TagService tagService;
     //private final LoginSystem loginSystem;
@@ -52,7 +51,7 @@ public class Controllers {
     public Controllers(PostService postService, PostConverter postConverter,
                        UserConverter userConverter, UserService userService,
                        CommentConverter commentConverter, CommentService commentService,
-                       TagConverter tagConverter, TagService tagService/*,
+                       TagConverter tagConverter, TagService tagService , AuthService authService/*,
                        LoginSystem loginSystem*/) {
         this.postService = postService;
         this.postConverter = postConverter;
@@ -62,6 +61,7 @@ public class Controllers {
         this.commentService = commentService;
         this.tagConverter = tagConverter;
         this.tagService = tagService;
+        this.authService = authService;
         //this.loginSystem = loginSystem;
     }
 
@@ -132,7 +132,7 @@ public class Controllers {
     public String addPostSubmit(
             @Valid @ModelAttribute("postFormDTO") PostFormDTO postFormDTO,
             BindingResult bindingResult) {
-        System.out.println("1");
+
         if (bindingResult.hasErrors()) {
             System.out.println("Some errors have been found:");
             bindingResult.getAllErrors().forEach(error -> {
@@ -140,16 +140,48 @@ public class Controllers {
             });
             return "addPost";
         }
-        System.out.println("2");
+
         String pdfFilePath = postService.savePostPDF(postFormDTO);
         if(!pdfFilePath.isEmpty()) {
-            System.out.println("3");
+
             postService.addNewPost(postFormDTO , pdfFilePath);
-            System.out.println("4");
+
             return "successfulPost";
 
         }
         return "mainMenu";
+    }
+
+    @GetMapping("/editPost")
+    public String editPost(@RequestParam int postId, Model model) {
+
+        Post existingPost = postService.getPostDTO(postId);
+        if (existingPost == null) {
+            return "redirect:/allPosts";
+        }
+
+        PostEditDTO postEditDTO = postConverter.createEditDTOFromPost(existingPost);
+
+        model.addAttribute("postEditDTO", postEditDTO);
+        return "editPost";
+    }
+
+
+    @PostMapping("/confirmEditPost")
+    public String editPostSubmit(@Valid @ModelAttribute("postFormDTO") PostEditDTO postEditDTO,
+                                 BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "editPost";
+        }
+
+        postService.updateExistingPost(postEditDTO);
+
+        return "redirect:/showPost?postId=" + postEditDTO.getId();
+    }
+
+    @RequestMapping("/deletePost")
+    public String deletePost(){
+        return "deletePost";
     }
 
     @RequestMapping("/showPost")
@@ -168,11 +200,38 @@ public class Controllers {
             commentService.updateDTOShowableDate(comment);
         }
 
+        model.addAttribute("isViewedByAuthor" , authService.isLogged() && authService.getLoggedUserDetails().getId() == postAuthor.getId());
+        model.addAttribute("isLogged" , authService.isLogged());
         model.addAttribute("post" , postDTO);
         model.addAttribute("postAuthor" , postAuthor);
         model.addAttribute("postComments" , postComments);
         model.addAttribute("commentsAuthors" , commentsAuthors);
         return "showPost";
+    }
+
+    @RequestMapping("/writeComment")
+    public String writeComment(@RequestParam int postId , Model model){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+
+        CommentFormDTO commentFormDTO = new CommentFormDTO();
+        commentFormDTO.setAuthorId(userDetails.getId());
+        commentFormDTO.setPostId((long) postId);
+
+        model.addAttribute("postId" , postId);
+        model.addAttribute("authorId" , userDetails.getId());
+        model.addAttribute("commentFormDTO" , commentFormDTO);
+        return "writeComment";
+    }
+
+
+    //TODO dodac Valid do komentarza
+    @PostMapping("/addingComment")
+    public String addingComment(@ModelAttribute("commentFormDTO") CommentFormDTO commentFormDTO){
+        commentService.addNewComment(commentFormDTO);
+
+        return "redirect:/showPost?postId=" + commentFormDTO.getPostId();
     }
 
     @RequestMapping("/myProfile")

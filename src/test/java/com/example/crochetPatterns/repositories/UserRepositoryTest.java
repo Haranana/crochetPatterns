@@ -31,7 +31,7 @@ public class UserRepositoryTest {
         // then
         // np. asercja
         // assertThat(googleUsers).hasSize(1).extracting(User::getUsername).contains("alice");
-        
+
          */
     }
 }

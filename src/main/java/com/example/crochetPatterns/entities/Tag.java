@@ -22,7 +22,6 @@ import java.util.Set;
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     @Positive(message = "{number.positive}")
     private Long id;
 

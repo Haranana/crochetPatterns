@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Edycja posta</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1>Edycja posta</h1>
+
+<form th:action="@{/confirmEditPost}" th:object="${postEditDTO}" method="post" enctype="multipart/form-data">
+
+  <p>
+    <label for="title">Tytuł:</label>
+    <input type="text" id="title" th:field="*{title}" />
+    <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+  </p>
+
+  <p>
+    <label for="description">Opis:</label>
+    <textarea id="description" th:field="*{description}"></textarea>
+    <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+  </p>
+
+  <p>
+    <label for="pdfFile">Nowy plik PDF (opcjonalnie):</label>
+    <input type="file" id="pdfFile" th:field="*{pdfFile}" accept="application/pdf" />
+  </p>
+
+  <input type="hidden" th:field="*{id}">
+
+  <button type="submit">Zapisz zmiany</button>
+</form>
+</body>
+</html>

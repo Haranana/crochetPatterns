@@ -1,5 +1,6 @@
 package com.example.crochetPatterns.services;
 
+import com.example.crochetPatterns.dtos.PostEditDTO;
 import com.example.crochetPatterns.dtos.PostFormDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Tag;
@@ -55,8 +56,32 @@ public class PostService {
         postRepository.save(post);
     }
 
+    public void editPost(PostFormDTO postFormDTO , Long postId){
+
+    }
+
     public String savePostPDF(PostFormDTO postFormDTO){
         MultipartFile pdf = postFormDTO.getPdfFile();
+        String pdfFilePath = "";
+        try {
+            String originalFilename = pdf.getOriginalFilename();
+            String uniqueName = System.currentTimeMillis() + "-" + originalFilename;
+            Path uploadDir = Paths.get("uploads");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+            Path filePath = uploadDir.resolve(uniqueName);
+            Files.copy(pdf.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            pdfFilePath = filePath.toString();
+            return pdfFilePath;
+        } catch (IOException e) {
+            System.out.println("Błąd przy zapisie pliku.");
+            return "";
+        }
+    }
+
+    public String savePostPDF(PostEditDTO postEditDTO){
+        MultipartFile pdf = postEditDTO.getPdfFile();
         String pdfFilePath = "";
         try {
             String originalFilename = pdf.getOriginalFilename();
@@ -142,6 +167,48 @@ public class PostService {
             }
         }
         return pageNumbers;
+    }
+
+    public void updateExistingPost(PostEditDTO postEditDTO){
+        Post existingPost = postRepository.findById(postEditDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Post not found: " + postEditDTO.getId()));
+
+        existingPost.setTitle(postEditDTO.getTitle());
+        existingPost.setDescription(postEditDTO.getDescription());
+
+        MultipartFile newFile = postEditDTO.getPdfFile();
+        if (newFile != null && !newFile.isEmpty()) {
+            String newPdfPath = savePostPDF(postEditDTO);
+            existingPost.setPdfFilePath(newPdfPath);
+        }
+
+        postRepository.save(existingPost);
+    }
+
+    public void updateExistingPost(PostFormDTO postFormDTO ,Long id) {
+        // 1) Pobierz istniejący post z bazy (np. findById)
+        Long postId = id ;// pobierz z postFormDTO.getId() lub z argumentu
+        Post existingPost = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
+
+        // 2) Nadpisz pola tytułu, opisu itp.
+        existingPost.setTitle(postFormDTO.getTitle());
+        existingPost.setDescription(postFormDTO.getDescription());
+
+        // 3) Obsługa PDF:
+        //    - Jeśli user przesłał nowy plik (pdfFile nie jest puste), zapisz go.
+        //    - Jeśli nie przesłał (isEmpty), zostaw dotychczasową ścieżkę.
+
+        MultipartFile newFile = postFormDTO.getPdfFile();
+        if (newFile != null && !newFile.isEmpty()) {
+            // Zapisz nowy plik
+            String newPdfPath = savePostPDF(postFormDTO);
+            existingPost.setPdfFilePath(newPdfPath);
+        }
+        // else: nic nie zmieniamy w existingPost, bo pdfFilePath zostaje stary
+
+        // 4) Zapisz zmienionego posta
+        postRepository.save(existingPost);
     }
 
     private Sort createSortObject(PostSortType postSortType) {

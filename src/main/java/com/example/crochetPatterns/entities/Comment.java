@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     @Positive(message = "{number.notPositive}")
     private Long id;
 

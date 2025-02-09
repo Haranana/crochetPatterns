@@ -7,6 +7,13 @@
     <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
 </head>
 <body>
+
+<div th:if="${isViewedByAuthor}">
+    <a th:href="@{/editPost(postId=${post.id})}">Edytuj Post</a>
+    <a th:href="@{/deletePost(postId=${post.id})}">Usun Post</a>
+</div>
+
+
 <strong th:text="${post.title}"></strong> <br>
 <a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}"></a> <br>
 <span th:text="${post.description}"></span> <br>
@@ -16,6 +23,14 @@
     Pobierz PDF
 </a><br>
 <span th:text="${post.showableDate}"></span> <br> <br>
+
+<div th:if="${isLogged}">
+    <a th:href="@{/writeComment(postId=${post.id})}">Dodaj komentarz</a>
+</div>
+
+<div th:unless="${isLogged}">
+    <a th:href="@{/login}">Zaloguj się aby dodac komentarz</a>
+</div>
 
 <span th:each="comment , iterStat : ${postComments}">
     <!---

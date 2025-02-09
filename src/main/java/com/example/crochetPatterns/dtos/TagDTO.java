@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class TagDTO {
 
-    @NotNull
     @Positive(message = "{number.positive}")
     private long id;
 

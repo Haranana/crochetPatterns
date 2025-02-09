@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.mappers;
 
 import com.example.crochetPatterns.dtos.PostDTO;
+import com.example.crochetPatterns.dtos.PostEditDTO;
 import com.example.crochetPatterns.dtos.PostFormDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
@@ -67,6 +68,31 @@ public class PostConverter {
 
         postDTO.setCreationTime();
         return postDTO;
+    }
+
+    public PostFormDTO createFormDTOFromPost(Post post) {
+        PostFormDTO dto = new PostFormDTO();
+        dto.setTitle(post.getTitle());
+        dto.setDescription(post.getDescription());
+        // PDF w PostFormDTO to MultipartFile – tutaj nie ustawiamy go (bo nie przechowujemy
+        // w bazie plików binarnych).
+        // Zamiast tego, jeśli chcesz, możesz przechować ścieżkę do pliku w polu tymczasowym,
+        // ale nie jest to zawsze konieczne.
+        dto.setAuthorId(post.getAuthor().getId());
+        // ewentualnie tagIds, jeśli używasz
+        // dto.setTagIds(...);
+
+        // Jeżeli chcesz mieć w PostFormDTO pole id, to je ustaw:
+        // dto.setId(post.getId());
+        return dto;
+    }
+
+    public PostEditDTO createEditDTOFromPost(Post post) {
+        PostEditDTO dto = new PostEditDTO();
+        dto.setTitle(post.getTitle());
+        dto.setDescription(post.getDescription());
+        dto.setId(post.getId());
+        return dto;
     }
 
     public List<PostDTO> createDTO(List<Post> list) {

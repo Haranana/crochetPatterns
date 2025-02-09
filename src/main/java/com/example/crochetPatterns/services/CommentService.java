@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.services;
 
 import com.example.crochetPatterns.dtos.CommentDTO;
+import com.example.crochetPatterns.dtos.CommentFormDTO;
 import com.example.crochetPatterns.dtos.PostDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
@@ -40,6 +41,11 @@ public class CommentService {
         this.commentRepository = commentRepository;
         this.commentConverter = commentConverter;
         this.userRepository = userRepository;
+    }
+
+    public void addNewComment(CommentFormDTO commentDTO){
+        Comment comment = commentConverter.createComment(commentDTO);
+        commentRepository.save(comment);
     }
 
     public void addNewComment(CommentDTO commentDTO){

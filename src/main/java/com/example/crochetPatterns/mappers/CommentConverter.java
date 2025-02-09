@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.mappers;
 
 import com.example.crochetPatterns.dtos.CommentDTO;
+import com.example.crochetPatterns.dtos.CommentFormDTO;
 import com.example.crochetPatterns.dtos.PostDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
@@ -26,6 +27,14 @@ public class CommentConverter {
     }
 
     public Comment createComment(CommentDTO commentDTO){
+        Comment comment = new Comment();
+        comment.setAuthor( (userRepository.findById(commentDTO.getAuthorId())).get() );
+        comment.setPost( (postRepository.findById(commentDTO.getPostId())).get() );
+        comment.setText(commentDTO.getText());
+        return comment;
+    }
+
+    public Comment createComment(CommentFormDTO commentDTO){
         Comment comment = new Comment();
         comment.setAuthor( (userRepository.findById(commentDTO.getAuthorId())).get() );
         comment.setPost( (postRepository.findById(commentDTO.getPostId())).get() );

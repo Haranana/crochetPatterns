@@ -15,7 +15,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class CommentDTO {
 
-    @NotNull
+
     @Positive(message = "{number.positive}")
     private Long id;
 
