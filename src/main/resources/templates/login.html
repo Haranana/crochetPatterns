@@ -26,11 +26,18 @@
         <button type="submit">Zaloguj</button>
     </div>
 </form>
+
+<!-- Sekcja komunikatów (np. błąd logowania) -->
 <div th:if="${param.error}">
     <p style="color:red;">Nieprawidłowe dane logowania!</p>
 </div>
 <div th:if="${param.logout}">
     <p style="color:green;">Pomyślnie wylogowano!</p>
 </div>
+
+<!-- Link do rejestracji -->
+<hr>
+<a th:href="@{/register}">Zarejestruj się</a>
+
 </body>
 </html>

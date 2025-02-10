@@ -91,7 +91,8 @@ public class AuthControllers {
         String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
         emailService.sendConfirmationEmail(user.getEmail(), confirmationUrl);
 
-        return "mainMenu";
+        // Zamiast powrotu do mainMenu zwracamy nowy widok:
+        return "afterRegister";
     }
 
     @GetMapping("/confirm")
@@ -153,5 +154,11 @@ public class AuthControllers {
         SecurityContextHolder.clearContext();
         // Przekierowujemy użytkownika do strony logowania z informacją, że hasło zostało zmienione
         return "redirect:/login?passwordChanged";
+    }
+
+    @GetMapping("/afterRegister")
+    public String afterRegister() {
+        // Zwracamy widok (szablon) informujący o wysłaniu maila weryfikacyjnego
+        return "afterRegister";
     }
 }
