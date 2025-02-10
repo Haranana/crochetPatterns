@@ -3,6 +3,7 @@ package com.example.crochetPatterns.controllers;
 import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
+import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.mappers.CommentConverter;
 import com.example.crochetPatterns.mappers.PostConverter;
@@ -89,38 +90,41 @@ public class Controllers {
             @RequestParam(defaultValue = "2") int size,
             @RequestParam(defaultValue = "none") String sort,
             @RequestParam(defaultValue = "") String search,
+            @RequestParam(required = false) Long tagId,
             Model model) {
 
-        Page<Post> result;
+        // 1. Zawsze przekazujemy listę tagów do modelu:
+        model.addAttribute("allTags", tagService.findAllTags());
 
-        if (search != null && !search.trim().isEmpty()) {
+        // 2. Logika wyszukiwania/filtrowania
+        Page<Post> result;
+        if (tagId != null) {
+            // filtruj posty po tagu
+            result = postService.findByTagId(tagId, page, size, PostService.PostSortType.NAME);
+        }
+        else if (search != null && !search.trim().isEmpty()) {
             result = postService.searchPosts(search, page, size, PostService.PostSortType.NAME);
-        } else {
+        }
+        else {
             result = postService.getPostDTOPage(page, size, PostService.PostSortType.NAME);
         }
 
-        // Konwersja Post -> PostDTO (Twoja standardowa logika)
+        // 3. Konwersja Post -> PostDTO
         List<PostDTO> postDTOs = postConverter.createDTO(result.getContent());
 
-        // ------------------------------
-        // 1. Mapa: postId -> liczba polubień
-        // ------------------------------
+        // 4. Mapa: postId -> liczba polubień
         Map<Long, Long> postLikesCountMap = new HashMap<>();
         for (Post p : result.getContent()) {
             long likesCount = likeService.countLikes(p.getId());
             postLikesCountMap.put(p.getId(), likesCount);
         }
 
-        // ------------------------------
-        // 2. Zbiór: postów polubionych przez zalogowanego usera
-        // ------------------------------
+        // 5. Zbiór: ID postów polubionych przez zalogowanego usera
         Set<Long> userLikedPosts = new HashSet<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof LoggedUserDetails) {
             LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
             Long userId = userDetails.getId();
-
-            // Dla każdego postu sprawdź, czy user polubił
             for (Post p : result.getContent()) {
                 boolean liked = likeService.hasLiked(userId, p.getId());
                 if (liked) {
@@ -129,11 +133,10 @@ public class Controllers {
             }
         }
 
-        // Przekazujemy do modelu
-        model.addAttribute("posts", postDTOs);               // lista postów
-        model.addAttribute("postLikesCountMap", postLikesCountMap); // licznik polubień
-        model.addAttribute("userLikedPosts", userLikedPosts);       // zbiór ID postów polubionych przez usera
-        // reszta Twoich zmiennych:
+        // 6. Dodajemy wszystko do modelu
+        model.addAttribute("posts", postDTOs);
+        model.addAttribute("postLikesCountMap", postLikesCountMap);
+        model.addAttribute("userLikedPosts", userLikedPosts);
         model.addAttribute("page", page);
         model.addAttribute("sort", sort);
         model.addAttribute("size", size);
@@ -165,16 +168,20 @@ public class Controllers {
 
     @RequestMapping("/addPost")
     public String addPost(Model model) {
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
 
+        // Tworzymy pusty obiekt PostFormDTO
         PostFormDTO postFormDTO = new PostFormDTO();
         postFormDTO.setAuthorId(userDetails.getId());
 
-        model.addAttribute("postFormDTO", postFormDTO );
-        return "addPost";
+        model.addAttribute("postFormDTO", postFormDTO);
 
+        // Dodajemy listę wszystkich tagów z bazy (np. do multi-select w widoku)
+        List<Tag> allTags = tagService.findAllTags();
+        model.addAttribute("allTags", allTags);
+
+        return "addPost";
     }
 
     @PostMapping("/addingPost")
@@ -203,28 +210,39 @@ public class Controllers {
 
     @GetMapping("/editPost")
     public String editPost(@RequestParam int postId, Model model) {
-
+        // 1. Pobieramy istniejącego posta
         Post existingPost = postService.getPostDTO(postId);
         if (existingPost == null) {
             return "redirect:/allPosts";
         }
 
+        // 2. Tworzymy PostEditDTO z wypełnionymi polami, w tym tagIds
         PostEditDTO postEditDTO = postConverter.createEditDTOFromPost(existingPost);
 
+        // 3. Pobieramy wszystkie dostępne tagi z bazy – żeby wypełnić <select>
+        List<Tag> allTags = tagService.findAllTags();
+        model.addAttribute("allTags", allTags);
+
+        // 4. Umieszczamy postEditDTO w modelu
         model.addAttribute("postEditDTO", postEditDTO);
+
+        // 5. Zwracamy szablon Thymeleaf np. "editPost.html"
         return "editPost";
     }
 
 
     @PostMapping("/confirmEditPost")
-    public String editPostSubmit(@Valid @ModelAttribute("postFormDTO") PostEditDTO postEditDTO,
-                                 BindingResult bindingResult) {
+    public String editPostSubmit(
+            @Valid @ModelAttribute("postEditDTO") PostEditDTO postEditDTO,
+            BindingResult bindingResult , Model model) {
         if (bindingResult.hasErrors()) {
+            // ponownie dodaj listę tagów
+            model.addAttribute("allTags", tagService.findAllTags());
+            // i postEditDTO Spring sam zwraca w parametrach
             return "editPost";
         }
 
         postService.updateExistingPost(postEditDTO);
-
         return "redirect:/showPost?postId=" + postEditDTO.getId();
     }
 
@@ -242,45 +260,82 @@ public class Controllers {
 
     @RequestMapping("/showPost")
     public String showPost(@RequestParam int postId, Model model){
+        // 1. Pobranie encji Post z bazy
         Post post = postService.getPostDTO(postId);
         if (post == null) {
-            // Możesz rzucić np. ElementNotFoundException lub przekierować na stronę błędu
+            // Jeśli nie ma takiego posta, możemy przekierować np. na listę postów
             return "redirect:/allPosts";
         }
 
+        // 2. Konwersja Post -> PostDTO
         PostDTO postDTO = postConverter.createDTO(post);
 
-        // 1. Liczba polubień
+        // 3. Liczba polubień
         long likeCount = likeService.countLikes(post.getId());
 
-        // 2. Czy zalogowany user lubi?
+        // 4. Sprawdzamy, czy zalogowany user lubi post (userLiked)
+        //    oraz czy jest autorem postu (isViewedByAuthor)
         boolean userLiked = false;
+        boolean isViewedByAuthor = false;
+
+        // Możesz też w ten sposób sprawdzić, czy w ogóle ktoś jest zalogowany:
+        boolean isLogged = authService.isLogged();
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof LoggedUserDetails) {
             LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
             Long userId = userDetails.getId();
+
+            // Czy user polubił post?
             userLiked = likeService.hasLiked(userId, post.getId());
+
+            // Czy to ten sam user, który napisał post?
+            if (userId.equals(postDTO.getAuthorId())) {
+                isViewedByAuthor = true;
+            }
         }
 
-        // Ustawiamy w modelu
-        model.addAttribute("post", postDTO);
-        model.addAttribute("likeCount", likeCount);
-        model.addAttribute("userLiked", userLiked);
+        // 5. Tagi – pobieramy nazwy na podstawie tagIds z PostDTO
+        List<String> postTagNames = new ArrayList<>();
+        for (Long tagId : postDTO.getTagIds()) {
+            Tag t = tagService.findById(tagId);
+            if (t != null) {
+                postTagNames.add(t.getName());
+            }
+        }
 
-        // Reszta Twojej logiki, np. pobieranie autora, komentarzy, itp.:
-        User tempAuthor = userService.getUserDTO(Math.toIntExact(postDTO.getAuthorId()));
-        UserDTO postAuthor = userConverter.createDTO(tempAuthor);
+        // 6. Pobieramy autora posta (np. żeby wyświetlać avatar itp.)
+        User postAuthorEntity = userService.getUserDTO(Math.toIntExact(postDTO.getAuthorId()));
+        UserDTO postAuthor = userConverter.createDTO(postAuthorEntity);
+
+        // 7. Pobieramy komentarze do postu i autorów tych komentarzy
+        //    (jeśli chcesz je wyświetlać na tej samej stronie):
+        List<Comment> comments = commentService
+                .getCommentDTOPageByPost(0, 100, CommentService.CommentSortType.DEFAULT, postId)
+                .getContent();
+        List<CommentDTO> postComments = commentConverter.createDTO(comments);
+
+        List<UserDTO> commentsAuthors = new ArrayList<>();
+        for (CommentDTO commentDTO : postComments) {
+            User tempUser = userService.getUserDTO(Math.toIntExact(commentDTO.getAuthorId()));
+            commentsAuthors.add(userConverter.createDTO(tempUser));
+        }
+
+        // 8. Dodajemy wszystkie dane do modelu
+        model.addAttribute("post", postDTO);
         model.addAttribute("postAuthor", postAuthor);
 
-        // ...
-        model.addAttribute("isViewedByAuthor", authService.isLogged() &&
-                authService.getLoggedUserDetails().getId() == postAuthor.getId());
-        model.addAttribute("isLogged", authService.isLogged());
-        model.addAttribute("userID", authService.isLogged() ? authService.getLoggedUserDetails().getId() : -1);
+        model.addAttribute("likeCount", likeCount);
+        model.addAttribute("userLiked", userLiked);
+        model.addAttribute("isViewedByAuthor", isViewedByAuthor);
+        model.addAttribute("isLogged", isLogged);
 
-        // Komentarze, itd.
-        // ...
+        model.addAttribute("postTagNames", postTagNames);
 
+        model.addAttribute("postComments", postComments);
+        model.addAttribute("commentsAuthors", commentsAuthors);
+
+        // 9. Zwracamy nazwę szablonu
         return "showPost";
     }
 

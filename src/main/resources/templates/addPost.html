@@ -26,6 +26,17 @@
         <span class="error" th:if="${#fields.hasErrors('pdfFile')}" th:errors="*{pdfFile}"></span>
     </p>
 
+    <p>
+        <label>Wybierz tagi:</label><br>
+        <select multiple="multiple" th:field="*{tagIds}">
+            <!-- each="tag : ${allTags}" – allTags to lista Tag przekazana w modelu -->
+            <option th:each="tag : ${allTags}"
+                    th:value="${tag.id}"
+                    th:text="${tag.name}">
+            </option>
+        </select>
+    </p>
+
     <input type="hidden" th:field="*{authorId}" />
 
     <input type="submit">

@@ -15,7 +15,20 @@
     <input type="hidden" name="size" th:value="${size}"/>
     <button type="submit">Szukaj</button>
 </form>
-
+<form action="/allPosts" method="get">
+    <input type="text" name="search" placeholder="Szukaj w tytule..." th:value="${search}"/>
+    <!-- select tagów -->
+    <select name="tagId">
+        <option value="">-- dowolny tag --</option>
+        <option th:each="tag : ${allTags}"
+                th:value="${tag.id}"
+                th:text="${tag.name}">
+        </option>
+    </select>
+    <input type="hidden" name="size" th:value="${size}"/>
+    <!-- ... itp. -->
+    <button type="submit">Filtruj</button>
+</form>
 <ul>
     <!-- Iterujemy listę postów -->
     <li th:each="post : ${posts}">

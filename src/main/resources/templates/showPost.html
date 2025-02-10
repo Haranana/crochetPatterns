@@ -49,6 +49,15 @@
     </div>
 </div>
 
+<div>
+    <span>Tagi: </span>
+    <span th:if="${#lists.isEmpty(postTagNames)}">Brak</span>
+    <ul th:if="${!#lists.isEmpty(postTagNames)}">
+        <li th:each="tagName : ${postTagNames}"
+            th:text="${tagName}">TagName</li>
+    </ul>
+</div>
+
 <!-- Link do dodania komentarza, jeśli zalogowany -->
 <div th:if="${isLogged}">
     <a th:href="@{/writeComment(postId=${post.id})}">Dodaj komentarz</a>

@@ -21,13 +21,18 @@ public class PostEditDTO {
     private long id;
 
     @NotEmpty(message = "{post.titleEmpty}")
-    @Size(max = 100 , message = "{post.titleTooLong}")
+    @Size(max = 100, message = "{post.titleTooLong}")
     private String title;
 
-    @Size(max = 10000 , message = "{post.descriptionTooLong}")
+    @Size(max = 10000, message = "{post.descriptionTooLong}")
     private String description;
 
+    @pdfFileConstraint(message = "{post.wrongFile}")  // jeśli masz taką walidację
     private MultipartFile pdfFile;
 
+    /**
+     * Bardzo ważne: zawsze inicjujemy `tagIds` pustym zestawem.
+     * Dzięki temu `.contains(...)` nie rzuci NullPointerException.
+     */
     private Set<Long> tagIds = new HashSet<>();
 }

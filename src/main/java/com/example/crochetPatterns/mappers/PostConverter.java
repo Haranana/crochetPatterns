@@ -9,6 +9,7 @@ import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.repositories.TagRepository;
 import com.example.crochetPatterns.repositories.UserRepository;
+import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -89,9 +90,22 @@ public class PostConverter {
 
     public PostEditDTO createEditDTOFromPost(Post post) {
         PostEditDTO dto = new PostEditDTO();
+        dto.setId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setDescription(post.getDescription());
-        dto.setId(post.getId());
+        // pdfFile - tutaj zwykle nie ustawiamy, bo to nowy plik, który user może uploadować
+
+        // Kluczowy fragment:
+        // Pobieramy ID wszystkich tagów z encji Post
+        Set<Long> tagIds = new HashSet<>();
+
+
+        tagIds = post.getTags().stream()
+                .map(tag -> tag.getId())
+                .collect(Collectors.toSet());
+
+        dto.setTagIds(tagIds);
+
         return dto;
     }
 

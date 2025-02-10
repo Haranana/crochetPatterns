@@ -22,9 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PostService {
@@ -41,9 +39,12 @@ public class PostService {
 
     private final PostConverter postConverter;
 
-    public PostService(PostRepository postRepository, PostConverter postConverter) {
+    private final TagService tagService;
+
+    public PostService(PostRepository postRepository, PostConverter postConverter , TagService tagService) {
         this.postRepository = postRepository;
         this.postConverter = postConverter;
+        this.tagService = tagService;
     }
 
     public void addNewPost(PostDTO postDTO){
@@ -190,6 +191,15 @@ public class PostService {
             existingPost.setPdfFilePath(newPdfPath);
         }
 
+        Set<Tag> tags = new HashSet<>();
+        for (Long tagId : postEditDTO.getTagIds()) {
+            Tag tag = tagService.findById(tagId);
+            if (tag != null) {
+                tags.add(tag);
+            }
+        }
+        existingPost.setTags(tags);
+
         postRepository.save(existingPost);
     }
 
@@ -238,6 +248,12 @@ public class PostService {
             return postRepository.findAll(pageable);
         }
         return postRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+    }
+
+    public Page<Post>findByTagId(Long tagId , int page , int size  , PostSortType postSortType){
+        Sort sort = createSortObject(postSortType);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return postRepository.findByTagId(tagId, pageable);
     }
 }
 
