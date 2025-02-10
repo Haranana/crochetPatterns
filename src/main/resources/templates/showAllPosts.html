@@ -15,41 +15,45 @@
     <input type="hidden" name="size" th:value="${size}"/>
     <button type="submit">Szukaj</button>
 </form>
-<img th:src="@{/images/defaultavatar.png}" alt="Przykładowy obraz" />
+
 <ul>
-    <li th:each="post: ${posts}">
+    <!-- Iterujemy listę postów -->
+    <li th:each="post : ${posts}">
         <a th:href="@{/showPost(postId=${post.id})}">
             <strong th:text="${post.title}">Tytuł wpisu</strong><br>
-            <!-- Jeśli DTO posiada avatar autora, możesz dodać: -->
-
-            <!-- <img th:src="@{/${post.authorAvatar}}" alt="Avatar" style="max-width:50px; max-height:50px;"> -->
-            <!--<img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" /> -->
-            <span th:text="${post.description}">Opis wpisu</span><br>
-            <span th:text="${post.id}">ID wpisu</span><br>
-            <span>
-                <span th:text="${post.creationTimeValue}">0</span>
-                <span th:switch="${post.creationTimeValueType}">
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}">lat</span>
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}">miesięcy</span>
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}">tygodni</span>
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}">dni</span>
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}">godzin</span>
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}">minut</span>
-                    <span th:case="${T(com.example.crochetPatterns.dtos.PostDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}">sekund</span>
-                    <span th:case="*"></span>
-                </span>
-            </span>
+            <span th:text="${post.description}">Opis wpisu</span>
         </a>
+        <br>
+
+        <!-- Liczba polubień: wyciągamy z mapy postLikesCountMap -->
+        <span>Liczba polubień:
+            <b th:text="${postLikesCountMap[post.id]}">0</b>
+        </span>
+        <br>
+
+        <!-- Przyciski Like/Unlike -->
+        <div th:if="${userLikedPosts.contains(post.id)}">
+            <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
+                <button type="submit">Unlike</button>
+            </form>
+        </div>
+        <div th:unless="${userLikedPosts.contains(post.id)}">
+            <form th:action="@{/post/{id}/like(id=${post.id})}" method="post">
+                <button type="submit">Like</button>
+            </form>
+        </div>
         <br>
     </li>
 </ul>
-<!-- Nawigacja -->
+
+<!-- Nawigacja stron -->
 <span th:each="number : ${numbers}">
     <a th:if="${number} != -1"
        th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort}, search=${search})}"
        th:text="${number + 1}"></a>
     <span th:unless="${number} != -1">...</span>
 </span>
+
 <a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}">Powrót do menu</a>
 </body>
 </html>

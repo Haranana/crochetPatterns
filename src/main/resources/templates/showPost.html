@@ -8,18 +8,21 @@
     <hr>
 </head>
 <body>
+
+<!-- Przyciski edycji, jeśli to autor -->
 <div th:if="${isViewedByAuthor}">
     <a th:href="@{/editPost(postId=${post.id})}">Edytuj Post</a>
     <a th:href="@{/deletePost(postId=${post.id})}">Usuń Post</a>
 </div>
-<!-- Wyświetlenie tytułu oraz avatara autora -->
-<strong th:text="${post.title}">Tytuł wpisu</strong> <br>
+
+<!-- Tytuł postu, avatar autora, link do profilu autora -->
+<strong th:text="${post.title}">Tytuł wpisu</strong><br>
 <img th:src="@{${postAuthor.avatar}}" alt="Avatar autora" style="max-width:50px; max-height:50px;"/>
 <a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}">Autor</a>
-<!-- Dodajemy avatar autora – zakładamy, że UserDTO zawiera avatar -->
-
 <br>
-<span th:text="${post.description}">Opis wpisu</span> <br>
+<span th:text="${post.description}">Opis wpisu</span><br>
+
+<!-- Link do PDF, jeśli istnieje -->
 <a th:if="${post.pdfFilePath != null}"
    th:href="@{/posts/{id}/pdf(id=${post.id})}"
    target="_blank">
@@ -28,32 +31,44 @@
 <br>
 <span th:text="${post.showableDate}">Data</span>
 <br><br>
+
+<!-- Liczba polubień i przyciski Like/Unlike -->
+<div>
+    <span>Liczba polubień: <b th:text="${likeCount}">0</b></span>
+</div>
+<div th:if="${isLogged}">
+    <div th:if="${userLiked}">
+        <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
+            <button type="submit">Unlike</button>
+        </form>
+    </div>
+    <div th:unless="${userLiked}">
+        <form th:action="@{/post/{id}/like(id=${post.id})}" method="post">
+            <button type="submit">Like</button>
+        </form>
+    </div>
+</div>
+
+<!-- Link do dodania komentarza, jeśli zalogowany -->
 <div th:if="${isLogged}">
     <a th:href="@{/writeComment(postId=${post.id})}">Dodaj komentarz</a>
 </div>
 <div th:unless="${isLogged}">
     <a th:href="@{/login}">Zaloguj się, aby dodać komentarz</a>
 </div>
+
 <!-- Lista komentarzy -->
-<span th:each="comment, iterStat : ${postComments}">
+<div th:each="comment, iterStat : ${postComments}">
     <img th:src="@{${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
-    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
+    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}"
+       th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
     <br>
     <span th:text="${comment.text}">Tekst komentarza</span><br>
     <span th:text="${comment.showableDate}">Data</span><br>
-    <span th:text="${comment.creationTimeValue}">0</span>
-    <span th:switch="${comment.creationTimeValueType}">
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).YEAR}" th:text="#{showAllPosts.year}">lat</span>
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MONTH}" th:text="#{showAllPosts.month}">miesięcy</span>
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).WEEK}" th:text="#{showAllPosts.week}">tygodni</span>
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).DAY}" th:text="#{showAllPosts.day}">dni</span>
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).HOUR}" th:text="#{showAllPosts.hour}">godzin</span>
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).MINUTE}" th:text="#{showAllPosts.minute}">minut</span>
-        <span th:case="${T(com.example.crochetPatterns.dtos.CommentDTO.CreationTimeValueType).SECOND}" th:text="#{showAllPosts.second}">sekund</span>
-        <span th:case="*"></span>
-    </span>
+    <!-- Twoja logika 'creationTimeValue' itp. -->
     <br><br>
-</span>
+</div>
+
 <a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}">Powrót do listy wpisów</a>
 </body>
 </html>

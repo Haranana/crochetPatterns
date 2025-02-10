@@ -30,8 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class Controllers {
@@ -46,6 +45,7 @@ public class Controllers {
     private final CommentService commentService;
     private final AuthService authService;
     private final CommentRepository commentRepository;
+    private final LikeService likeService;
     private final TagConverter tagConverter;
     private final TagService tagService;
     //private final LoginSystem loginSystem;
@@ -55,7 +55,8 @@ public class Controllers {
                        UserConverter userConverter, UserService userService,
                        CommentConverter commentConverter, CommentService commentService,
                        TagConverter tagConverter, TagService tagService , AuthService authService ,
-                       CommentRepository commentRepository/*,
+                       CommentRepository commentRepository,
+                       LikeService likeService/*,
                        LoginSystem loginSystem*/) {
         this.postService = postService;
         this.postConverter = postConverter;
@@ -67,6 +68,7 @@ public class Controllers {
         this.tagService = tagService;
         this.authService = authService;
         this.commentRepository = commentRepository;
+        this.likeService = likeService;
         //this.loginSystem = loginSystem;
     }
 
@@ -86,22 +88,56 @@ public class Controllers {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size,
             @RequestParam(defaultValue = "none") String sort,
-            @RequestParam(defaultValue = "") String search, // nowy parametr wyszukiwania
+            @RequestParam(defaultValue = "") String search,
             Model model) {
 
         Page<Post> result;
-        // Jeśli wprowadzono tekst do wyszukiwania, użyj metody searchPosts; w przeciwnym wypadku findAll
+
         if (search != null && !search.trim().isEmpty()) {
             result = postService.searchPosts(search, page, size, PostService.PostSortType.NAME);
         } else {
             result = postService.getPostDTOPage(page, size, PostService.PostSortType.NAME);
         }
 
-        model.addAttribute("posts", postConverter.createDTO(result.getContent()));
+        // Konwersja Post -> PostDTO (Twoja standardowa logika)
+        List<PostDTO> postDTOs = postConverter.createDTO(result.getContent());
+
+        // ------------------------------
+        // 1. Mapa: postId -> liczba polubień
+        // ------------------------------
+        Map<Long, Long> postLikesCountMap = new HashMap<>();
+        for (Post p : result.getContent()) {
+            long likesCount = likeService.countLikes(p.getId());
+            postLikesCountMap.put(p.getId(), likesCount);
+        }
+
+        // ------------------------------
+        // 2. Zbiór: postów polubionych przez zalogowanego usera
+        // ------------------------------
+        Set<Long> userLikedPosts = new HashSet<>();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof LoggedUserDetails) {
+            LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+            Long userId = userDetails.getId();
+
+            // Dla każdego postu sprawdź, czy user polubił
+            for (Post p : result.getContent()) {
+                boolean liked = likeService.hasLiked(userId, p.getId());
+                if (liked) {
+                    userLikedPosts.add(p.getId());
+                }
+            }
+        }
+
+        // Przekazujemy do modelu
+        model.addAttribute("posts", postDTOs);               // lista postów
+        model.addAttribute("postLikesCountMap", postLikesCountMap); // licznik polubień
+        model.addAttribute("userLikedPosts", userLikedPosts);       // zbiór ID postów polubionych przez usera
+        // reszta Twoich zmiennych:
         model.addAttribute("page", page);
         model.addAttribute("sort", sort);
         model.addAttribute("size", size);
-        model.addAttribute("search", search); // przekazujemy aktualny tekst wyszukiwania do widoku
+        model.addAttribute("search", search);
         model.addAttribute("numbers", postService.createPageNumbers(page, result.getTotalPages()));
 
         return "showAllPosts";
@@ -205,29 +241,46 @@ public class Controllers {
     }
 
     @RequestMapping("/showPost")
-    public String showPost(@RequestParam int postId , Model model){
+    public String showPost(@RequestParam int postId, Model model){
         Post post = postService.getPostDTO(postId);
-        PostDTO postDTO = postConverter.createDTO(post);
-        User tempAuthor = userService.getUserDTO(Math.toIntExact(postDTO.getAuthorId()));
-        UserDTO postAuthor = userConverter.createDTO(tempAuthor);
-
-        List<Comment> tempCommentList = commentService.getCommentDTOPageByPost(0,100, CommentService.CommentSortType.DEFAULT , postId).getContent();
-        List<CommentDTO> postComments= commentConverter.createDTO( tempCommentList  );
-        List<UserDTO> commentsAuthors = new ArrayList<>();
-        for(CommentDTO comment : postComments){
-            User tempUser = userService.getUserDTO(Math.toIntExact(comment.getAuthorId()));
-            commentsAuthors.add(userConverter.createDTO(tempUser));
-            commentService.updateDTOShowableDate(comment);
+        if (post == null) {
+            // Możesz rzucić np. ElementNotFoundException lub przekierować na stronę błędu
+            return "redirect:/allPosts";
         }
 
-        model.addAttribute("isViewedByAuthor" , authService.isLogged() && authService.getLoggedUserDetails().getId() == postAuthor.getId());
-        model.addAttribute("isLogged" , authService.isLogged());
-        if(authService.isLogged()) model.addAttribute("userID" , authService.getLoggedUserDetails().getId());
-        else model.addAttribute("userID" , -1);
-        model.addAttribute("post" , postDTO);
-        model.addAttribute("postAuthor" , postAuthor);
-        model.addAttribute("postComments" , postComments);
-        model.addAttribute("commentsAuthors" , commentsAuthors);
+        PostDTO postDTO = postConverter.createDTO(post);
+
+        // 1. Liczba polubień
+        long likeCount = likeService.countLikes(post.getId());
+
+        // 2. Czy zalogowany user lubi?
+        boolean userLiked = false;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof LoggedUserDetails) {
+            LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+            Long userId = userDetails.getId();
+            userLiked = likeService.hasLiked(userId, post.getId());
+        }
+
+        // Ustawiamy w modelu
+        model.addAttribute("post", postDTO);
+        model.addAttribute("likeCount", likeCount);
+        model.addAttribute("userLiked", userLiked);
+
+        // Reszta Twojej logiki, np. pobieranie autora, komentarzy, itp.:
+        User tempAuthor = userService.getUserDTO(Math.toIntExact(postDTO.getAuthorId()));
+        UserDTO postAuthor = userConverter.createDTO(tempAuthor);
+        model.addAttribute("postAuthor", postAuthor);
+
+        // ...
+        model.addAttribute("isViewedByAuthor", authService.isLogged() &&
+                authService.getLoggedUserDetails().getId() == postAuthor.getId());
+        model.addAttribute("isLogged", authService.isLogged());
+        model.addAttribute("userID", authService.isLogged() ? authService.getLoggedUserDetails().getId() : -1);
+
+        // Komentarze, itd.
+        // ...
+
         return "showPost";
     }
 
@@ -417,6 +470,36 @@ public class Controllers {
         */
         System.out.println("Konto usunieto");
         return "deleteAccountSuccess"; // szablon potwierdzający usunięcie konta
+    }
+
+    @PostMapping("/post/{postId}/like")
+    public String likePost(@PathVariable("postId") Long postId) {
+        // Sprawdzamy, czy jest zalogowany
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+            return "redirect:/login";
+        }
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+        Long userId = userDetails.getId();
+
+        likeService.likePost(userId, postId);
+
+        // Po polubieniu wracamy do szczegółów posta
+        return "redirect:/showPost?postId=" + postId;
+    }
+
+    @PostMapping("/post/{postId}/unlike")
+    public String unlikePost(@PathVariable("postId") Long postId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+            return "redirect:/login";
+        }
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+        Long userId = userDetails.getId();
+
+        likeService.unlikePost(userId, postId);
+
+        return "redirect:/showPost?postId=" + postId;
     }
 
 
