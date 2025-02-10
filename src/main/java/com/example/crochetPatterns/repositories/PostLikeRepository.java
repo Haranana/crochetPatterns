@@ -4,6 +4,7 @@ import com.example.crochetPatterns.entities.PostLike;
 import com.example.crochetPatterns.entities.PostLikeId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PostLikeRepository extends JpaRepository<PostLike, PostLikeId> {
 
@@ -11,7 +12,7 @@ public interface PostLikeRepository extends JpaRepository<PostLike, PostLikeId> 
      * Liczba polubień danego postu.
      */
     @Query("SELECT COUNT(pl) FROM PostLike pl WHERE pl.id.postId = :postId")
-    long countByPostId(Long postId);
+    long countByPostId(@Param("postId") Long postId);
 
     /**
      * Czy dany użytkownik polubił dany post?

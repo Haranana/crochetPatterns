@@ -49,6 +49,7 @@ public class LikeService {
      * Zwraca liczbę polubień postu.
      */
     public long countLikes(Long postId) {
+        System.out.println("Post id: " + postId);
         return postLikeRepository.countByPostId(postId);
     }
 }

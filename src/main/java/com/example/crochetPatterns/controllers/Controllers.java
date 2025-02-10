@@ -84,26 +84,62 @@ public class Controllers {
     @RequestMapping("/allPosts")
     public String returnAllPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
-            @RequestParam(defaultValue = "none") String sort,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "default") String sort, // tytuł, data, polubienia
             @RequestParam(defaultValue = "") String search,
             @RequestParam(required = false) Long tagId,
             Model model) {
 
-        // 1. Zawsze przekazujemy listę tagów do modelu:
         model.addAttribute("allTags", tagService.findAllTags());
 
-        // 2. Logika wyszukiwania/filtrowania
+        // 1. Ustalenie typu sortowania
+        PostService.PostSortType sortType = postService.mapSortParamToEnum(sort); // metoda pomocnicza (patrz niżej)
+
         Page<Post> result;
+
+        System.out.println(">>> Tuz przed sortowaniem przez polubienia [DEBUG] sortType = " + sortType + ", page=" + page + ", size=" + size);
+        // 2. Kwestia filtrowania (tagId / search). Najpierw pobieramy z bazy:
         if (tagId != null) {
-            // filtruj posty po tagu
-            result = postService.findByTagId(tagId, page, size, PostService.PostSortType.NAME);
+            System.out.println("0.5");
+            // Filtruj po tagu (bez względu na sortType – bo i tak zrobimy ewentualne sort w pamięci)
+            // W przypadku sortType == LIKES pobieramy bazę np. sortowaną po ID
+            if (sortType == PostService.PostSortType.LIKES) {
+                System.out.println("1");
+                // pobierz "duży" page, np. 9999, aby mieć wszystkie i posortować w pamięci
+                Page<Post> all = postService.findByTagId(tagId, 0, 9999, PostService.PostSortType.DEFAULT);
+                System.out.println("2");
+                // sort i stronicowanie w pamięci
+                result = postService.findAllSortedByLikesInMemory(all.getContent(), page, size);
+                System.out.println("3");
+            } else {
+
+                // normalne sortowanie w bazie
+                result = postService.findByTagId(tagId, page, size, sortType);
+            }
         }
         else if (search != null && !search.trim().isEmpty()) {
-            result = postService.searchPosts(search, page, size, PostService.PostSortType.NAME);
+            // Wyszukiwanie w tytule
+
+            if (sortType == PostService.PostSortType.LIKES) {
+                Page<Post> all = postService.searchPosts(search, 0, 9999, PostService.PostSortType.DEFAULT);
+                result = postService.findAllSortedByLikesInMemory(all.getContent(), page, size);
+            } else {
+                result = postService.searchPosts(search, page, size, sortType);
+            }
         }
         else {
-            result = postService.getPostDTOPage(page, size, PostService.PostSortType.NAME);
+            // Bez filtra tagu i bez wyszukiwania
+            System.out.println("3_1");
+            if (sortType == PostService.PostSortType.LIKES) {
+                System.out.println("3_2");
+                Page<Post> all = postService.getPostDTOPage(0, 9999, PostService.PostSortType.DEFAULT);
+                System.out.println("3_3");
+                result = postService.findAllSortedByLikesInMemory(all.getContent(), page, size);
+                System.out.println("3_4");
+            } else {
+                System.out.println("3_5");
+                result = postService.getPostDTOPage(page, size, sortType);
+            }
         }
 
         // 3. Konwersja Post -> PostDTO
@@ -116,7 +152,7 @@ public class Controllers {
             postLikesCountMap.put(p.getId(), likesCount);
         }
 
-        // 5. Zbiór: ID postów polubionych przez zalogowanego usera
+        // 5. Zbiór ID postów polubionych przez zalogowanego usera
         Set<Long> userLikedPosts = new HashSet<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof LoggedUserDetails) {
@@ -134,11 +170,22 @@ public class Controllers {
         model.addAttribute("posts", postDTOs);
         model.addAttribute("postLikesCountMap", postLikesCountMap);
         model.addAttribute("userLikedPosts", userLikedPosts);
+
+        System.out.println(">>> Tuz przed add atribute strony [DEBUG] sortType = " + sortType + ", page=" + page + ", size=" + size);
+
+        // Numer aktualnej strony, wybrany sort, itp.
         model.addAttribute("page", page);
-        model.addAttribute("sort", sort);
         model.addAttribute("size", size);
+        model.addAttribute("sort", sort);
         model.addAttribute("search", search);
+
+        // Liczba stron po posortowaniu
+        // (jeśli w pamięci, to jest w result co nam da PageImpl z totalElements)
+
+
         model.addAttribute("numbers", postService.createPageNumbers(page, result.getTotalPages()));
+
+        System.out.println(">>> Tuz przed zwroceniem szablonu [DEBUG] sortType = " + sortType + ", page=" + page + ", size=" + size);
 
         return "showAllPosts";
     }

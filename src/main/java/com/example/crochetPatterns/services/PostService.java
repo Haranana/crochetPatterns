@@ -2,13 +2,10 @@ package com.example.crochetPatterns.services;
 
 import com.example.crochetPatterns.dtos.PostEditDTO;
 import com.example.crochetPatterns.dtos.PostFormDTO;
-import com.example.crochetPatterns.entities.Comment;
-import com.example.crochetPatterns.entities.Tag;
-import com.example.crochetPatterns.entities.User;
+import com.example.crochetPatterns.entities.*;
 import com.example.crochetPatterns.mappers.PostConverter;
 import com.example.crochetPatterns.repositories.PostRepository;
 import com.example.crochetPatterns.dtos.PostDTO;
-import com.example.crochetPatterns.entities.Post;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -28,11 +25,12 @@ import java.util.*;
 public class PostService {
 
 
-    public enum PostSortType{
-        NEWEST,
-        OLDEST,
-        NAME,
-        DEFAULT
+    public enum PostSortType {
+        TITLE_ASC,    // sortujemy po tytule rosnąco
+        DATE_NEWEST,  // sortujemy po dacie malejąco
+        DATE_OLDEST,  // sortujemy po dacie rosnąco
+        LIKES,        // sortujemy po liczbie polubień malejąco
+        DEFAULT       // domyślnie np. sort po ID
     }
 
     private final PostRepository postRepository;
@@ -41,10 +39,13 @@ public class PostService {
 
     private final TagService tagService;
 
-    public PostService(PostRepository postRepository, PostConverter postConverter , TagService tagService) {
+    private final LikeService likeService;
+
+    public PostService(PostRepository postRepository, PostConverter postConverter , TagService tagService , LikeService likeService) {
         this.postRepository = postRepository;
         this.postConverter = postConverter;
         this.tagService = tagService;
+        this.likeService = likeService;
     }
 
     public void addNewPost(PostDTO postDTO){
@@ -229,15 +230,29 @@ public class PostService {
         postRepository.save(existingPost);
     }
 
-    private Sort createSortObject(PostSortType postSortType) {
-        Sort returnSort = Sort.by("id").ascending();
-        switch (postSortType){
-            case NAME -> returnSort = Sort.by("title").ascending();
-            case NEWEST -> returnSort = Sort.by("creation_date").descending();
-            case OLDEST -> returnSort = Sort.by("creation_date").ascending();
-            case DEFAULT -> returnSort = Sort.by("id").ascending();
+    private Sort createSortObject(PostSortType sortType) {
+        // Domyślnie sortujemy po ID rosnąco
+        Sort defaultSort = Sort.by("id").ascending();
+
+        switch (sortType) {
+            case TITLE_ASC:
+                return Sort.by("title").ascending();
+
+            case DATE_NEWEST:
+                return Sort.by("creationDate").descending();
+
+            case DATE_OLDEST:
+                return Sort.by("creationDate").ascending();
+
+            // Sortowanie po polubieniach tu pominiemy, bo i tak je zrobimy w pamięci
+            case LIKES:
+                // Zwrot domyślnego, bo i tak w pamięci to obsłużymy
+                return defaultSort;
+
+            case DEFAULT:
+            default:
+                return defaultSort;
         }
-        return returnSort;
     }
 
     public Page<Post> searchPosts(String keyword, int pageId, int pageSize, PostSortType postSortType) {
@@ -254,6 +269,60 @@ public class PostService {
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(page, size, sort);
         return postRepository.findByTagId(tagId, pageable);
+    }
+
+    public Page<Post> findAllSortedByLikesInMemory(List<Post> posts, int pageId, int pageSize) {
+        System.out.println("4_1");
+        if(likeService == null) {
+            System.out.println("likeService is null");
+        } else {
+            System.out.println("likeService is not null");
+        }
+
+        // Skopiuj listę do nowej, modyfikowalnej listy
+        List<Post> mutablePosts = new ArrayList<>(posts);
+
+        // 1. Sortujemy w pamięci wg liczby polubień malejąco (bez lambd)
+        Collections.sort(mutablePosts, new Comparator<Post>() {
+            @Override
+            public int compare(Post p1, Post p2) {
+                System.out.println("4_11");
+                long likes1 = likeService.countLikes(p1.getId());
+                System.out.println("4_12");
+                long likes2 = likeService.countLikes(p2.getId());
+                System.out.println("4_13");
+                return Long.compare(likes2, likes1); // malejąco
+            }
+        });
+
+        System.out.println("4_2");
+        // 2. Stronicowanie w pamięci
+        int total = mutablePosts.size();
+        int fromIndex = pageId * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, total);
+        if (fromIndex > total) {
+            System.out.println("4_3");
+            List<Post> empty = Collections.emptyList();
+            System.out.println("4_4");
+            return new PageImpl<>(empty, PageRequest.of(pageId, pageSize), total);
+        }
+
+        System.out.println("4_5");
+        List<Post> subList = mutablePosts.subList(fromIndex, toIndex);
+        System.out.println("4_6");
+
+        return new PageImpl<>(subList, PageRequest.of(pageId, pageSize), total);
+    }
+
+    public PostSortType mapSortParamToEnum(String sortParam) {
+        // Np. w URL: ?sort=titleAsc, ?sort=dateNewest, ?sort=dateOldest, ?sort=likes
+        return switch (sortParam) {
+            case "titleAsc" -> PostSortType.TITLE_ASC;
+            case "dateNewest" -> PostSortType.DATE_NEWEST;
+            case "dateOldest" -> PostSortType.DATE_OLDEST;
+            case "likes" -> PostSortType.LIKES;
+            default -> PostSortType.DEFAULT;
+        };
     }
 }
 

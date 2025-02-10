@@ -8,15 +8,36 @@
     <hr>
 </head>
 <body>
-<!-- Formularz wyszukiwania -->
+
+<!-- Formularz do wyszukiwania i sortowania -->
 <form action="/allPosts" method="get">
+    <!-- Wyszukiwanie po tytule -->
     <input type="text" name="search" placeholder="Szukaj w tytule..." th:value="${search}"/>
-    <input type="hidden" name="sort" th:value="${sort}"/>
-    <input type="hidden" name="size" th:value="${size}"/>
-    <button type="submit">Szukaj</button>
+
+    <!-- Wybór rozmiaru strony -->
+    <label>Rozmiar strony:</label>
+    <select name="size">
+        <option th:value="2" th:text="'2'" th:selected="${size == 2}"></option>
+        <option th:value="5" th:text="'5'" th:selected="${size == 5}"></option>
+        <option th:value="10" th:text="'10'" th:selected="${size == 10}"></option>
+    </select>
+
+    <!-- Wybór sortowania -->
+    <label>Sortuj wg:</label>
+    <select name="sort">
+        <option th:value="titleAsc" th:text="'Tytuł (A-Z)'" th:selected="${sort == 'titleAsc'}"></option>
+        <option th:value="dateNewest" th:text="'Najnowsze'" th:selected="${sort == 'dateNewest'}"></option>
+        <option th:value="dateOldest" th:text="'Najstarsze'" th:selected="${sort == 'dateOldest'}"></option>
+        <option th:value="likes" th:text="'Polubienia'" th:selected="${sort == 'likes'}"></option>
+    </select>
+
+    <button type="submit">Szukaj/Sortuj</button>
 </form>
+
+<!-- Dodatkowy formularz do filtrowania po tagach (jeśli chcesz) -->
 <form action="/allPosts" method="get">
-    <input type="text" name="search" placeholder="Szukaj w tytule..." th:value="${search}"/>
+    <input type="hidden" name="size" th:value="${size}"/>
+    <input type="hidden" name="sort" th:value="${sort}"/>
     <!-- select tagów -->
     <select name="tagId">
         <option value="">-- dowolny tag --</option>
@@ -25,26 +46,24 @@
                 th:text="${tag.name}">
         </option>
     </select>
-    <input type="hidden" name="size" th:value="${size}"/>
-    <!-- ... itp. -->
-    <button type="submit">Filtruj</button>
+    <button type="submit">Filtruj tag</button>
 </form>
+
+<hr>
+
+<!-- Lista postów -->
 <ul>
-    <!-- Iterujemy listę postów -->
     <li th:each="post : ${posts}">
         <a th:href="@{/showPost(postId=${post.id})}">
             <strong th:text="${post.title}">Tytuł wpisu</strong><br>
             <span th:text="${post.description}">Opis wpisu</span>
         </a>
         <br>
-
-        <!-- Liczba polubień: wyciągamy z mapy postLikesCountMap -->
         <span>Liczba polubień:
             <b th:text="${postLikesCountMap[post.id]}">0</b>
         </span>
         <br>
-
-        <!-- Przyciski Like/Unlike -->
+        <!-- Like/Unlike -->
         <div th:if="${userLikedPosts.contains(post.id)}">
             <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
                 <button type="submit">Unlike</button>
