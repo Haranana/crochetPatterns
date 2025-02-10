@@ -49,7 +49,6 @@ public class Controllers {
     private final LikeService likeService;
     private final TagConverter tagConverter;
     private final TagService tagService;
-    //private final LoginSystem loginSystem;
 
     @Autowired
     public Controllers(PostService postService, PostConverter postConverter,
@@ -57,8 +56,7 @@ public class Controllers {
                        CommentConverter commentConverter, CommentService commentService,
                        TagConverter tagConverter, TagService tagService , AuthService authService ,
                        CommentRepository commentRepository,
-                       LikeService likeService/*,
-                       LoginSystem loginSystem*/) {
+                       LikeService likeService) {
         this.postService = postService;
         this.postConverter = postConverter;
         this.userConverter = userConverter;
@@ -70,7 +68,6 @@ public class Controllers {
         this.authService = authService;
         this.commentRepository = commentRepository;
         this.likeService = likeService;
-        //this.loginSystem = loginSystem;
     }
 
 
@@ -260,10 +257,9 @@ public class Controllers {
 
     @RequestMapping("/showPost")
     public String showPost(@RequestParam int postId, Model model){
-        // 1. Pobranie encji Post z bazy
+        // 1. Pobranie encji Post
         Post post = postService.getPostDTO(postId);
         if (post == null) {
-            // Jeśli nie ma takiego posta, możemy przekierować np. na listę postów
             return "redirect:/allPosts";
         }
 
@@ -273,12 +269,9 @@ public class Controllers {
         // 3. Liczba polubień
         long likeCount = likeService.countLikes(post.getId());
 
-        // 4. Sprawdzamy, czy zalogowany user lubi post (userLiked)
-        //    oraz czy jest autorem postu (isViewedByAuthor)
+        // 4. Logika userLiked / isViewedByAuthor
         boolean userLiked = false;
         boolean isViewedByAuthor = false;
-
-        // Możesz też w ten sposób sprawdzić, czy w ogóle ktoś jest zalogowany:
         boolean isLogged = authService.isLogged();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -286,16 +279,13 @@ public class Controllers {
             LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
             Long userId = userDetails.getId();
 
-            // Czy user polubił post?
             userLiked = likeService.hasLiked(userId, post.getId());
-
-            // Czy to ten sam user, który napisał post?
             if (userId.equals(postDTO.getAuthorId())) {
                 isViewedByAuthor = true;
             }
         }
 
-        // 5. Tagi – pobieramy nazwy na podstawie tagIds z PostDTO
+        // 5. Tagi
         List<String> postTagNames = new ArrayList<>();
         for (Long tagId : postDTO.getTagIds()) {
             Tag t = tagService.findById(tagId);
@@ -304,12 +294,11 @@ public class Controllers {
             }
         }
 
-        // 6. Pobieramy autora posta (np. żeby wyświetlać avatar itp.)
+        // 6. Autor posta
         User postAuthorEntity = userService.getUserDTO(Math.toIntExact(postDTO.getAuthorId()));
         UserDTO postAuthor = userConverter.createDTO(postAuthorEntity);
 
-        // 7. Pobieramy komentarze do postu i autorów tych komentarzy
-        //    (jeśli chcesz je wyświetlać na tej samej stronie):
+        // 7. Komentarze + autorzy komentarzy
         List<Comment> comments = commentService
                 .getCommentDTOPageByPost(0, 100, CommentService.CommentSortType.DEFAULT, postId)
                 .getContent();
@@ -317,11 +306,22 @@ public class Controllers {
 
         List<UserDTO> commentsAuthors = new ArrayList<>();
         for (CommentDTO commentDTO : postComments) {
-            User tempUser = userService.getUserDTO(Math.toIntExact(commentDTO.getAuthorId()));
-            commentsAuthors.add(userConverter.createDTO(tempUser));
+            Long authorId = commentDTO.getAuthorId();
+            if (authorId == null) {
+                // Konto usunięte => placeholder
+                UserDTO deletedUser = new UserDTO();
+                deletedUser.setId(0L);
+                deletedUser.setUsername("[user deleted]");
+                deletedUser.setAvatar("/images/defaultavatar.png");
+                commentsAuthors.add(deletedUser);
+            } else {
+                User tempUser = userService.getUserDTO(authorId.intValue());
+                UserDTO userDTO = userConverter.createDTO(tempUser);
+                commentsAuthors.add(userDTO);
+            }
         }
 
-        // 8. Dodajemy wszystkie dane do modelu
+        // 8. Dodajemy do modelu
         model.addAttribute("post", postDTO);
         model.addAttribute("postAuthor", postAuthor);
 
@@ -331,11 +331,9 @@ public class Controllers {
         model.addAttribute("isLogged", isLogged);
 
         model.addAttribute("postTagNames", postTagNames);
-
         model.addAttribute("postComments", postComments);
         model.addAttribute("commentsAuthors", commentsAuthors);
 
-        // 9. Zwracamy nazwę szablonu
         return "showPost";
     }
 

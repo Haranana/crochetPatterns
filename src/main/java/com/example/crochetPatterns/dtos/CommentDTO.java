@@ -29,8 +29,6 @@ public class CommentDTO {
     @Positive(message = "{number.positive}")
     private Long postId;
 
-    @NotNull
-    @Positive(message = "{number.positive}")
     private Long authorId;
 
     public enum CreationTimeValueType{

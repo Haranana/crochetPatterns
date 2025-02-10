@@ -23,7 +23,5 @@ public class CommentFormDTO {
     @Positive(message = "{number.positive}")
     private Long postId;
 
-    @NotNull
-    @Positive(message = "{number.positive}")
     private Long authorId;
 }

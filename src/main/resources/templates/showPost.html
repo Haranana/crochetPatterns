@@ -68,13 +68,22 @@
 
 <!-- Lista komentarzy -->
 <div th:each="comment, iterStat : ${postComments}">
-    <img th:src="@{${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
-    <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}"
-       th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
+
+    <!-- Sprawdzamy, czy user ID == 0 (placeholder) -->
+    <div th:if="${commentsAuthors[iterStat.index].id != 0}">
+        <!-- Prawidłowy user -->
+        <img th:src="@{${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
+        <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}"
+           th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
+    </div>
+    <div th:unless="${commentsAuthors[iterStat.index].id != 0}">
+        <!-- Użytkownik usunięty -->
+        <span>[user deleted]</span>
+    </div>
+
     <br>
     <span th:text="${comment.text}">Tekst komentarza</span><br>
     <span th:text="${comment.showableDate}">Data</span><br>
-    <!-- Twoja logika 'creationTimeValue' itp. -->
     <br><br>
 </div>
 

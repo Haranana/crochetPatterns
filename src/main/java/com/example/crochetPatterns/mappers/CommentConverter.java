@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CommentConverter {
@@ -26,30 +27,44 @@ public class CommentConverter {
 
     public Comment createComment(CommentDTO commentDTO){
         Comment comment = new Comment();
-        comment.setAuthor( (userRepository.findById(commentDTO.getAuthorId())).get() );
+        comment.setAuthor( userRepository.findById(commentDTO.getAuthorId()).orElse(null) );
         comment.setPost( (postRepository.findById(commentDTO.getPostId())).get() );
         comment.setText(commentDTO.getText());
         return comment;
     }
 
-    public Comment createComment(CommentFormDTO commentDTO){
+    public Comment createComment(CommentFormDTO dto) {
         Comment comment = new Comment();
-        comment.setAuthor( (userRepository.findById(commentDTO.getAuthorId())).get() );
-        comment.setPost( (postRepository.findById(commentDTO.getPostId())).get() );
-        comment.setText(commentDTO.getText());
+        comment.setText(dto.getText());
+        // post
+        Post post = postRepository.findById(dto.getPostId()).orElseThrow(() -> new RuntimeException("Post not found"));
+        comment.setPost(post);
+
+        // user
+        User author = userRepository.findById(dto.getAuthorId()).orElse(null);
+        comment.setAuthor(author); // może być null, jeśli tak byś chciał
+
         return comment;
     }
 
 
-    public CommentDTO createDTO(Comment comment){
-        CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setId(comment.getId());
-        commentDTO.setPostId(comment.getPost() != null ? comment.getPost().getId() : null);
-        commentDTO.setAuthorId(comment.getAuthor() != null ? comment.getAuthor().getId() : null);
-        commentDTO.setText(comment.getText());
-        commentDTO.setCreationDate(comment.getCreationDate());
+    public CommentDTO createDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+        dto.setId(comment.getId());
+        dto.setText(comment.getText());
+        dto.setCreationDate(comment.getCreationDate());
+        dto.setPostId(comment.getPost().getId());
 
-        return commentDTO;
+        // Jeśli author w encji jest null (konto usunięte), to dto.authorId będzie null
+        if (comment.getAuthor() != null) {
+            dto.setAuthorId(comment.getAuthor().getId());
+        } else {
+            dto.setAuthorId(null);
+        }
+
+        // Możemy też zaktualizować showableDate
+        dto.updateShowableDate();
+        return dto;
     }
 
     public CommentEditDTO createEditDTOFromComment(Comment comment){
@@ -60,19 +75,8 @@ public class CommentConverter {
         return dto;
     }
 
-    public List<CommentDTO> createDTO(List<Comment> comments){
-        List<CommentDTO> commentDTOs = new ArrayList<>();
-        for(Comment comment : comments) {
-            CommentDTO commentDTO = new CommentDTO();
-            commentDTO.setId(comment.getId());
-            commentDTO.setPostId(comment.getPost() != null ? comment.getPost().getId() : null);
-            commentDTO.setAuthorId(comment.getAuthor() != null ? comment.getAuthor().getId() : null);
-            commentDTO.setText(comment.getText());
-            commentDTO.setCreationDate(comment.getCreationDate());
-
-            commentDTOs.add(commentDTO);
-        }
-        return commentDTOs;
+    public List<CommentDTO> createDTO(List<Comment> commentList) {
+        return commentList.stream().map(this::createDTO).collect(Collectors.toList());
     }
 
 

@@ -23,6 +23,4 @@ public class CommentEditDTO {
     @Size(max = 1000, message = "{comment.tooLong}")
     private String text;
 
-
-
 }

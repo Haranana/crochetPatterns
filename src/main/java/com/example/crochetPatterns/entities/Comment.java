@@ -26,7 +26,6 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    @NotNull
     private User author;
 
     @Column(name = "text", nullable = false)
