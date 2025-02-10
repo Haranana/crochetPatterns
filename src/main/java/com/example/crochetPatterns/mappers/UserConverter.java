@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.mappers;
 
 import com.example.crochetPatterns.dtos.UserDTO;
+import com.example.crochetPatterns.dtos.UserEditDTO;
 import com.example.crochetPatterns.dtos.UserRegistrationDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
@@ -68,5 +69,14 @@ public class UserConverter {
         userDTO.setCommentIds(user.getComments().stream().map(Comment::getId).collect(Collectors.toList()));
 
         return userDTO;
+    }
+
+    public UserEditDTO createEditDTO(User user) {
+        UserEditDTO dto = new UserEditDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setBio(user.getBio());
+        // Nie ustawiamy avatarFile – to pole w formularzu będzie puste, dopiero jeśli użytkownik przesła nowy plik
+        return dto;
     }
 }

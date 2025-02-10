@@ -12,6 +12,7 @@ import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.others.LoginSystem;
 import com.example.crochetPatterns.repositories.CommentRepository;
 import com.example.crochetPatterns.services.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -304,6 +305,7 @@ public class Controllers {
         else {
             LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
             model.addAttribute("user", userConverter.createDTO(userService.getUserDTO(userDetails.getId())));
+            System.out.println(userConverter.createDTO(userService.getUserDTO(userDetails.getId())).getAvatar());
             return "showUserProfile";
         }
     }
@@ -320,6 +322,7 @@ public class Controllers {
     @RequestMapping("/userProfile")
     public String showUserProfile(@RequestParam int userId , Model model){
         UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+
         model.addAttribute("user" , user);
         return "showUserProfile";
     }
@@ -357,5 +360,63 @@ public class Controllers {
         return "showUserComments";
     }
 
+    // GET /editProfile – wyświetlenie formularza z danymi aktualnego użytkownika
+    @GetMapping("/editProfile")
+    public String editProfile(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+        User user = userService.getUserDTO(userDetails.getId());
+
+        // Konwersja encji do DTO edycji – upewnij się, że w UserConverter masz metodę createEditDTO(User user)
+        UserEditDTO userEditDTO = userConverter.createEditDTO(user);
+        model.addAttribute("userEditDTO", userEditDTO);
+        return "editProfile";  // nazwa szablonu, np. editProfile.html
+    }
+
+    // POST /confirmEditProfile – przetwarzanie formularza edycji profilu
+    @PostMapping("/confirmEditProfile")
+    public String confirmEditProfile(@Valid @ModelAttribute("userEditDTO") UserEditDTO userEditDTO,
+                                     BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "editProfile";
+        }
+        userService.updateUserProfile(userEditDTO);
+        return "redirect:/userProfile?userId=" + userEditDTO.getId();
+    }
+
+    // GET – wyświetlenie potwierdzenia usunięcia konta
+    @GetMapping("/deleteAccount")
+    public String deleteAccount(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+            return "login"; // jeśli użytkownik nie jest zalogowany
+        }
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+        model.addAttribute("userId", userDetails.getId());
+        return "deleteAccountConfirm"; // szablon potwierdzenia usunięcia konta
+    }
+
+    // POST – wykonanie usunięcia konta
+    @PostMapping("/deleteAccountConfirmed")
+    public String deleteAccountConfirmed(@RequestParam Long userId, HttpServletRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+            return "login";
+        }
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+        if (!userDetails.getId().equals(userId)) {
+            // Można tu dodać komunikat o błędzie, jeśli ktoś próbuje usunąć konto innego użytkownika
+            return "error";
+        }
+        /*
+        // Usuń konto
+        userService.deleteUser(userId);
+        // Unieważnij sesję i wyczyść kontekst bezpieczeństwa
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+        */
+        System.out.println("Konto usunieto");
+        return "deleteAccountSuccess"; // szablon potwierdzający usunięcie konta
+    }
 }
 

@@ -183,8 +183,8 @@ public class PostService {
 
         existingPost.setTitle(postEditDTO.getTitle());
         existingPost.setDescription(postEditDTO.getDescription());
-
         MultipartFile newFile = postEditDTO.getPdfFile();
+
         if (newFile != null && !newFile.isEmpty()) {
             String newPdfPath = savePostPDF(postEditDTO);
             existingPost.setPdfFilePath(newPdfPath);

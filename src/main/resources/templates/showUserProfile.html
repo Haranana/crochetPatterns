@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="#{userProfile.title}">Profil użytkownika</title>
-    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
+    <link href="/css/style.css" rel="stylesheet" />
+    <button type="button" onclick="window.location.href='/main'">Strona główna</button>
     <hr>
 </head>
 <body>
 <div class="user-profile">
-    <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <h1 th:text="${user.username}">Nazwa użytkownika</h1>
-    <!-- Wyświetlanie avatara -->
-    <!-- <img th:src="@{/${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;"/> -->
-
+    <!-- Avatar – zakładamy, że wartość user.avatar jest np. "/images/defaultavatar.png" lub ścieżką do nowego avatara -->
+    <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <p th:text="${user.bio}">Biografia użytkownika</p>
+    <!-- Link do edycji profilu -->
+    <a th:href="@{/editProfile}">Edytuj profil</a>
+    <a th:href="@{/deleteAccount}">Usuń konto</a>
+    <hr>
     <a th:href="@{/userPosts(userId=${user.id})}" th:text="#{userProfile.posts}">Wpisy użytkownika</a>
     <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze użytkownika</a>
 </div>

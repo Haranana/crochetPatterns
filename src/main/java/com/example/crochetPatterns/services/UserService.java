@@ -1,9 +1,6 @@
 package com.example.crochetPatterns.services;
 
-import com.example.crochetPatterns.dtos.CommentDTO;
-import com.example.crochetPatterns.dtos.PostFormDTO;
-import com.example.crochetPatterns.dtos.UserDTO;
-import com.example.crochetPatterns.dtos.UserRegistrationDTO;
+import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
@@ -16,6 +13,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 import java.util.Optional;
 
@@ -65,5 +70,49 @@ public class UserService {
 
     public void saveUser(User user) {
         userRepository.save(user);
+    }
+
+    public void updateUserProfile(UserEditDTO userEditDTO) {
+        User user = userRepository.findById(userEditDTO.getId())
+                .orElseThrow(() -> new RuntimeException("User not found: " + userEditDTO.getId()));
+
+        user.setUsername(userEditDTO.getUsername());
+        user.setBio(userEditDTO.getBio());
+        MultipartFile avatarFile = userEditDTO.getAvatarFile();
+
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            String newAvatarPath = saveAvatarFile(avatarFile);
+            user.setAvatar(newAvatarPath);
+            /*
+            if (!newAvatarPath.isEmpty()) {
+
+            }
+            */
+
+        }
+        userRepository.save(user);
+    }
+
+    private String saveAvatarFile(MultipartFile avatarFile) {
+        try {
+            String originalFilename = avatarFile.getOriginalFilename();
+            String uniqueName = System.currentTimeMillis() + "_" + originalFilename;
+            // Zakładamy, że nowe avatary zapisywane są w folderze: src/main/resources/static/images/
+            Path uploadDir = Paths.get("src/main/resources/static/images");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+            Path filePath = uploadDir.resolve(uniqueName);
+            Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Zwracamy ścieżkę względną, która umożliwi wyświetlenie obrazu (np. "/images/unikalnaNazwa.png")
+            return "/images/" + uniqueName;
+        } catch (IOException e) {
+            System.out.println("Błąd przy zapisie pliku avatara: " + e.getMessage());
+            return "";
+        }
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 }
