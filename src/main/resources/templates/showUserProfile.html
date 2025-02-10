@@ -9,9 +9,11 @@
 </head>
 <body>
 <div class="user-profile">
+    <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <h1 th:text="${user.username}">Nazwa użytkownika</h1>
     <!-- Wyświetlanie avatara -->
-    <img th:src="@{/${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;"/>
+    <!-- <img th:src="@{/${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;"/> -->
+
     <p th:text="${user.bio}">Biografia użytkownika</p>
     <a th:href="@{/userPosts(userId=${user.id})}" th:text="#{userProfile.posts}">Wpisy użytkownika</a>
     <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze użytkownika</a>

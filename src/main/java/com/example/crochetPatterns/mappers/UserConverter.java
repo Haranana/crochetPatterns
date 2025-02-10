@@ -34,7 +34,7 @@ public class UserConverter {
         user.setEmail(userDTO.getEmail());
         user.setPassword(encodedPassword);
         // Ustawiamy domyślny avatar (ścieżka względna – upewnij się, że plik istnieje)
-        user.setAvatar("uploads/default-avatar.png");
+        user.setAvatar("/images/defaultavatar.png");
         user.setEnabled(false); // Nowe konta domyślnie nie są aktywne
         user.setBio("");
         user.setPosts(new ArrayList<>());

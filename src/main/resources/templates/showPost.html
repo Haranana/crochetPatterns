@@ -14,9 +14,10 @@
 </div>
 <!-- Wyświetlenie tytułu oraz avatara autora -->
 <strong th:text="${post.title}">Tytuł wpisu</strong> <br>
+<img th:src="@{${postAuthor.avatar}}" alt="Avatar autora" style="max-width:50px; max-height:50px;"/>
 <a th:href="@{/userProfile(userId=${postAuthor.id})}" th:text="${postAuthor.username}">Autor</a>
 <!-- Dodajemy avatar autora – zakładamy, że UserDTO zawiera avatar -->
-<img th:src="@{/${postAuthor.avatar}}" alt="Avatar autora" style="max-width:50px; max-height:50px;"/>
+
 <br>
 <span th:text="${post.description}">Opis wpisu</span> <br>
 <a th:if="${post.pdfFilePath != null}"
@@ -35,9 +36,8 @@
 </div>
 <!-- Lista komentarzy -->
 <span th:each="comment, iterStat : ${postComments}">
+    <img th:src="@{${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
     <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}" th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
-    <!-- Wyświetlamy avatar komentatora -->
-    <img th:src="@{/${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
     <br>
     <span th:text="${comment.text}">Tekst komentarza</span><br>
     <span th:text="${comment.showableDate}">Data</span><br>

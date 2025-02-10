@@ -15,12 +15,15 @@
     <input type="hidden" name="size" th:value="${size}"/>
     <button type="submit">Szukaj</button>
 </form>
+<img th:src="@{/images/defaultavatar.png}" alt="Przykładowy obraz" />
 <ul>
     <li th:each="post: ${posts}">
         <a th:href="@{/showPost(postId=${post.id})}">
             <strong th:text="${post.title}">Tytuł wpisu</strong><br>
             <!-- Jeśli DTO posiada avatar autora, możesz dodać: -->
-            <img th:src="@{/${post.authorAvatar}}" alt="Avatar" style="max-width:50px; max-height:50px;"/
+
+            <!-- <img th:src="@{/${post.authorAvatar}}" alt="Avatar" style="max-width:50px; max-height:50px;"> -->
+            <!--<img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" /> -->
             <span th:text="${post.description}">Opis wpisu</span><br>
             <span th:text="${post.id}">ID wpisu</span><br>
             <span>

@@ -20,6 +20,9 @@
 <!---
 <a th:href="@{/userProfile(userId=${userId})}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
 --->
+
+<!--- <img th:src="@{/images/defaultavatar.png}" alt="Przykładowy obraz" /> --->
+
 <a th:href="@{/myProfile}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
 <form th:action="@{/logout}" method="post">
     <button type="submit">Wyloguj się</button>

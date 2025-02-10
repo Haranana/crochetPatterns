@@ -10,7 +10,7 @@
 <body>
 <!-- Wyświetlenie profilu użytkownika z avatarem -->
 <div class="user-profile">
-    <img th:src="@{/${user.avatar}}" alt="Avatar" style="max-width:100px; max-height:100px;"/>
+    <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <span th:text="${user.username}">Nazwa użytkownika</span>
 </div>
 <hr>
