@@ -418,5 +418,7 @@ public class Controllers {
         System.out.println("Konto usunieto");
         return "deleteAccountSuccess"; // szablon potwierdzający usunięcie konta
     }
+
+
 }
 

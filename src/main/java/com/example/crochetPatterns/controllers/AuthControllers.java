@@ -1,14 +1,19 @@
 package com.example.crochetPatterns.controllers;
 
+import com.example.crochetPatterns.dtos.UserPasswordChangeDTO;
 import com.example.crochetPatterns.dtos.UserRegistrationDTO;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.entities.VerificationToken;
+import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.repositories.UserRepository;
 import com.example.crochetPatterns.repositories.VerificationTokenRepository;
 import com.example.crochetPatterns.services.EmailService;
 import com.example.crochetPatterns.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -112,5 +117,41 @@ public class AuthControllers {
 
         model.addAttribute("message", "Konto aktywowane. Możesz się zalogować.");
         return "login";
+    }
+
+    // Endpoint wyświetlający formularz zmiany hasła
+    @GetMapping("/editPassword")
+    public String editPassword(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+            return "login";
+        }
+        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
+        UserPasswordChangeDTO dto = new UserPasswordChangeDTO();
+        dto.setId(userDetails.getId());
+        model.addAttribute("userPasswordChangeDTO", dto);
+        return "editPassword"; // nazwa szablonu Thymeleaf, np. editPassword.html
+    }
+
+    // Endpoint przetwarzający formularz zmiany hasła
+    @PostMapping("/confirmEditPassword")
+    public String confirmEditPassword(@Valid @ModelAttribute("userPasswordChangeDTO") UserPasswordChangeDTO dto,
+                                      BindingResult bindingResult,
+                                      HttpServletRequest request,
+                                      Model model) {
+        if (bindingResult.hasErrors()) {
+            return "editPassword";
+        }
+        // Próba zmiany hasła
+        if (!userService.changeUserPassword(dto, passwordEncoder)) {
+            bindingResult.rejectValue("currentPassword", "error.currentPassword", "Aktualne hasło jest nieprawidłowe");
+            return "editPassword";
+        }
+        // Opcjonalnie – unieważniamy sesję po zmianie hasła
+        request.getSession().invalidate();
+        // Czyscimy kontekst bezpieczeństwa
+        SecurityContextHolder.clearContext();
+        // Przekierowujemy użytkownika do strony logowania z informacją, że hasło zostało zmienione
+        return "redirect:/login?passwordChanged";
     }
 }

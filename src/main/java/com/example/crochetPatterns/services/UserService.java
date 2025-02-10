@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -110,6 +111,22 @@ public class UserService {
             System.out.println("Błąd przy zapisie pliku avatara: " + e.getMessage());
             return "";
         }
+    }
+
+    public boolean changeUserPassword(UserPasswordChangeDTO dto, PasswordEncoder passwordEncoder) {
+        Optional<User> optionalUser = userRepository.findById(dto.getId());
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("Użytkownik nie został znaleziony o id: " + dto.getId());
+        }
+        User user = optionalUser.get();
+        // Sprawdzamy, czy podane aktualne hasło zgadza się z tym zapisanym (przy użyciu PasswordEncoder.matches)
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            return false;
+        }
+        // Ustawiamy nowe hasło – kodujemy je przy pomocy PasswordEncoder
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+        return true;
     }
 
     public void deleteUser(Long id) {

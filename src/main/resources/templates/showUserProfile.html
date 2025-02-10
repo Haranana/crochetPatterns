@@ -15,6 +15,7 @@
     <p th:text="${user.bio}">Biografia użytkownika</p>
     <!-- Link do edycji profilu -->
     <a th:href="@{/editProfile}">Edytuj profil</a>
+    <a th:href="@{/editPassword}">Zmien haslo</a>
     <a th:href="@{/deleteAccount}">Usuń konto</a>
     <hr>
     <a th:href="@{/userPosts(userId=${user.id})}" th:text="#{userProfile.posts}">Wpisy użytkownika</a>
