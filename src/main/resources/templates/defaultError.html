@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Błąd 500 - Wewnętrzny błąd serwera</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1>Błąd 500 - Wewnętrzny błąd serwera</h1>
+<p th:text="'Wiadomość: ' + ${message}"></p>
+<p th:text="'Żądany adres: ' + ${url}"></p>
+<p th:text="'Status: ' + ${status}"></p>
+<a th:href="@{/main}">Powrót do strony głównej</a>
+</body>
+</html>
