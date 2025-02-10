@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title th:text="#{showPost.name}"></title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
+    <hr>
 </head>
 <body>
 <h1>Logowanie</h1>
@@ -18,6 +19,10 @@
         <input type="password" id="password" name="password" required>
     </div>
     <div>
+        <label for="remember-me">Zapamiętaj mnie:</label>
+        <input type="checkbox" id="remember-me" name="remember-me">
+    </div>
+    <div>
         <button type="submit">Zaloguj</button>
     </div>
 </form>
@@ -28,5 +33,4 @@
     <p style="color:green;">Pomyślnie wylogowano!</p>
 </div>
 </body>
-
 </html>

@@ -26,13 +26,10 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authBuilder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-
+        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authBuilder
                 .userDetailsService(myUserDetailsService)
                 .passwordEncoder(passwordEncoder());
-
         return authBuilder.build();
     }
 
@@ -43,10 +40,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Publiczne strony: główna, logowanie, zasoby statyczne
                         .requestMatchers("/", "/login", "/css/**", "/js/**").permitAll()
-                        // Tylko zalogowani mogą dodawać posty lub komentarze
-                        //.requestMatchers("/addPost", "/addingPost", "/addComment").authenticated()
-                        .requestMatchers( "/addPost" , "/addComment").authenticated()
-                        // Pozostałe endpointy – dostęp według Twojej logiki (tutaj np. dostęp publiczny)
+                        // Tylko zalogowani użytkownicy mogą dodawać posty lub komentarze
+                        .requestMatchers("/addPost", "/addComment").authenticated()
+                        // Pozostałe endpointy – dostęp według Twojej logiki
                         .anyRequest().permitAll()
                 )
                 // Konfiguracja własnego formularza logowania:
@@ -59,19 +55,24 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")            // przekierowanie przy błędzie logowania
                         .permitAll()
                 )
+                // Konfiguracja mechanizmu "zapamiętaj mnie"
+                .rememberMe(rememberMe -> rememberMe
+                        .key("uniqueAndSecret")                     // klucz wykorzystywany do generowania tokena
+                        .rememberMeParameter("remember-me")         // nazwa parametru z formularza (domyślnie "remember-me")
+                        .tokenValiditySeconds(7 * 24 * 60 * 60)       // czas ważności tokena – 7 dni (w sekundach)
+                )
                 // Konfiguracja wylogowania:
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID", "remember-me") // usuwamy również ciasteczko "remember-me"
                 )
-                // Domyślna ochrona CSRF – możesz ją zmodyfikować, tutaj pozostawiamy domyślnie włączoną:
+                // Domyślna ochrona CSRF – pozostawiamy włączoną:
                 .csrf(Customizer.withDefaults());
 
         return http.build();
     }
-
 
     // Definicja encodera haseł
     @Bean
