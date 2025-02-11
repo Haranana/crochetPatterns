@@ -1,47 +1,36 @@
 package com.example.crochetPatterns.services;
 
-import com.example.crochetPatterns.dtos.PostEditDTO;
-import com.example.crochetPatterns.dtos.PostFormDTO;
+import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.*;
+import com.example.crochetPatterns.exceptions.ElementNotFoundException;
+import com.example.crochetPatterns.exceptions.FileStorageException;
 import com.example.crochetPatterns.mappers.PostConverter;
 import com.example.crochetPatterns.repositories.PostRepository;
-import com.example.crochetPatterns.dtos.PostDTO;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.*;
 
 @Service
 public class PostService {
 
-
     public enum PostSortType {
-        TITLE_ASC,    // sortujemy po tytule rosnąco
-        DATE_NEWEST,  // sortujemy po dacie malejąco
-        DATE_OLDEST,  // sortujemy po dacie rosnąco
-        LIKES,        // sortujemy po liczbie polubień malejąco
-        DEFAULT       // domyślnie np. sort po ID
+        TITLE_ASC,
+        DATE_NEWEST,
+        DATE_OLDEST,
+        LIKES,
+        DEFAULT
     }
 
     private final PostRepository postRepository;
-
     private final PostConverter postConverter;
-
     private final TagService tagService;
-
     private final LikeService likeService;
 
-    public PostService(PostRepository postRepository, PostConverter postConverter , TagService tagService , LikeService likeService) {
+    public PostService(PostRepository postRepository, PostConverter postConverter, TagService tagService, LikeService likeService) {
         this.postRepository = postRepository;
         this.postConverter = postConverter;
         this.tagService = tagService;
@@ -53,26 +42,24 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public void addNewPost(PostFormDTO postFormDTO , String pdfFilePath){
-        Post post = postConverter.createPost(postFormDTO , pdfFilePath);
+    public void addNewPost(PostFormDTO postFormDTO, String pdfFilePath){
+        Post post = postConverter.createPost(postFormDTO, pdfFilePath);
         postRepository.save(post);
     }
 
-    public void editPost(PostFormDTO postFormDTO , Long postId){
-
+    public void editPost(PostFormDTO postFormDTO, Long postId){
+        // Implementacja edycji posta (opcjonalnie)
     }
 
     public void deletePost(Long postId) {
         if (!postRepository.existsById(postId)) {
-            throw new RuntimeException("Post not found: " + postId);
+            throw new ElementNotFoundException("Post not found: " + postId);
         }
-
         postRepository.deleteById(postId);
     }
 
     public String savePostPDF(PostFormDTO postFormDTO){
         MultipartFile pdf = postFormDTO.getPdfFile();
-        String pdfFilePath = "";
         try {
             String originalFilename = pdf.getOriginalFilename();
             String uniqueName = System.currentTimeMillis() + "-" + originalFilename;
@@ -82,17 +69,14 @@ public class PostService {
             }
             Path filePath = uploadDir.resolve(uniqueName);
             Files.copy(pdf.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            pdfFilePath = filePath.toString();
-            return pdfFilePath;
+            return filePath.toString();
         } catch (IOException e) {
-            System.out.println("Błąd przy zapisie pliku.");
-            return "";
+            throw new FileStorageException("Błąd przy zapisie pliku PDF", e);
         }
     }
 
     public String savePostPDF(PostEditDTO postEditDTO){
         MultipartFile pdf = postEditDTO.getPdfFile();
-        String pdfFilePath = "";
         try {
             String originalFilename = pdf.getOriginalFilename();
             String uniqueName = System.currentTimeMillis() + "-" + originalFilename;
@@ -102,11 +86,9 @@ public class PostService {
             }
             Path filePath = uploadDir.resolve(uniqueName);
             Files.copy(pdf.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            pdfFilePath = filePath.toString();
-            return pdfFilePath;
+            return filePath.toString();
         } catch (IOException e) {
-            System.out.println("Błąd przy zapisie pliku.");
-            return "";
+            throw new FileStorageException("Błąd przy zapisie pliku PDF", e);
         }
     }
 
@@ -117,14 +99,14 @@ public class PostService {
     }
 
     public Post getPostDTO(int id){
-        Optional<Post> returnPost = postRepository.findById(Integer.toUnsignedLong(id));
-        return returnPost.orElse(null);
+        return postRepository.findById(Integer.toUnsignedLong(id))
+                .orElseThrow(() -> new ElementNotFoundException("Post not found: " + id));
     }
 
     public Page<Post> getPostDTOPageByUser(int pageId, int pageSize, PostSortType postSortType, int userId){
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
-        return postRepository.findByAuthorId( Integer.toUnsignedLong(userId), pageable);
+        return postRepository.findByAuthorId(Integer.toUnsignedLong(userId), pageable);
     }
 
     public List<Integer> createPageNumbers(int page, int totalPages) {
@@ -181,17 +163,14 @@ public class PostService {
 
     public void updateExistingPost(PostEditDTO postEditDTO){
         Post existingPost = postRepository.findById(postEditDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Post not found: " + postEditDTO.getId()));
-
+                .orElseThrow(() -> new ElementNotFoundException("Post not found: " + postEditDTO.getId()));
         existingPost.setTitle(postEditDTO.getTitle());
         existingPost.setDescription(postEditDTO.getDescription());
         MultipartFile newFile = postEditDTO.getPdfFile();
-
         if (newFile != null && !newFile.isEmpty()) {
             String newPdfPath = savePostPDF(postEditDTO);
             existingPost.setPdfFilePath(newPdfPath);
         }
-
         Set<Tag> tags = new HashSet<>();
         for (Long tagId : postEditDTO.getTagIds()) {
             Tag tag = tagService.findById(tagId);
@@ -200,55 +179,34 @@ public class PostService {
             }
         }
         existingPost.setTags(tags);
-
         postRepository.save(existingPost);
     }
 
-    public void updateExistingPost(PostFormDTO postFormDTO ,Long id) {
-        // 1) Pobierz istniejący post z bazy (np. findById)
-        Long postId = id ;// pobierz z postFormDTO.getId() lub z argumentu
+    public void updateExistingPost(PostFormDTO postFormDTO, Long id) {
+        Long postId = id;
         Post existingPost = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
-
-        // 2) Nadpisz pola tytułu, opisu itp.
+                .orElseThrow(() -> new ElementNotFoundException("Post not found: " + postId));
         existingPost.setTitle(postFormDTO.getTitle());
         existingPost.setDescription(postFormDTO.getDescription());
-
-        // 3) Obsługa PDF:
-        //    - Jeśli user przesłał nowy plik (pdfFile nie jest puste), zapisz go.
-        //    - Jeśli nie przesłał (isEmpty), zostaw dotychczasową ścieżkę.
-
         MultipartFile newFile = postFormDTO.getPdfFile();
         if (newFile != null && !newFile.isEmpty()) {
-            // Zapisz nowy plik
             String newPdfPath = savePostPDF(postFormDTO);
             existingPost.setPdfFilePath(newPdfPath);
         }
-        // else: nic nie zmieniamy w existingPost, bo pdfFilePath zostaje stary
-
-        // 4) Zapisz zmienionego posta
         postRepository.save(existingPost);
     }
 
     private Sort createSortObject(PostSortType sortType) {
-        // Domyślnie sortujemy po ID rosnąco
         Sort defaultSort = Sort.by("id").ascending();
-
         switch (sortType) {
             case TITLE_ASC:
                 return Sort.by("title").ascending();
-
             case DATE_NEWEST:
                 return Sort.by("creationDate").descending();
-
             case DATE_OLDEST:
                 return Sort.by("creationDate").ascending();
-
-            // Sortowanie po polubieniach tu pominiemy, bo i tak je zrobimy w pamięci
             case LIKES:
-                // Zwrot domyślnego, bo i tak w pamięci to obsłużymy
                 return defaultSort;
-
             case DEFAULT:
             default:
                 return defaultSort;
@@ -258,57 +216,32 @@ public class PostService {
     public Page<Post> searchPosts(String keyword, int pageId, int pageSize, PostSortType postSortType) {
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
-        // Jeśli keyword jest pusty lub null, zwróć wszystkie posty:
         if (keyword == null || keyword.trim().isEmpty()) {
             return postRepository.findAll(pageable);
         }
         return postRepository.findByTitleContainingIgnoreCase(keyword, pageable);
     }
 
-    public Page<Post>findByTagId(Long tagId , int page , int size  , PostSortType postSortType){
+    public Page<Post> findByTagId(Long tagId, int page, int size, PostSortType postSortType) {
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(page, size, sort);
         return postRepository.findByTagId(tagId, pageable);
     }
 
     public Page<Post> findAllSortedByLikesInMemory(List<Post> posts, int pageId, int pageSize) {
-
-
         List<Post> mutablePosts = new ArrayList<>(posts);
-
-        Collections.sort(mutablePosts, new Comparator<Post>() {
-            @Override
-            public int compare(Post p1, Post p2) {
-
-                long likes1 = likeService.countLikes(p1.getId());
-
-                long likes2 = likeService.countLikes(p2.getId());
-
-                return Long.compare(likes2, likes1); // malejąco
-            }
-        });
-
-
-        // 2. Stronicowanie w pamięci
+        mutablePosts.sort((p1, p2) -> Long.compare(likeService.countLikes(p2.getId()), likeService.countLikes(p1.getId())));
         int total = mutablePosts.size();
         int fromIndex = pageId * pageSize;
         int toIndex = Math.min(fromIndex + pageSize, total);
         if (fromIndex > total) {
-
-            List<Post> empty = Collections.emptyList();
-
-            return new PageImpl<>(empty, PageRequest.of(pageId, pageSize), total);
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(pageId, pageSize), total);
         }
-
-
         List<Post> subList = mutablePosts.subList(fromIndex, toIndex);
-
-
         return new PageImpl<>(subList, PageRequest.of(pageId, pageSize), total);
     }
 
     public PostSortType mapSortParamToEnum(String sortParam) {
-        // Np. w URL: ?sort=titleAsc, ?sort=dateNewest, ?sort=dateOldest, ?sort=likes
         return switch (sortParam) {
             case "titleAsc" -> PostSortType.TITLE_ASC;
             case "dateNewest" -> PostSortType.DATE_NEWEST;

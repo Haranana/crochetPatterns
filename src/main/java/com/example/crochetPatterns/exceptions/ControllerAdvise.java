@@ -9,16 +9,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * Klasa ControllerAdvise służy do globalnej obsługi wyjątków w aplikacji.
- * W przypadku wystąpienia wyjątku, metoda odpowiedzialna za jego obsługę
- * zwraca odpowiedni szablon Thymeleaf z informacjami o błędzie.
  */
 @ControllerAdvice
 public class ControllerAdvise {
 
-    /**
-     * Obsługuje wyjątek informujący o braku elementu w bazie danych.
-     * Szablon: error404.html
-     */
     @ExceptionHandler(ElementNotFoundException.class)
     public String handleElementNotFoundException(ElementNotFoundException ex,
                                                  HttpServletRequest request,
@@ -29,10 +23,6 @@ public class ControllerAdvise {
         return "error404";
     }
 
-    /**
-     * Obsługuje wyjątki typu IllegalArgumentException.
-     * Szablon: error400.html
-     */
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException ex,
                                                  HttpServletRequest request,
@@ -43,10 +33,6 @@ public class ControllerAdvise {
         return "error400";
     }
 
-    /**
-     * Obsługuje wyjątki związane z brakiem uprawnień.
-     * Szablon: error403.html
-     */
     @ExceptionHandler(AccessDeniedException.class)
     public String handleAccessDeniedException(AccessDeniedException ex,
                                               HttpServletRequest request,
@@ -57,10 +43,6 @@ public class ControllerAdvise {
         return "error403";
     }
 
-    /**
-     * Globalna obsługa pozostałych wyjątków.
-     * Szablon: defaultError.html
-     */
     @ExceptionHandler(Exception.class)
     public String handleGeneralException(Exception ex,
                                          HttpServletRequest request,

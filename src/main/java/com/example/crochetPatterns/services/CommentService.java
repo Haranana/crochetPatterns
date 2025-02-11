@@ -4,10 +4,9 @@ import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
+import com.example.crochetPatterns.exceptions.ElementNotFoundException;
 import com.example.crochetPatterns.mappers.CommentConverter;
-import com.example.crochetPatterns.mappers.PostConverter;
 import com.example.crochetPatterns.repositories.CommentRepository;
-import com.example.crochetPatterns.repositories.PostRepository;
 import com.example.crochetPatterns.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +20,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -33,10 +31,9 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-
     private final CommentConverter commentConverter;
 
-    public CommentService(CommentRepository commentRepository, CommentConverter commentConverter , UserRepository userRepository) {
+    public CommentService(CommentRepository commentRepository, CommentConverter commentConverter, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.commentConverter = commentConverter;
         this.userRepository = userRepository;
@@ -56,26 +53,21 @@ public class CommentService {
         commentRepository.deleteById(Integer.toUnsignedLong(commentId));
     }
 
-    public Page<Comment> getCommentDTOPageByPost(int pageId, int pageSize, CommentService.CommentSortType commentSortType, int postId){
+    public Page<Comment> getCommentDTOPageByPost(int pageId, int pageSize, CommentSortType commentSortType, int postId){
         Sort sort = createSortObject(commentSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
-        return commentRepository.findByPostId( Integer.toUnsignedLong(postId), pageable);
+        return commentRepository.findByPostId(Integer.toUnsignedLong(postId), pageable);
     }
 
     public Page<Comment> getCommentDTOPageByUser(int pageId, int pageSize, CommentSortType commentSortType, int userId){
         Sort sort = createSortObject(commentSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
-
-        Page<Comment> result = commentRepository.findByAuthorId( Integer.toUnsignedLong(userId), pageable);
-        return result;
+        return commentRepository.findByAuthorId(Integer.toUnsignedLong(userId), pageable);
     }
 
-
-
-
     public Comment getCommentDTO(int id){
-        Optional<Comment> returnComment = commentRepository.findById(Integer.toUnsignedLong(id));
-        return returnComment.orElse(null);
+        return commentRepository.findById(Integer.toUnsignedLong(id))
+                .orElseThrow(() -> new ElementNotFoundException("Comment not found: " + id));
     }
 
     public List<Integer> createPageNumbers(int page, int totalPages) {
@@ -132,30 +124,26 @@ public class CommentService {
 
     public void updateExistingComment(CommentEditDTO commentEditDTO){
         Comment existingComment = commentRepository.findById(commentEditDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Comment not found: " + commentEditDTO.getId()));
-
+                .orElseThrow(() -> new ElementNotFoundException("Comment not found: " + commentEditDTO.getId()));
         existingComment.setText(commentEditDTO.getText());
-
         commentRepository.save(existingComment);
     }
 
     public void updateDTOShowableDate(CommentDTO commentDTO){
-
-        commentDTO.setShowableDate(commentDTO.getCreationDate().toString().substring(0 , commentDTO.getCreationDate().toString().lastIndexOf(':')));
+        commentDTO.setShowableDate(commentDTO.getCreationDate().toString().substring(0, commentDTO.getCreationDate().toString().lastIndexOf(':')));
 
         Instant instant1 = commentDTO.getCreationDate().toInstant();
         Instant instant2 = Instant.now();
-
         Duration duration = Duration.between(instant1, instant2);
 
-        if(duration.toDays()>=365){
+        if(duration.toDays() >= 365){
             commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.YEAR);
-            commentDTO.setCreationTimeValue((int) (duration.toDays()/365));
+            commentDTO.setCreationTimeValue((int) (duration.toDays() / 365));
         }
-        else if(duration.toDays()>=30){
+        else if(duration.toDays() >= 30){
             commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.MONTH);
-            commentDTO.setCreationTimeValue((int) (duration.toDays()/30));
-        } else if (duration.toDays()>=7) {
+            commentDTO.setCreationTimeValue((int) (duration.toDays() / 30));
+        } else if (duration.toDays() >= 7) {
             commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.WEEK);
             commentDTO.setCreationTimeValue((int) (duration.toDays() / 7));
         } else if (duration.toHours() >= 24) {
@@ -183,4 +171,3 @@ public class CommentService {
         return returnSort;
     }
 }
-//todo NAPRAWIC CUTOMOWE SORING TYPE, POWODUJA CRASHE DLA WSZYSTKIEGO POZA DEFAULT!
