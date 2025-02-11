@@ -7,9 +7,6 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Klasa reprezentująca klucz złożony (user_id + post_id) dla tabeli post_likes.
- */
 @Embeddable
 @Getter
 @Setter
@@ -24,10 +21,10 @@ public class PostLikeId implements Serializable {
     private Long postId;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PostLikeId)) return false;
-        PostLikeId that = (PostLikeId) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof PostLikeId)) return false;
+        PostLikeId that = (PostLikeId)object;
         return Objects.equals(userId, that.userId) &&
                 Objects.equals(postId, that.postId);
     }
