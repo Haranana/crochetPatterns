@@ -6,25 +6,24 @@ import com.example.crochetPatterns.dtos.UserRegistrationDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
-import com.example.crochetPatterns.repositories.CommentRepository;
-import com.example.crochetPatterns.repositories.PostRepository;
+import com.example.crochetPatterns.services.PostService;
+import com.example.crochetPatterns.services.CommentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-
-
-
 @Component
 public class UserConverter {
 
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
+    private final PostService postService;
+    private final CommentService commentService;
 
-    public UserConverter(PostRepository postRepository, CommentRepository commentRepository) {
-        this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
+    @Autowired
+    public UserConverter(PostService postService, CommentService commentService) {
+        this.postService = postService;
+        this.commentService = commentService;
     }
 
     // Ustaw domyślny avatar dla nowych użytkowników
@@ -50,8 +49,9 @@ public class UserConverter {
         user.setAvatar(userReturnDTO.getAvatar());
         user.setBio(userReturnDTO.getBio());
         user.setEnabled(userReturnDTO.isEnabled());
-        user.setPosts(postRepository.findAllById(userReturnDTO.getPostIds()));
-        user.setComments(commentRepository.findAllById(userReturnDTO.getCommentIds()));
+        // Pobieramy posty oraz komentarze korzystając z serwisów
+        user.setPosts(postService.findPostsByIds(userReturnDTO.getPostIds()));
+        user.setComments(commentService.findCommentsByIds(userReturnDTO.getCommentIds()));
         return user;
     }
 
@@ -66,7 +66,6 @@ public class UserConverter {
         userReturnDTO.setEnabled(user.isEnabled());
         userReturnDTO.setPostIds(user.getPosts().stream().map(Post::getId).collect(Collectors.toList()));
         userReturnDTO.setCommentIds(user.getComments().stream().map(Comment::getId).collect(Collectors.toList()));
-
         return userReturnDTO;
     }
 
@@ -75,7 +74,7 @@ public class UserConverter {
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setBio(user.getBio());
-        // Nie ustawiamy avatarFile – to pole w formularzu będzie puste, dopiero jeśli użytkownik przesła nowy plik
+        // Pole avatarFile nie jest ustawiane – formularz pozostawi je puste, dopóki użytkownik nie prześle nowego pliku.
         return dto;
     }
 }

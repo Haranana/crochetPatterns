@@ -45,6 +45,10 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    public List<Comment> findCommentsByIds(List<Long> ids) {
+        return commentRepository.findAllById(ids);
+    }
+
     public void removeComment(int commentId){
         commentRepository.deleteById(Integer.toUnsignedLong(commentId));
     }

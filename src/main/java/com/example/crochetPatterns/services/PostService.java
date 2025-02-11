@@ -109,6 +109,10 @@ public class PostService {
         return postRepository.findByAuthorId(Integer.toUnsignedLong(userId), pageable);
     }
 
+    public List<Post> findPostsByIds(List<Long> ids) {
+        return postRepository.findAllById(ids);
+    }
+
     public List<Integer> createPageNumbers(int page, int totalPages) {
         int numbers = 3;
         List<Integer> pageNumbers = new ArrayList<>();
