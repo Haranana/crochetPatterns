@@ -9,12 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashSet;
 import java.util.Set;
 
-/*
-    represents PostDTO before saving PDF file
-    as a result has attribute PDF file of type MultipartFile instead of a path to it
-    It also doesn't have any auto generated attributes nor comments
-    In future this class will probably be also used to modify posts
- */
 
 @Getter
 @Setter

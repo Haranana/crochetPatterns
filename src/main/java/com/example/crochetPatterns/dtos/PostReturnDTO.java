@@ -75,10 +75,6 @@ public class PostReturnDTO {
 
         Duration duration = Duration.between(instant1, instant2);
 
-        long seconds = duration.getSeconds();
-        long minutes = duration.toMinutes();
-        long hours = duration.toHours();
-
         if(duration.toDays()>=365){
             creationTimeValueType = CreationTimeValueType.YEAR;
             creationTimeValue = (int) (duration.toDays()/365);

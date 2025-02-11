@@ -8,6 +8,7 @@ import com.example.crochetPatterns.mappers.PostConverter;
 import com.example.crochetPatterns.repositories.PostRepository;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.nio.file.*;
 import java.util.*;
 
 @Service
+@Transactional
 public class PostService {
 
     public enum PostSortType {
@@ -26,29 +28,17 @@ public class PostService {
     }
 
     private final PostRepository postRepository;
-    private final PostConverter postConverter;
     private final TagService tagService;
     private final LikeService likeService;
 
-    public PostService(PostRepository postRepository, PostConverter postConverter, TagService tagService, LikeService likeService) {
+    public PostService(PostRepository postRepository, TagService tagService, LikeService likeService) {
         this.postRepository = postRepository;
-        this.postConverter = postConverter;
         this.tagService = tagService;
         this.likeService = likeService;
     }
 
-    public void addNewPost(PostReturnDTO postReturnDTO){
-        Post post = postConverter.createPost(postReturnDTO);
+    public void addNewPost(Post post){
         postRepository.save(post);
-    }
-
-    public void addNewPost(PostCreateDTO postFormDTO, String pdfFilePath){
-        Post post = postConverter.createPost(postFormDTO, pdfFilePath);
-        postRepository.save(post);
-    }
-
-    public void editPost(PostCreateDTO postFormDTO, Long postId){
-        // Implementacja edycji posta (opcjonalnie)
     }
 
     public void deletePost(Long postId) {

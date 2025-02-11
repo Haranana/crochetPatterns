@@ -44,7 +44,7 @@ public class CommentReturnDTO {
     private int creationTimeValue;
 
     public void updateShowableDate() {
-        // Ustawiamy showableDate na podstawie creationDate
+
         this.showableDate = creationDate.toString().substring(0, creationDate.toString().lastIndexOf(':'));
 
         Instant instant1 = creationDate.toInstant();

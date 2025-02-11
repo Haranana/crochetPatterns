@@ -4,6 +4,7 @@ import com.example.crochetPatterns.dtos.UserPasswordChangeDTO;
 import com.example.crochetPatterns.dtos.UserRegistrationDTO;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.entities.VerificationToken;
+import com.example.crochetPatterns.mappers.UserConverter;
 import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.repositories.UserRepository;
 import com.example.crochetPatterns.repositories.VerificationTokenRepository;
@@ -37,17 +38,19 @@ public class AuthControllers {
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final UserConverter userConverter;
 
     @Autowired
     public AuthControllers(UserService userService, PasswordEncoder passwordEncoder,
                            VerificationTokenRepository verificationTokenRepository,
                            UserRepository userRepository,
-                           EmailService emailService) {
+                           EmailService emailService, UserConverter userConverter) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.verificationTokenRepository = verificationTokenRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.userConverter = userConverter;
     }
 
     @GetMapping("/login")
@@ -79,7 +82,8 @@ public class AuthControllers {
         }
 
         // Zakoduj hasło i utwórz użytkownika
-        User user = userService.addNewUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword()));
+       // User user = userService.addNewUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword()));
+        User user = userService.addNewUser(userConverter.createUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword())));
 
         // Generuj token weryfikacyjny (ważny np. 1 dzień)
         String token = UUID.randomUUID().toString();

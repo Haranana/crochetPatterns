@@ -56,8 +56,7 @@ public class CommentControllers {
             model.addAttribute("postId", commentCreateDTO.getPostId());
             return "writeComment";
         }
-
-        commentService.addNewComment(commentCreateDTO);
+        commentService.addNewComment(commentConverter.createComment(commentCreateDTO));
         return "redirect:/showPost?postId=" + commentCreateDTO.getPostId();
     }
 

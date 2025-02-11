@@ -9,8 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
+
     Page<Post> findByAuthorId(Long authorId, Pageable pageable);
+
     Page<Post> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
     @Query("SELECT p FROM Post p JOIN p.tags t WHERE t.id = :tagId")
     Page<Post> findByTagId(@Param("tagId") Long tagId, Pageable pageable);
 }

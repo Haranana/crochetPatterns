@@ -35,29 +35,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                /*
-                .authorizeHttpRequests(authorize -> authorize
-                        // Publiczne strony: główna, logowanie, zasoby statyczne
-                        .requestMatchers("/", "/login", "/css/**", "/js/**").permitAll()
-                        // Tylko zalogowani użytkownicy mogą dodawać posty lub komentarze
-                        .requestMatchers("/addPost", "/addComment").authenticated()
-                        // Pozostałe endpointy – dostęp według Twojej logiki
-                        .anyRequest().permitAll()
-                )*/
-                .authorizeHttpRequests(authorize -> authorize
-                        // Zasoby statyczne – dostęp publiczny
+        http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-
-                        // Publiczne endpointy – dostęp ogólny
                         .requestMatchers(
                                 "/", "/main",
                                 "/login", "/register", "/confirm", "/afterRegister",
                                 "/allPosts", "/showPost", "/userProfile", "/userPosts", "/userComments",
-                                "/posts/{postId}/pdf"  // Używamy path variable zamiast **/pdf
+                                "/posts/{postId}/pdf"
                         ).permitAll()
-
-                        // Prywatne endpointy – dostęp tylko dla zalogowanych
                         .requestMatchers(
                                 "/addPost", "/addingPost",
                                 "/editPost", "/confirmEditPost",
@@ -69,40 +54,33 @@ public class SecurityConfig {
                                 "/editPassword", "/confirmEditPassword",
                                 "/post/{postId}/like", "/post/{postId}/unlike"
                         ).authenticated()
-
-                        // Pozostałe endpointy – domyślnie dostęp publiczny
                         .anyRequest().permitAll()
                 )
-                // Konfiguracja własnego formularza logowania:
                 .formLogin(form -> form
-                        .loginPage("/login")                      // własna strona logowania
-                        .loginProcessingUrl("/login/process")       // adres, na który trafiają dane logowania
-                        .usernameParameter("username")              // nazwa pola z loginem
-                        .passwordParameter("password")              // nazwa pola z hasłem
-                        .defaultSuccessUrl("/main", true)           // przekierowanie po udanym logowaniu
-                        .failureUrl("/login?error=true")            // przekierowanie przy błędzie logowania
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login/process")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/main", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
-                // Konfiguracja mechanizmu "zapamiętaj mnie"
                 .rememberMe(rememberMe -> rememberMe
-                        .key("uniqueAndSecret")                     // klucz wykorzystywany do generowania tokena
-                        .rememberMeParameter("remember-me")         // nazwa parametru z formularza (domyślnie "remember-me")
-                        .tokenValiditySeconds(7 * 24 * 60 * 60)       // czas ważności tokena – 7 dni (w sekundach)
+                        .key("uniqueAndSecret")
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(7 * 24 * 60 * 60)
                 )
-                // Konfiguracja wylogowania:
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID", "remember-me") // usuwamy również ciasteczko "remember-me"
+                        .deleteCookies("JSESSIONID", "remember-me")
                 )
-                // Domyślna ochrona CSRF – pozostawiamy włączoną:
                 .csrf(Customizer.withDefaults());
 
         return http.build();
     }
 
-    // Definicja encodera haseł
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

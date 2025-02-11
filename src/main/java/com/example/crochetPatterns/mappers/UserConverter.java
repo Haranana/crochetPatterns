@@ -26,15 +26,14 @@ public class UserConverter {
         this.commentService = commentService;
     }
 
-    // Ustaw domyślny avatar dla nowych użytkowników
     public User createUser(UserRegistrationDTO userDTO, String encodedPassword) {
+
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPassword(encodedPassword);
-        // Ustawiamy domyślny avatar (ścieżka względna – upewnij się, że plik istnieje)
         user.setAvatar("/images/defaultavatar.png");
-        user.setEnabled(false); // Nowe konta domyślnie nie są aktywne
+        user.setEnabled(false);
         user.setBio("");
         user.setPosts(new ArrayList<>());
         user.setComments(new ArrayList<>());
@@ -42,6 +41,7 @@ public class UserConverter {
     }
 
     public User createUser(UserReturnDTO userReturnDTO) {
+
         User user = new User();
         user.setUsername(userReturnDTO.getUsername());
         user.setEmail(userReturnDTO.getEmail());
@@ -49,13 +49,13 @@ public class UserConverter {
         user.setAvatar(userReturnDTO.getAvatar());
         user.setBio(userReturnDTO.getBio());
         user.setEnabled(userReturnDTO.isEnabled());
-        // Pobieramy posty oraz komentarze korzystając z serwisów
         user.setPosts(postService.findPostsByIds(userReturnDTO.getPostIds()));
         user.setComments(commentService.findCommentsByIds(userReturnDTO.getCommentIds()));
         return user;
     }
 
     public UserReturnDTO createDTO(User user) {
+
         UserReturnDTO userReturnDTO = new UserReturnDTO();
         userReturnDTO.setId(user.getId());
         userReturnDTO.setUsername(user.getUsername());
@@ -70,11 +70,11 @@ public class UserConverter {
     }
 
     public UserEditDTO createEditDTO(User user) {
+
         UserEditDTO dto = new UserEditDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setBio(user.getBio());
-        // Pole avatarFile nie jest ustawiane – formularz pozostawi je puste, dopóki użytkownik nie prześle nowego pliku.
         return dto;
     }
 }

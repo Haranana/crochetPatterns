@@ -8,6 +8,7 @@ import com.example.crochetPatterns.mappers.UserConverter;
 import com.example.crochetPatterns.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,22 +16,16 @@ import java.nio.file.*;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
+
     private final UserRepository userRepository;
-    private final UserConverter userConverter;
 
     public UserService(UserRepository userRepository, UserConverter userConverter) {
         this.userRepository = userRepository;
-        this.userConverter = userConverter;
     }
 
-    public void addNewUser(UserReturnDTO userReturnDTO){
-        User user = userConverter.createUser(userReturnDTO);
-        userRepository.save(user);
-    }
-
-    public User addNewUser(UserRegistrationDTO userDTO, String encodedPassword){
-        User user = userConverter.createUser(userDTO, encodedPassword);
+    public User addNewUser(User user){
         userRepository.save(user);
         return user;
     }
@@ -65,9 +60,6 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
 
     public void updateUserProfile(UserEditDTO userEditDTO) {
         User user = userRepository.findById(userEditDTO.getId())
@@ -116,7 +108,4 @@ public class UserService {
         return true;
     }
 
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
 }

@@ -3,6 +3,7 @@ package com.example.crochetPatterns.services;
 import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.repositories.TagRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Transactional
 public class TagService {
 
     private final TagRepository tagRepository;

@@ -222,7 +222,7 @@ public class PostControllers {
 
         String pdfFilePath = postService.savePostPDF(postFormDTO);
         if(!pdfFilePath.isEmpty()) {
-            postService.addNewPost(postFormDTO, pdfFilePath);
+            postService.addNewPost( postConverter.createPost(postFormDTO, pdfFilePath));
             return "successfulPost";
         }
 
