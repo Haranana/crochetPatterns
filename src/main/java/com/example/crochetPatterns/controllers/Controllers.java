@@ -314,18 +314,18 @@ public class Controllers {
         // 3. Liczba polubień
         long likeCount = likeService.countLikes(post.getId());
 
-        // 4. Logika userLiked / isViewedByAuthor
+        // 4. Logika userLiked / isViewedByAuthor oraz pobranie id zalogowanego użytkownika
         boolean userLiked = false;
         boolean isViewedByAuthor = false;
         boolean isLogged = authService.isLogged();
+        Long loggedUserId = null;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof LoggedUserDetails) {
             LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
-            Long userId = userDetails.getId();
-
-            userLiked = likeService.hasLiked(userId, post.getId());
-            if (userId.equals(postDTO.getAuthorId())) {
+            loggedUserId = userDetails.getId();
+            userLiked = likeService.hasLiked(loggedUserId, post.getId());
+            if (loggedUserId.equals(postDTO.getAuthorId())) {
                 isViewedByAuthor = true;
             }
         }
@@ -369,12 +369,11 @@ public class Controllers {
         // 8. Dodajemy do modelu
         model.addAttribute("post", postDTO);
         model.addAttribute("postAuthor", postAuthor);
-
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("userLiked", userLiked);
         model.addAttribute("isViewedByAuthor", isViewedByAuthor);
         model.addAttribute("isLogged", isLogged);
-
+        model.addAttribute("loggedUserId", loggedUserId); // przekazujemy id zalogowanego użytkownika
         model.addAttribute("postTagNames", postTagNames);
         model.addAttribute("postComments", postComments);
         model.addAttribute("commentsAuthors", commentsAuthors);
@@ -438,11 +437,20 @@ public class Controllers {
         return "writeComment";
     }
 
-    //TODO dodac Valid do komentarza
     @PostMapping("/addingComment")
-    public String addingComment(@ModelAttribute("commentFormDTO") CommentFormDTO commentFormDTO){
-        commentService.addNewComment(commentFormDTO);
+    public String addingComment(
+            @Valid @ModelAttribute("commentFormDTO") CommentFormDTO commentFormDTO,
+            BindingResult bindingResult,
+            Model model) {
 
+        if (bindingResult.hasErrors()) {
+            // W razie błędów dodajemy potrzebne atrybuty do modelu
+            model.addAttribute("postId", commentFormDTO.getPostId());
+            // Możemy również dodać inne atrybuty potrzebne dla widoku writeComment
+            return "writeComment";
+        }
+
+        commentService.addNewComment(commentFormDTO);
         return "redirect:/showPost?postId=" + commentFormDTO.getPostId();
     }
 

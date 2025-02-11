@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<!-- Przyciski edycji, jeśli to autor -->
+<!-- Przyciski edycji, jeśli to autor posta -->
 <div th:if="${isViewedByAuthor}">
     <a th:href="@{/editPost(postId=${post.id})}">Edytuj Post</a>
     <a th:href="@{/deletePost(postId=${post.id})}">Usuń Post</a>
@@ -53,8 +53,7 @@
     <span>Tagi: </span>
     <span th:if="${#lists.isEmpty(postTagNames)}">Brak</span>
     <ul th:if="${!#lists.isEmpty(postTagNames)}">
-        <li th:each="tagName : ${postTagNames}"
-            th:text="${tagName}">TagName</li>
+        <li th:each="tagName : ${postTagNames}" th:text="${tagName}">TagName</li>
     </ul>
 </div>
 
@@ -69,21 +68,26 @@
 <!-- Lista komentarzy -->
 <div th:each="comment, iterStat : ${postComments}">
 
-    <!-- Sprawdzamy, czy user ID == 0 (placeholder) -->
+    <!-- Wyświetlanie autora komentarza -->
     <div th:if="${commentsAuthors[iterStat.index].id != 0}">
-        <!-- Prawidłowy user -->
         <img th:src="@{${commentsAuthors[iterStat.index].avatar}}" alt="Avatar" style="max-width:30px; max-height:30px;"/>
         <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}"
            th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
     </div>
     <div th:unless="${commentsAuthors[iterStat.index].id != 0}">
-        <!-- Użytkownik usunięty -->
         <span>[user deleted]</span>
     </div>
 
     <br>
     <span th:text="${comment.text}">Tekst komentarza</span><br>
     <span th:text="${comment.showableDate}">Data</span><br>
+
+    <!-- Opcje edycji i usunięcia komentarza, jeśli zalogowany użytkownik jest autorem komentarza -->
+    <div th:if="${isLogged and comment.authorId == loggedUserId}">
+        <a th:href="@{/editComment(commentId=${comment.id})}">Edytuj komentarz</a> |
+        <a th:href="@{/deleteComment(commentId=${comment.id}, postId=${post.id})}">Usuń komentarz</a>
+    </div>
+
     <br><br>
 </div>
 
