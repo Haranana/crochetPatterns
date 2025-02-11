@@ -36,13 +36,41 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Konfiguracja dostępu do endpointów:
+                /*
                 .authorizeHttpRequests(authorize -> authorize
                         // Publiczne strony: główna, logowanie, zasoby statyczne
                         .requestMatchers("/", "/login", "/css/**", "/js/**").permitAll()
                         // Tylko zalogowani użytkownicy mogą dodawać posty lub komentarze
                         .requestMatchers("/addPost", "/addComment").authenticated()
                         // Pozostałe endpointy – dostęp według Twojej logiki
+                        .anyRequest().permitAll()
+                )*/
+                .authorizeHttpRequests(authorize -> authorize
+                        // Zasoby statyczne – dostęp publiczny
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                        // Publiczne endpointy – dostęp ogólny
+                        .requestMatchers(
+                                "/", "/main",
+                                "/login", "/register", "/confirm", "/afterRegister",
+                                "/allPosts", "/showPost", "/userProfile", "/userPosts", "/userComments",
+                                "/posts/{postId}/pdf"  // Używamy path variable zamiast **/pdf
+                        ).permitAll()
+
+                        // Prywatne endpointy – dostęp tylko dla zalogowanych
+                        .requestMatchers(
+                                "/addPost", "/addingPost",
+                                "/editPost", "/confirmEditPost",
+                                "/deletePost", "/deletePostConfirmed",
+                                "/editComment", "/confirmEditComment",
+                                "/writeComment", "/addingComment",
+                                "/myProfile", "/editProfile", "/confirmEditProfile",
+                                "/deleteAccount", "/deleteAccountConfirmed",
+                                "/editPassword", "/confirmEditPassword",
+                                "/post/{postId}/like", "/post/{postId}/unlike"
+                        ).authenticated()
+
+                        // Pozostałe endpointy – domyślnie dostęp publiczny
                         .anyRequest().permitAll()
                 )
                 // Konfiguracja własnego formularza logowania:
