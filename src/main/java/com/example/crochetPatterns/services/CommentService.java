@@ -164,8 +164,8 @@ public class CommentService {
     private Sort createSortObject(CommentSortType commentSortType) {
         Sort returnSort = Sort.by("id").ascending();
         switch (commentSortType){
-            case NEWEST -> returnSort = Sort.by("creation_date").descending();
-            case OLDEST -> returnSort = Sort.by("creation_date").ascending();
+            case NEWEST -> returnSort = Sort.by("creationDate").descending();
+            case OLDEST -> returnSort = Sort.by("creationDate").ascending();
             case DEFAULT -> returnSort = Sort.by("id").ascending();
         }
         return returnSort;

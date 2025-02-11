@@ -59,6 +59,9 @@
             <span th:text="${post.description}">Opis wpisu</span>
         </a>
         <br>
+        <span th:text="${post.showableDate}">
+        </span>
+        <br>
         <span>Liczba polubień:
             <b th:text="${postLikesCountMap[post.id]}">0</b>
         </span>

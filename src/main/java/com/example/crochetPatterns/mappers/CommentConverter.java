@@ -76,7 +76,12 @@ public class CommentConverter {
     }
 
     public List<CommentDTO> createDTO(List<Comment> commentList) {
-        return commentList.stream().map(this::createDTO).collect(Collectors.toList());
+        List<CommentDTO> result = new ArrayList<>();
+        result = commentList.stream().map(this::createDTO).collect(Collectors.toList());
+        for(CommentDTO commentDTO : result){
+            commentDTO.updateShowableDate();
+        }
+        return result;
     }
 
 

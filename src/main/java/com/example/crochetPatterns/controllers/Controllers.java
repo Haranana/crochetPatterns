@@ -345,7 +345,7 @@ public class Controllers {
 
         // 7. Komentarze + autorzy komentarzy
         List<Comment> comments = commentService
-                .getCommentDTOPageByPost(0, 100, CommentService.CommentSortType.DEFAULT, postId)
+                .getCommentDTOPageByPost(0, 100, CommentService.CommentSortType.NEWEST, postId)
                 .getContent();
         List<CommentDTO> postComments = commentConverter.createDTO(comments);
 

@@ -45,47 +45,35 @@ public class CommentDTO {
     private CreationTimeValueType creationTimeValueType = CreationTimeValueType.HOUR;
     private int creationTimeValue;
 
-    public void updateShowableDate(){
-
-        String showableDate = "";
-        int creationTimeValue;
-        CreationTimeValueType creationTimeValueType = CreationTimeValueType.HOUR;
-
-        showableDate = creationDate.toString().substring(0 , creationDate.toString().lastIndexOf(':'));
+    public void updateShowableDate() {
+        // Ustawiamy showableDate na podstawie creationDate
+        this.showableDate = creationDate.toString().substring(0, creationDate.toString().lastIndexOf(':'));
 
         Instant instant1 = creationDate.toInstant();
         Instant instant2 = Instant.now();
-
         Duration duration = Duration.between(instant1, instant2);
 
-        long seconds = duration.getSeconds();
-        long minutes = duration.toMinutes();
-        long hours = duration.toHours();
-
-        if(duration.toDays()>=365){
-            creationTimeValueType = CreationTimeValueType.YEAR;
-            creationTimeValue = (int) (duration.toDays()/365);
-        }
-        else if(duration.toDays()>=30){
-            creationTimeValueType = CreationTimeValueType.MONTH;
-            creationTimeValue = (int) (duration.toDays()/30);
-        } else if (duration.toDays()>=7) {
-            creationTimeValueType = CreationTimeValueType.WEEK;
-            creationTimeValue = (int) (duration.toDays() / 7);
+        if (duration.toDays() >= 365) {
+            this.creationTimeValueType = CreationTimeValueType.YEAR;
+            this.creationTimeValue = (int) (duration.toDays() / 365);
+        } else if (duration.toDays() >= 30) {
+            this.creationTimeValueType = CreationTimeValueType.MONTH;
+            this.creationTimeValue = (int) (duration.toDays() / 30);
+        } else if (duration.toDays() >= 7) {
+            this.creationTimeValueType = CreationTimeValueType.WEEK;
+            this.creationTimeValue = (int) (duration.toDays() / 7);
         } else if (duration.toHours() >= 24) {
-            creationTimeValueType = CreationTimeValueType.DAY;
-            creationTimeValue = (int) (duration.toHours() / 24);
-        } else if(duration.toMinutes() >= 60){
-            creationTimeValueType = CreationTimeValueType.HOUR;
-            creationTimeValue = (int) (duration.toMinutes() / 60);
-        } else if(duration.toMinutes() >= 1){
-            creationTimeValueType = CreationTimeValueType.MINUTE;
-            creationTimeValue = (int) (duration.toMinutes());
-        } else{
-            creationTimeValueType = CreationTimeValueType.SECOND;
-            creationTimeValue = (int) (duration.toSeconds());
+            this.creationTimeValueType = CreationTimeValueType.DAY;
+            this.creationTimeValue = (int) (duration.toHours() / 24);
+        } else if (duration.toMinutes() >= 60) {
+            this.creationTimeValueType = CreationTimeValueType.HOUR;
+            this.creationTimeValue = (int) (duration.toMinutes() / 60);
+        } else if (duration.toMinutes() >= 1) {
+            this.creationTimeValueType = CreationTimeValueType.MINUTE;
+            this.creationTimeValue = (int) (duration.toMinutes());
+        } else {
+            this.creationTimeValueType = CreationTimeValueType.SECOND;
+            this.creationTimeValue = (int) (duration.toSeconds());
         }
-
-
     }
 }
