@@ -4,8 +4,10 @@ import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.repositories.TagRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TagService {
@@ -40,12 +42,11 @@ public class TagService {
 
     /**
      * Tworzy nowy tag w bazie (lub zwraca istniejący, jeśli nazwa jest unikalna).
-     * Możesz dostosować logikę do swoich potrzeb.
      */
     public Tag createTag(String name) {
         Tag existing = tagRepository.findByName(name);
         if (existing != null) {
-            return existing; // jeśli już istnieje, zwracamy
+            return existing;
         }
         Tag newTag = new Tag();
         newTag.setName(name);
@@ -57,5 +58,12 @@ public class TagService {
      */
     public Tag saveTag(Tag tag) {
         return tagRepository.save(tag);
+    }
+
+    /**
+     * Zwraca zbiór tagów na podstawie kolekcji identyfikatorów.
+     */
+    public Set<Tag> findTagsByIds(Set<Long> ids) {
+        return new HashSet<>(tagRepository.findAllById(ids));
     }
 }

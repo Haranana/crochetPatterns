@@ -42,7 +42,7 @@ public class CommentConverter {
         comment.setAuthor(userService.getUserOrNull(dto.getAuthorId()));
         return comment;
     }
-    
+
     public CommentReturnDTO createDTO(Comment comment) {
         CommentReturnDTO dto = new CommentReturnDTO();
         dto.setId(comment.getId());
