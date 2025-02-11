@@ -1,12 +1,11 @@
 package com.example.crochetPatterns.mappers;
 
-import com.example.crochetPatterns.dtos.TagDTO;
+import com.example.crochetPatterns.dtos.TagReturnDTO;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.repositories.PostRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,9 +22,9 @@ public class TagConverter {
      * Uwaga: w tym prostym przykładzie, jeśli dany Tag istnieje w bazie,
      * powinniśmy raczej go pobierać z TagService zamiast tworzyć nowy.
      */
-    public Tag createTag(TagDTO tagDTO) {
+    public Tag createTag(TagReturnDTO tagReturnDTO) {
         Tag tag = new Tag();
-        tag.setName(tagDTO.getName());
+        tag.setName(tagReturnDTO.getName());
         // w postach raczej nie ustawiamy od razu, bo
         // zarządza tym relacja w Post -> Tag
         return tag;
@@ -35,8 +34,8 @@ public class TagConverter {
      * Konwersja z Tag -> TagDTO.
      * Ustawiamy listę ID postów powiązanych z tym tagiem.
      */
-    public TagDTO createDTO(Tag tag) {
-        TagDTO dto = new TagDTO();
+    public TagReturnDTO createDTO(Tag tag) {
+        TagReturnDTO dto = new TagReturnDTO();
         dto.setId(tag.getId());
         dto.setName(tag.getName());
         // Ustawiamy powiązane posty

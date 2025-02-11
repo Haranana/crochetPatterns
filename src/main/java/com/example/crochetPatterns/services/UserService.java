@@ -24,8 +24,8 @@ public class UserService {
         this.userConverter = userConverter;
     }
 
-    public void addNewUser(UserDTO userDTO){
-        User user = userConverter.createUser(userDTO);
+    public void addNewUser(UserReturnDTO userReturnDTO){
+        User user = userConverter.createUser(userReturnDTO);
         userRepository.save(user);
     }
 

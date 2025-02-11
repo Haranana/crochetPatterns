@@ -37,17 +37,17 @@ public class PostService {
         this.likeService = likeService;
     }
 
-    public void addNewPost(PostDTO postDTO){
-        Post post = postConverter.createPost(postDTO);
+    public void addNewPost(PostReturnDTO postReturnDTO){
+        Post post = postConverter.createPost(postReturnDTO);
         postRepository.save(post);
     }
 
-    public void addNewPost(PostFormDTO postFormDTO, String pdfFilePath){
+    public void addNewPost(PostCreateDTO postFormDTO, String pdfFilePath){
         Post post = postConverter.createPost(postFormDTO, pdfFilePath);
         postRepository.save(post);
     }
 
-    public void editPost(PostFormDTO postFormDTO, Long postId){
+    public void editPost(PostCreateDTO postFormDTO, Long postId){
         // Implementacja edycji posta (opcjonalnie)
     }
 
@@ -58,7 +58,7 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public String savePostPDF(PostFormDTO postFormDTO){
+    public String savePostPDF(PostCreateDTO postFormDTO){
         MultipartFile pdf = postFormDTO.getPdfFile();
         try {
             String originalFilename = pdf.getOriginalFilename();
@@ -186,7 +186,7 @@ public class PostService {
         postRepository.save(existingPost);
     }
 
-    public void updateExistingPost(PostFormDTO postFormDTO, Long id) {
+    public void updateExistingPost(PostCreateDTO postFormDTO, Long id) {
         Long postId = id;
         Post existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new ElementNotFoundException("Post not found: " + postId));

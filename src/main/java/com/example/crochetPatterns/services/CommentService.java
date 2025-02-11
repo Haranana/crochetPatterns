@@ -2,8 +2,6 @@ package com.example.crochetPatterns.services;
 
 import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
-import com.example.crochetPatterns.entities.Post;
-import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.exceptions.ElementNotFoundException;
 import com.example.crochetPatterns.mappers.CommentConverter;
 import com.example.crochetPatterns.repositories.CommentRepository;
@@ -13,12 +11,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -39,13 +35,13 @@ public class CommentService {
         this.userRepository = userRepository;
     }
 
-    public void addNewComment(CommentFormDTO commentDTO){
+    public void addNewComment(CommentCreateDTO commentDTO){
         Comment comment = commentConverter.createComment(commentDTO);
         commentRepository.save(comment);
     }
 
-    public void addNewComment(CommentDTO commentDTO){
-        Comment comment = commentConverter.createComment(commentDTO);
+    public void addNewComment(CommentReturnDTO commentReturnDTO){
+        Comment comment = commentConverter.createComment(commentReturnDTO);
         commentRepository.save(comment);
     }
 
@@ -129,35 +125,35 @@ public class CommentService {
         commentRepository.save(existingComment);
     }
 
-    public void updateDTOShowableDate(CommentDTO commentDTO){
-        commentDTO.setShowableDate(commentDTO.getCreationDate().toString().substring(0, commentDTO.getCreationDate().toString().lastIndexOf(':')));
+    public void updateDTOShowableDate(CommentReturnDTO commentReturnDTO){
+        commentReturnDTO.setShowableDate(commentReturnDTO.getCreationDate().toString().substring(0, commentReturnDTO.getCreationDate().toString().lastIndexOf(':')));
 
-        Instant instant1 = commentDTO.getCreationDate().toInstant();
+        Instant instant1 = commentReturnDTO.getCreationDate().toInstant();
         Instant instant2 = Instant.now();
         Duration duration = Duration.between(instant1, instant2);
 
         if(duration.toDays() >= 365){
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.YEAR);
-            commentDTO.setCreationTimeValue((int) (duration.toDays() / 365));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.YEAR);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toDays() / 365));
         }
         else if(duration.toDays() >= 30){
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.MONTH);
-            commentDTO.setCreationTimeValue((int) (duration.toDays() / 30));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.MONTH);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toDays() / 30));
         } else if (duration.toDays() >= 7) {
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.WEEK);
-            commentDTO.setCreationTimeValue((int) (duration.toDays() / 7));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.WEEK);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toDays() / 7));
         } else if (duration.toHours() >= 24) {
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.DAY);
-            commentDTO.setCreationTimeValue((int) (duration.toHours() / 24));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.DAY);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toHours() / 24));
         } else if(duration.toMinutes() >= 60){
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.HOUR);
-            commentDTO.setCreationTimeValue((int) (duration.toMinutes() / 60));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.HOUR);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toMinutes() / 60));
         } else if(duration.toMinutes() >= 1){
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.MINUTE);
-            commentDTO.setCreationTimeValue((int) (duration.toMinutes()));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.MINUTE);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toMinutes()));
         } else{
-            commentDTO.setCreationTimeValueType(CommentDTO.CreationTimeValueType.SECOND);
-            commentDTO.setCreationTimeValue((int) (duration.toSeconds()));
+            commentReturnDTO.setCreationTimeValueType(CommentReturnDTO.CreationTimeValueType.SECOND);
+            commentReturnDTO.setCreationTimeValue((int) (duration.toSeconds()));
         }
     }
 

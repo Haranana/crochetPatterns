@@ -1,15 +1,14 @@
 package com.example.crochetPatterns.mappers;
 
-import com.example.crochetPatterns.dtos.PostDTO;
+import com.example.crochetPatterns.dtos.PostReturnDTO;
 import com.example.crochetPatterns.dtos.PostEditDTO;
-import com.example.crochetPatterns.dtos.PostFormDTO;
+import com.example.crochetPatterns.dtos.PostCreateDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.Tag;
 import com.example.crochetPatterns.entities.User;
 import com.example.crochetPatterns.repositories.TagRepository;
 import com.example.crochetPatterns.repositories.UserRepository;
-import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -27,20 +26,20 @@ public class PostConverter {
         this.tagRepository = tagRepository;
     }
 
-    public Post createPost(PostDTO postDTO) {
+    public Post createPost(PostReturnDTO postReturnDTO) {
         Post post = new Post();
-        post.setTitle(postDTO.getTitle());
-        post.setDescription(postDTO.getDescription());
-        post.setPdfFilePath(postDTO.getPdfFilePath());
-        User author = userRepository.findById(postDTO.getAuthorId()).get();
+        post.setTitle(postReturnDTO.getTitle());
+        post.setDescription(postReturnDTO.getDescription());
+        post.setPdfFilePath(postReturnDTO.getPdfFilePath());
+        User author = userRepository.findById(postReturnDTO.getAuthorId()).get();
         post.setAuthor(author);
 
-        Set<Tag> tags =new HashSet<>(tagRepository.findAllById(postDTO.getTagIds()));
+        Set<Tag> tags =new HashSet<>(tagRepository.findAllById(postReturnDTO.getTagIds()));
         post.setTags(tags);
         //post.setTags((Set<Tag>) tagRepository.findAllById(postDTO.getTagIds()));
         return post;
     }
-    public Post createPost(PostFormDTO postDTO , String pdfFilePath){
+    public Post createPost(PostCreateDTO postDTO , String pdfFilePath){
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
@@ -55,24 +54,24 @@ public class PostConverter {
     }
 
 
-    public PostDTO createDTO(Post post) {
-        PostDTO postDTO = new PostDTO();
-        postDTO.setId(post.getId());
-        postDTO.setTitle(post.getTitle());
-        postDTO.setDescription(post.getDescription());
-        postDTO.setPdfFilePath(post.getPdfFilePath());
-        postDTO.setCreationDate(post.getCreationDate());
-        postDTO.setAuthorId(post.getAuthor().getId());
-        postDTO.setCommentIds(post.getComments().stream().map(Comment::getId).collect(Collectors.toList()));
+    public PostReturnDTO createDTO(Post post) {
+        PostReturnDTO postReturnDTO = new PostReturnDTO();
+        postReturnDTO.setId(post.getId());
+        postReturnDTO.setTitle(post.getTitle());
+        postReturnDTO.setDescription(post.getDescription());
+        postReturnDTO.setPdfFilePath(post.getPdfFilePath());
+        postReturnDTO.setCreationDate(post.getCreationDate());
+        postReturnDTO.setAuthorId(post.getAuthor().getId());
+        postReturnDTO.setCommentIds(post.getComments().stream().map(Comment::getId).collect(Collectors.toList()));
         //postDTO.setTagIds(post.getTags().stream().map(Tag::getId).collect(Collectors.toList()));
-        postDTO.setTagIds(post.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
+        postReturnDTO.setTagIds(post.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
 
-        postDTO.setCreationTime();
-        return postDTO;
+        postReturnDTO.setCreationTime();
+        return postReturnDTO;
     }
 
-    public PostFormDTO createFormDTOFromPost(Post post) {
-        PostFormDTO dto = new PostFormDTO();
+    public PostCreateDTO createFormDTOFromPost(Post post) {
+        PostCreateDTO dto = new PostCreateDTO();
         dto.setTitle(post.getTitle());
         dto.setDescription(post.getDescription());
         // PDF w PostFormDTO to MultipartFile – tutaj nie ustawiamy go (bo nie przechowujemy
@@ -109,8 +108,8 @@ public class PostConverter {
         return dto;
     }
 
-    public List<PostDTO> createDTO(List<Post> list) {
-        List<PostDTO> listDTO = list.stream()
+    public List<PostReturnDTO> createDTO(List<Post> list) {
+        List<PostReturnDTO> listDTO = list.stream()
                 .map(this::createDTO).collect(Collectors.toList());
         return listDTO;
     }

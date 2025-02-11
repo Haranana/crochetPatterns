@@ -13,7 +13,6 @@ import lombok.*;
 @FieldMatch(first = "newPassword", second = "confirmNewPassword", message = "Nowe hasła muszą być takie same")
 public class UserPasswordChangeDTO {
 
-    // Identyfikator użytkownika – zakładamy, że pobieramy go z kontekstu zalogowanego użytkownika.
     private Long id;
 
     @NotEmpty(message = "Pole z aktualnym hasłem nie może być puste")

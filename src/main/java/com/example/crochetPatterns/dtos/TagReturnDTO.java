@@ -1,7 +1,6 @@
 package com.example.crochetPatterns.dtos;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -14,7 +13,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagDTO {
+public class TagReturnDTO {
 
     @Positive(message = "{number.positive}")
     private long id;

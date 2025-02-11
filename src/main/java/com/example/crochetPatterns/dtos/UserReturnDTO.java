@@ -13,7 +13,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserReturnDTO {
 
     @NotNull
     @Positive(message = "{number.positive}")

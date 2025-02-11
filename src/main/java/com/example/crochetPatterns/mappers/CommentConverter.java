@@ -4,7 +4,6 @@ import com.example.crochetPatterns.dtos.*;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
 import com.example.crochetPatterns.entities.User;
-import com.example.crochetPatterns.repositories.CommentRepository;
 import com.example.crochetPatterns.repositories.PostRepository;
 import com.example.crochetPatterns.repositories.UserRepository;
 import org.springframework.stereotype.Component;
@@ -25,15 +24,15 @@ public class CommentConverter {
         this.userRepository = userRepository;
     }
 
-    public Comment createComment(CommentDTO commentDTO){
+    public Comment createComment(CommentReturnDTO commentReturnDTO){
         Comment comment = new Comment();
-        comment.setAuthor( userRepository.findById(commentDTO.getAuthorId()).orElse(null) );
-        comment.setPost( (postRepository.findById(commentDTO.getPostId())).get() );
-        comment.setText(commentDTO.getText());
+        comment.setAuthor( userRepository.findById(commentReturnDTO.getAuthorId()).orElse(null) );
+        comment.setPost( (postRepository.findById(commentReturnDTO.getPostId())).get() );
+        comment.setText(commentReturnDTO.getText());
         return comment;
     }
 
-    public Comment createComment(CommentFormDTO dto) {
+    public Comment createComment(CommentCreateDTO dto) {
         Comment comment = new Comment();
         comment.setText(dto.getText());
         // post
@@ -48,8 +47,8 @@ public class CommentConverter {
     }
 
 
-    public CommentDTO createDTO(Comment comment) {
-        CommentDTO dto = new CommentDTO();
+    public CommentReturnDTO createDTO(Comment comment) {
+        CommentReturnDTO dto = new CommentReturnDTO();
         dto.setId(comment.getId());
         dto.setText(comment.getText());
         dto.setCreationDate(comment.getCreationDate());
@@ -75,11 +74,11 @@ public class CommentConverter {
         return dto;
     }
 
-    public List<CommentDTO> createDTO(List<Comment> commentList) {
-        List<CommentDTO> result = new ArrayList<>();
+    public List<CommentReturnDTO> createDTO(List<Comment> commentList) {
+        List<CommentReturnDTO> result = new ArrayList<>();
         result = commentList.stream().map(this::createDTO).collect(Collectors.toList());
-        for(CommentDTO commentDTO : result){
-            commentDTO.updateShowableDate();
+        for(CommentReturnDTO commentReturnDTO : result){
+            commentReturnDTO.updateShowableDate();
         }
         return result;
     }

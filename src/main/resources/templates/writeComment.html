@@ -10,7 +10,7 @@
 
 <a th:href="@{/showPost(postId=${postId})}">Powrot do Wpisu</a> <br>
 
-<form th:action="@{/addingComment}" th:object="${commentFormDTO}" method="post">
+<form th:action="@{/addingComment}" th:object="${commentCreateDTO}" method="post">
 
     <p>
         <label th:text="#{addPost.newPostSubject}"></label>

@@ -1,7 +1,7 @@
 package com.example.crochetPatterns.controllers;
 
+import com.example.crochetPatterns.dtos.CommentCreateDTO;
 import com.example.crochetPatterns.dtos.CommentEditDTO;
-import com.example.crochetPatterns.dtos.CommentFormDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.mappers.CommentConverter;
 import com.example.crochetPatterns.others.LoggedUserDetails;
@@ -39,26 +39,26 @@ public class CommentControllers {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
 
-        CommentFormDTO commentFormDTO = new CommentFormDTO();
-        commentFormDTO.setAuthorId(userDetails.getId());
-        commentFormDTO.setPostId((long) postId);
+        CommentCreateDTO commentCreateDTO = new CommentCreateDTO();
+        commentCreateDTO.setAuthorId(userDetails.getId());
+        commentCreateDTO.setPostId((long) postId);
 
         model.addAttribute("postId" , postId);
         model.addAttribute("authorId" , userDetails.getId());
-        model.addAttribute("commentFormDTO" , commentFormDTO);
+        model.addAttribute("commentFormDTO" , commentCreateDTO);
         return "writeComment";
     }
 
     @PostMapping("/addingComment")
-    public String addingComment(@Valid @ModelAttribute("commentFormDTO") CommentFormDTO commentFormDTO, BindingResult bindingResult, Model model) {
+    public String addingComment(@Valid @ModelAttribute("commentFormDTO") CommentCreateDTO commentCreateDTO, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("postId", commentFormDTO.getPostId());
+            model.addAttribute("postId", commentCreateDTO.getPostId());
             return "writeComment";
         }
 
-        commentService.addNewComment(commentFormDTO);
-        return "redirect:/showPost?postId=" + commentFormDTO.getPostId();
+        commentService.addNewComment(commentCreateDTO);
+        return "redirect:/showPost?postId=" + commentCreateDTO.getPostId();
     }
 
     @RequestMapping("/editComment")

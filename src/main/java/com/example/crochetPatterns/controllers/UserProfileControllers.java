@@ -1,8 +1,8 @@
 package com.example.crochetPatterns.controllers;
 
-import com.example.crochetPatterns.dtos.CommentDTO;
-import com.example.crochetPatterns.dtos.PostDTO;
-import com.example.crochetPatterns.dtos.UserDTO;
+import com.example.crochetPatterns.dtos.CommentReturnDTO;
+import com.example.crochetPatterns.dtos.PostReturnDTO;
+import com.example.crochetPatterns.dtos.UserReturnDTO;
 import com.example.crochetPatterns.dtos.UserEditDTO;
 import com.example.crochetPatterns.entities.Comment;
 import com.example.crochetPatterns.entities.Post;
@@ -68,7 +68,7 @@ public class UserProfileControllers {
     @RequestMapping("/userProfile")
     public String showUserProfile(@RequestParam int userId , Model model){
 
-        UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        UserReturnDTO user = userConverter.createDTO(userService.getUserDTO(userId));
 
         if(authService.isLogged() && userId == authService.getLoggedUserDetails().getId() ){
             model.addAttribute("isViewedByAuthor" , true);
@@ -83,10 +83,10 @@ public class UserProfileControllers {
 
     @RequestMapping("/userPosts")
     public String showUserPosts(@RequestParam int userId , Model model){
-        UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        UserReturnDTO user = userConverter.createDTO(userService.getUserDTO(userId));
 
         List<Post> userPostsTemp = postService.getPostDTOPageByUser(0,100, PostService.PostSortType.DATE_NEWEST , userId).getContent();
-        List<PostDTO> userPosts= postConverter.createDTO( userPostsTemp  );
+        List<PostReturnDTO> userPosts= postConverter.createDTO( userPostsTemp  );
 
         model.addAttribute("user" , user);
         model.addAttribute("userPosts" , userPosts);
@@ -96,12 +96,12 @@ public class UserProfileControllers {
     @RequestMapping("/userComments")
     public String showUserComments(@RequestParam int userId , Model model){
 
-        UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        UserReturnDTO user = userConverter.createDTO(userService.getUserDTO(userId));
 
         List<Comment> userCommentsTemp = commentService.getCommentDTOPageByUser(0,100, CommentService.CommentSortType.NEWEST , userId).getContent();
-        List<CommentDTO> userComments= commentConverter.createDTO(userCommentsTemp);
-        List<PostDTO> commentedPosts = new ArrayList<>();
-        for(CommentDTO comment : userComments){
+        List<CommentReturnDTO> userComments= commentConverter.createDTO(userCommentsTemp);
+        List<PostReturnDTO> commentedPosts = new ArrayList<>();
+        for(CommentReturnDTO comment : userComments){
             commentedPosts.add(postConverter.createDTO(postService.getPostDTO(Math.toIntExact(comment.getPostId()))));
         }
         model.addAttribute("user" , user);

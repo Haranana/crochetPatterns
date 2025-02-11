@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO {
+public class PostReturnDTO {
 
     private long id;
 
@@ -53,14 +53,14 @@ public class PostDTO {
         SECOND
     }
 
-    public PostDTO(String title, String description, String pdfFilePath, Long authorId) {
+    public PostReturnDTO(String title, String description, String pdfFilePath, Long authorId) {
         this.title = title;
         this.description = description;
         this.pdfFilePath = pdfFilePath;
         this.authorId = authorId;
     }
 
-    public PostDTO(String title, String description) {
+    public PostReturnDTO(String title, String description) {
         this.title = title;
         this.description = description;
         this.pdfFilePath = "Lorem Ipsum";

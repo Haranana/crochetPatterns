@@ -1,7 +1,5 @@
 package com.example.crochetPatterns.dtos;
 
-import com.example.crochetPatterns.entities.Post;
-import com.example.crochetPatterns.entities.User;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -13,7 +11,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDTO {
+public class CommentReturnDTO {
 
     @Positive(message = "{number.positive}")
     private Long id;

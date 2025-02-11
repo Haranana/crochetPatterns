@@ -31,9 +31,5 @@ public class PostEditDTO {
     @pdfOrNullFileConstraint(message = "{post.wrongFile}")
     private MultipartFile pdfFile;
 
-    /**
-     * Bardzo ważne: zawsze inicjujemy `tagIds` pustym zestawem.
-     * Dzięki temu `.contains(...)` nie rzuci NullPointerException.
-     */
     private Set<Long> tagIds = new HashSet<>();
 }

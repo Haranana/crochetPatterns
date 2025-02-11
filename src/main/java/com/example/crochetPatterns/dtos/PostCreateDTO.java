@@ -6,10 +6,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /*
@@ -24,7 +21,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostFormDTO {
+public class PostCreateDTO {
 
     @NotEmpty(message = "{post.titleEmpty}")
     @Size(max = 100 , message = "{post.titleTooLong}")

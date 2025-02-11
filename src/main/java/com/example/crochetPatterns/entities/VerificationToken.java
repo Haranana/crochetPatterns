@@ -21,7 +21,7 @@ public class VerificationToken {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String token;  // np. UUID
+    private String token;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)

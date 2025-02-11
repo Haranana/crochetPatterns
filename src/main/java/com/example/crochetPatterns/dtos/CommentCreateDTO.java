@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentFormDTO {
+public class CommentCreateDTO {
 
     @NotEmpty(message = "{comment.empty}")
     @Size(max = 1000, message = "{comment.tooLong}")

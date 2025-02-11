@@ -62,7 +62,7 @@ public class PostControllers {
     public String showPost(@RequestParam int postId, Model model){
 
         Post post = postService.getPostDTO(postId);
-        PostDTO postDTO = postConverter.createDTO(post);
+        PostReturnDTO postReturnDTO = postConverter.createDTO(post);
         long likeCount = likeService.countLikes(post.getId());
         boolean userLiked = false;
         boolean isViewedByAuthor = false;
@@ -72,42 +72,42 @@ public class PostControllers {
         if(authService.isLogged()){
             loggedUserId = authService.getLoggedUserDetails().getId();
             userLiked = likeService.hasLiked(loggedUserId, post.getId());
-            if (loggedUserId.equals(postDTO.getAuthorId())) {
+            if (loggedUserId.equals(postReturnDTO.getAuthorId())) {
                 isViewedByAuthor = true;
             }
         }
 
         List<String> postTagNames = new ArrayList<>();
-        for (Long tagId : postDTO.getTagIds()) {
+        for (Long tagId : postReturnDTO.getTagIds()) {
             Tag tag = tagService.findById(tagId);
             if (tag != null) {
                 postTagNames.add(tag.getName());
             }
         }
 
-        User postAuthorEntity = userService.getUserDTO(postDTO.getAuthorId());
-        UserDTO postAuthor = userConverter.createDTO(postAuthorEntity);
+        User postAuthorEntity = userService.getUserDTO(postReturnDTO.getAuthorId());
+        UserReturnDTO postAuthor = userConverter.createDTO(postAuthorEntity);
 
         List<Comment> comments = commentService.getCommentDTOPageByPost(0, 100, CommentService.CommentSortType.NEWEST, postId).getContent();
-        List<CommentDTO> postComments = commentConverter.createDTO(comments);
+        List<CommentReturnDTO> postComments = commentConverter.createDTO(comments);
 
-        List<UserDTO> commentsAuthors = new ArrayList<>();
-        for (CommentDTO commentDTO : postComments) {
-            Long authorId = commentDTO.getAuthorId();
+        List<UserReturnDTO> commentsAuthors = new ArrayList<>();
+        for (CommentReturnDTO commentReturnDTO : postComments) {
+            Long authorId = commentReturnDTO.getAuthorId();
             if (authorId == null) {
-                UserDTO deletedUser = new UserDTO();
+                UserReturnDTO deletedUser = new UserReturnDTO();
                 deletedUser.setId(0);
                 deletedUser.setUsername("[user deleted]");
                 deletedUser.setAvatar("/images/defaultavatar.png");
                 commentsAuthors.add(deletedUser);
             } else {
                 User tempUser = userService.getUserDTO(authorId.intValue());
-                UserDTO userDTO = userConverter.createDTO(tempUser);
-                commentsAuthors.add(userDTO);
+                UserReturnDTO userReturnDTO = userConverter.createDTO(tempUser);
+                commentsAuthors.add(userReturnDTO);
             }
         }
 
-        model.addAttribute("post", postDTO);
+        model.addAttribute("post", postReturnDTO);
         model.addAttribute("postAuthor", postAuthor);
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("userLiked", userLiked);
@@ -160,7 +160,7 @@ public class PostControllers {
             }
         }
 
-        List<PostDTO> postDTOs = postConverter.createDTO(result.getContent());
+        List<PostReturnDTO> postReturnDTOS = postConverter.createDTO(result.getContent());
 
         Map<Long, Long> postLikesCountMap = new HashMap<>();
         for (Post postIt : result.getContent()) {
@@ -181,7 +181,7 @@ public class PostControllers {
             }
         }
 
-        model.addAttribute("posts", postDTOs);
+        model.addAttribute("posts", postReturnDTOS);
         model.addAttribute("postLikesCountMap", postLikesCountMap);
         model.addAttribute("userLikedPosts", userLikedPosts);
         model.addAttribute("page", page);
@@ -199,7 +199,7 @@ public class PostControllers {
         LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
 
         // Tworzymy pusty obiekt PostFormDTO
-        PostFormDTO postFormDTO = new PostFormDTO();
+        PostCreateDTO postFormDTO = new PostCreateDTO();
         postFormDTO.setAuthorId(userDetails.getId());
 
         model.addAttribute("postFormDTO", postFormDTO);
@@ -212,7 +212,7 @@ public class PostControllers {
     }
 
     @PostMapping("/addingPost")
-    public String addPostSubmit(@Valid @ModelAttribute("postFormDTO") PostFormDTO postFormDTO, BindingResult bindingResult, Model model) {
+    public String addPostSubmit(@Valid @ModelAttribute("postFormDTO") PostCreateDTO postFormDTO, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
             List<Tag> allTags = tagService.findAllTags();
