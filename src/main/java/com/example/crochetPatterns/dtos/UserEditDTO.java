@@ -1,5 +1,6 @@
 package com.example.crochetPatterns.dtos;
 
+import com.example.crochetPatterns.Validation.avatarOrNullFileConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,6 +24,6 @@ public class UserEditDTO {
     @Size(max = 4000, message = "{user.bioTooLong}")
     private String bio;
 
-    // Opcjonalnie – nowe zdjęcie profilowe przesłane przez użytkownika:
+    @avatarOrNullFileConstraint(message = "niepoprawny avatar uzytkownika")
     private MultipartFile avatarFile;
 }

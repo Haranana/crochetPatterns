@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.dtos;
 
 import com.example.crochetPatterns.Validation.pdfFileConstraint;
+import com.example.crochetPatterns.Validation.pdfOrNullFileConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -27,7 +28,7 @@ public class PostEditDTO {
     @Size(max = 10000, message = "{post.descriptionTooLong}")
     private String description;
 
-    @pdfFileConstraint(message = "{post.wrongFile}")  // jeśli masz taką walidację
+    @pdfOrNullFileConstraint(message = "{post.wrongFile}")
     private MultipartFile pdfFile;
 
     /**

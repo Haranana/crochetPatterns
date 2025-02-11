@@ -166,11 +166,15 @@ public class PostService {
                 .orElseThrow(() -> new ElementNotFoundException("Post not found: " + postEditDTO.getId()));
         existingPost.setTitle(postEditDTO.getTitle());
         existingPost.setDescription(postEditDTO.getDescription());
-        MultipartFile newFile = postEditDTO.getPdfFile();
-        if (newFile != null && !newFile.isEmpty()) {
-            String newPdfPath = savePostPDF(postEditDTO);
-            existingPost.setPdfFilePath(newPdfPath);
+
+        if(postEditDTO.getPdfFile()!=null){
+            MultipartFile newFile = postEditDTO.getPdfFile();
+            if (newFile != null && !newFile.isEmpty()) {
+                String newPdfPath = savePostPDF(postEditDTO);
+                existingPost.setPdfFilePath(newPdfPath);
+            }
         }
+
         Set<Tag> tags = new HashSet<>();
         for (Long tagId : postEditDTO.getTagIds()) {
             Tag tag = tagService.findById(tagId);

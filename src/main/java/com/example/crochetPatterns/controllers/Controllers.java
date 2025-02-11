@@ -229,23 +229,24 @@ public class Controllers {
     @PostMapping("/addingPost")
     public String addPostSubmit(
             @Valid @ModelAttribute("postFormDTO") PostFormDTO postFormDTO,
-            BindingResult bindingResult) {
+            BindingResult bindingResult,
+            Model model) {
 
         if (bindingResult.hasErrors()) {
             System.out.println("Some errors have been found:");
             bindingResult.getAllErrors().forEach(error -> {
                 System.out.println(error.toString());
             });
+            // Ponownie dodaj listę tagów do modelu, aby formularz miał pełne dane
+            List<Tag> allTags = tagService.findAllTags();
+            model.addAttribute("allTags", allTags);
             return "addPost";
         }
 
         String pdfFilePath = postService.savePostPDF(postFormDTO);
         if(!pdfFilePath.isEmpty()) {
-
-            postService.addNewPost(postFormDTO , pdfFilePath);
-
+            postService.addNewPost(postFormDTO, pdfFilePath);
             return "successfulPost";
-
         }
         return "mainMenu";
     }

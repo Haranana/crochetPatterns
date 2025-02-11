@@ -70,11 +70,14 @@ public class UserService {
                 .orElseThrow(() -> new ElementNotFoundException("User not found: " + userEditDTO.getId()));
         user.setUsername(userEditDTO.getUsername());
         user.setBio(userEditDTO.getBio());
-        MultipartFile avatarFile = userEditDTO.getAvatarFile();
 
-        if (avatarFile != null && !avatarFile.isEmpty()) {
-            String newAvatarPath = saveAvatarFile(avatarFile);
-            user.setAvatar(newAvatarPath);
+        if(userEditDTO.getAvatarFile() != null) {
+            MultipartFile avatarFile = userEditDTO.getAvatarFile();
+
+            if (avatarFile != null && !avatarFile.isEmpty()) {
+                String newAvatarPath = saveAvatarFile(avatarFile);
+                user.setAvatar(newAvatarPath);
+            }
         }
         userRepository.save(user);
     }
