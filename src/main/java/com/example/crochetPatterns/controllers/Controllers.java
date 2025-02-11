@@ -97,20 +97,20 @@ public class Controllers {
 
         Page<Post> result;
 
-        System.out.println(">>> Tuz przed sortowaniem przez polubienia [DEBUG] sortType = " + sortType + ", page=" + page + ", size=" + size);
+
         // 2. Kwestia filtrowania (tagId / search). Najpierw pobieramy z bazy:
         if (tagId != null) {
-            System.out.println("0.5");
+
             // Filtruj po tagu (bez względu na sortType – bo i tak zrobimy ewentualne sort w pamięci)
             // W przypadku sortType == LIKES pobieramy bazę np. sortowaną po ID
             if (sortType == PostService.PostSortType.LIKES) {
-                System.out.println("1");
+
                 // pobierz "duży" page, np. 9999, aby mieć wszystkie i posortować w pamięci
                 Page<Post> all = postService.findByTagId(tagId, 0, 9999, PostService.PostSortType.DEFAULT);
-                System.out.println("2");
+
                 // sort i stronicowanie w pamięci
                 result = postService.findAllSortedByLikesInMemory(all.getContent(), page, size);
-                System.out.println("3");
+
             } else {
 
                 // normalne sortowanie w bazie
@@ -129,15 +129,13 @@ public class Controllers {
         }
         else {
             // Bez filtra tagu i bez wyszukiwania
-            System.out.println("3_1");
+
             if (sortType == PostService.PostSortType.LIKES) {
-                System.out.println("3_2");
+
                 Page<Post> all = postService.getPostDTOPage(0, 9999, PostService.PostSortType.DEFAULT);
-                System.out.println("3_3");
+
                 result = postService.findAllSortedByLikesInMemory(all.getContent(), page, size);
-                System.out.println("3_4");
             } else {
-                System.out.println("3_5");
                 result = postService.getPostDTOPage(page, size, sortType);
             }
         }
@@ -171,7 +169,7 @@ public class Controllers {
         model.addAttribute("postLikesCountMap", postLikesCountMap);
         model.addAttribute("userLikedPosts", userLikedPosts);
 
-        System.out.println(">>> Tuz przed add atribute strony [DEBUG] sortType = " + sortType + ", page=" + page + ", size=" + size);
+
 
         // Numer aktualnej strony, wybrany sort, itp.
         model.addAttribute("page", page);
@@ -185,7 +183,7 @@ public class Controllers {
 
         model.addAttribute("numbers", postService.createPageNumbers(page, result.getTotalPages()));
 
-        System.out.println(">>> Tuz przed zwroceniem szablonu [DEBUG] sortType = " + sortType + ", page=" + page + ", size=" + size);
+
 
         return "showAllPosts";
     }
@@ -450,6 +448,7 @@ public class Controllers {
 
     @RequestMapping("/myProfile")
     public String showLoggedUserProfile(Model model){
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
@@ -459,6 +458,7 @@ public class Controllers {
             LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
             model.addAttribute("user", userConverter.createDTO(userService.getUserDTO(userDetails.getId())));
             System.out.println(userConverter.createDTO(userService.getUserDTO(userDetails.getId())).getAvatar());
+            model.addAttribute("isViewedByAuthor" , true);
             return "showUserProfile";
         }
     }
@@ -476,7 +476,15 @@ public class Controllers {
     public String showUserProfile(@RequestParam int userId , Model model){
         UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
 
+        if(authService.isLogged() && userId == authService.getLoggedUserDetails().getId() ){
+            model.addAttribute("isViewedByAuthor" , true);
+        }
+        else{
+            model.addAttribute("isViewedByAuthor" , false);
+        }
+
         model.addAttribute("user" , user);
+
         return "showUserProfile";
     }
 
@@ -494,7 +502,6 @@ public class Controllers {
 
     @RequestMapping("/userComments")
     public String showUserComments(@RequestParam int userId , Model model){
-        System.out.println("Start comment");
 
         UserDTO user = userConverter.createDTO(userService.getUserDTO(userId));
 

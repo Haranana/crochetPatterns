@@ -272,44 +272,37 @@ public class PostService {
     }
 
     public Page<Post> findAllSortedByLikesInMemory(List<Post> posts, int pageId, int pageSize) {
-        System.out.println("4_1");
-        if(likeService == null) {
-            System.out.println("likeService is null");
-        } else {
-            System.out.println("likeService is not null");
-        }
 
-        // Skopiuj listę do nowej, modyfikowalnej listy
+
         List<Post> mutablePosts = new ArrayList<>(posts);
 
-        // 1. Sortujemy w pamięci wg liczby polubień malejąco (bez lambd)
         Collections.sort(mutablePosts, new Comparator<Post>() {
             @Override
             public int compare(Post p1, Post p2) {
-                System.out.println("4_11");
+
                 long likes1 = likeService.countLikes(p1.getId());
-                System.out.println("4_12");
+
                 long likes2 = likeService.countLikes(p2.getId());
-                System.out.println("4_13");
+
                 return Long.compare(likes2, likes1); // malejąco
             }
         });
 
-        System.out.println("4_2");
+
         // 2. Stronicowanie w pamięci
         int total = mutablePosts.size();
         int fromIndex = pageId * pageSize;
         int toIndex = Math.min(fromIndex + pageSize, total);
         if (fromIndex > total) {
-            System.out.println("4_3");
+
             List<Post> empty = Collections.emptyList();
-            System.out.println("4_4");
+
             return new PageImpl<>(empty, PageRequest.of(pageId, pageSize), total);
         }
 
-        System.out.println("4_5");
+
         List<Post> subList = mutablePosts.subList(fromIndex, toIndex);
-        System.out.println("4_6");
+
 
         return new PageImpl<>(subList, PageRequest.of(pageId, pageSize), total);
     }

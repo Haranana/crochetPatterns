@@ -17,8 +17,9 @@
 <span th:each="post : ${userPosts}">
     <a th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}">Tytuł wpisu</a>
     <hr>
-    <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze</a>
-    <a th:href="@{/userProfile(userId=${user.id})}" th:text="#{userProfile.bio}">Biografia</a>
+
 </span>
+<a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze</a>
+<a th:href="@{/userProfile(userId=${user.id})}" th:text="#{userProfile.bio}">Biografia</a>
 </body>
 </html>

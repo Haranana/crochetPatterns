@@ -13,10 +13,14 @@
     <!-- Avatar – zakładamy, że wartość user.avatar jest np. "/images/defaultavatar.png" lub ścieżką do nowego avatara -->
     <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <p th:text="${user.bio}">Biografia użytkownika</p>
-    <!-- Link do edycji profilu -->
-    <a th:href="@{/editProfile}">Edytuj profil</a>
-    <a th:href="@{/editPassword}">Zmien haslo</a>
-    <a th:href="@{/deleteAccount}">Usuń konto</a>
+
+    <!-- Linki do edycji profilu, zmiany hasła i usunięcia konta wyświetlamy tylko, gdy isViewedByAuthor jest true -->
+    <div th:if="${isViewedByAuthor}">
+        <a th:href="@{/editProfile}">Edytuj profil</a>
+        <a th:href="@{/editPassword}">Zmień hasło</a>
+        <a th:href="@{/deleteAccount}">Usuń konto</a>
+    </div>
+
     <hr>
     <a th:href="@{/userPosts(userId=${user.id})}" th:text="#{userProfile.posts}">Wpisy użytkownika</a>
     <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze użytkownika</a>
