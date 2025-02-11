@@ -36,19 +36,23 @@ public class UserService {
     }
 
     public User getUserByUsername(String username){
-        User user = getUserDTO(userRepository.findUserIdByUsername(username));
+        User user = getUser(userRepository.findUserIdByUsername(username));
         if (user == null) {
             throw new ElementNotFoundException("User not found with username: " + username);
         }
         return user;
     }
 
-    public User getUserDTO(Long id){
+    public User getUser(Long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new ElementNotFoundException("User not found: " + id));
     }
 
-    public User getUserDTO(int id){
+    public User getUserOrNull(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User getUser(int id){
         return userRepository.findById(Integer.toUnsignedLong(id))
                 .orElseThrow(() -> new ElementNotFoundException("User not found: " + id));
     }

@@ -61,7 +61,7 @@ public class PostControllers {
     @RequestMapping("/showPost")
     public String showPost(@RequestParam int postId, Model model){
 
-        Post post = postService.getPostDTO(postId);
+        Post post = postService.getPost(postId);
         PostReturnDTO postReturnDTO = postConverter.createDTO(post);
         long likeCount = likeService.countLikes(post.getId());
         boolean userLiked = false;
@@ -85,7 +85,7 @@ public class PostControllers {
             }
         }
 
-        User postAuthorEntity = userService.getUserDTO(postReturnDTO.getAuthorId());
+        User postAuthorEntity = userService.getUser(postReturnDTO.getAuthorId());
         UserReturnDTO postAuthor = userConverter.createDTO(postAuthorEntity);
 
         List<Comment> comments = commentService.getCommentDTOPageByPost(0, 100, CommentService.CommentSortType.NEWEST, postId).getContent();
@@ -101,7 +101,7 @@ public class PostControllers {
                 deletedUser.setAvatar("/images/defaultavatar.png");
                 commentsAuthors.add(deletedUser);
             } else {
-                User tempUser = userService.getUserDTO(authorId.intValue());
+                User tempUser = userService.getUser(authorId.intValue());
                 UserReturnDTO userReturnDTO = userConverter.createDTO(tempUser);
                 commentsAuthors.add(userReturnDTO);
             }
@@ -232,7 +232,7 @@ public class PostControllers {
     @GetMapping("/editPost")
     public String editPost(@RequestParam int postId, Model model) {
         // 1. Pobieramy istniejącego posta
-        Post existingPost = postService.getPostDTO(postId);
+        Post existingPost = postService.getPost(postId);
         if (existingPost == null) {
             return "redirect:/allPosts";
         }
@@ -278,7 +278,7 @@ public class PostControllers {
 
     @GetMapping("/posts/{id}/pdf")
     public ResponseEntity<Resource> getPostPdf(@PathVariable Long id) {
-        Post post = postService.getPostDTO(Math.toIntExact(id)); // pobieramy z bazy
+        Post post = postService.getPost(Math.toIntExact(id)); // pobieramy z bazy
         String pathStr = post.getPdfFilePath();
         if (pathStr == null) {
             // brak PDF

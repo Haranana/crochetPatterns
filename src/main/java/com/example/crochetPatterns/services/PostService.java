@@ -98,12 +98,12 @@ public class PostService {
         return postRepository.findAll(pageable);
     }
 
-    public Post getPostDTO(int id){
+    public Post getPost(int id){
         return postRepository.findById(Integer.toUnsignedLong(id))
                 .orElseThrow(() -> new ElementNotFoundException("Post not found: " + id));
     }
 
-    public Page<Post> getPostDTOPageByUser(int pageId, int pageSize, PostSortType postSortType, int userId){
+    public Page<Post> getPostPageByUser(int pageId, int pageSize, PostSortType postSortType, int userId){
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
         return postRepository.findByAuthorId(Integer.toUnsignedLong(userId), pageable);

@@ -7,9 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-/**
- * Klasa ControllerAdvise służy do globalnej obsługi wyjątków w aplikacji.
- */
 @ControllerAdvice
 public class ControllerAdvise {
 

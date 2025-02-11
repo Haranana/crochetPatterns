@@ -56,8 +56,8 @@ public class UserProfileControllers {
     public String showLoggedUserProfile(Model model){
 
         if(authService.isLogged()){
-            model.addAttribute("user", userConverter.createDTO(userService.getUserDTO(authService.getLoggedUserDetails().getId())));
-            System.out.println(userConverter.createDTO(userService.getUserDTO(authService.getLoggedUserDetails().getId())).getAvatar());
+            model.addAttribute("user", userConverter.createDTO(userService.getUser(authService.getLoggedUserDetails().getId())));
+            System.out.println(userConverter.createDTO(userService.getUser(authService.getLoggedUserDetails().getId())).getAvatar());
             model.addAttribute("isViewedByAuthor" , true);
             return "showUserProfile";
         }else{
@@ -68,7 +68,7 @@ public class UserProfileControllers {
     @RequestMapping("/userProfile")
     public String showUserProfile(@RequestParam int userId , Model model){
 
-        UserReturnDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        UserReturnDTO user = userConverter.createDTO(userService.getUser(userId));
 
         if(authService.isLogged() && userId == authService.getLoggedUserDetails().getId() ){
             model.addAttribute("isViewedByAuthor" , true);
@@ -83,9 +83,9 @@ public class UserProfileControllers {
 
     @RequestMapping("/userPosts")
     public String showUserPosts(@RequestParam int userId , Model model){
-        UserReturnDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        UserReturnDTO user = userConverter.createDTO(userService.getUser(userId));
 
-        List<Post> userPostsTemp = postService.getPostDTOPageByUser(0,100, PostService.PostSortType.DATE_NEWEST , userId).getContent();
+        List<Post> userPostsTemp = postService.getPostPageByUser(0,100, PostService.PostSortType.DATE_NEWEST , userId).getContent();
         List<PostReturnDTO> userPosts= postConverter.createDTO( userPostsTemp  );
 
         model.addAttribute("user" , user);
@@ -96,13 +96,13 @@ public class UserProfileControllers {
     @RequestMapping("/userComments")
     public String showUserComments(@RequestParam int userId , Model model){
 
-        UserReturnDTO user = userConverter.createDTO(userService.getUserDTO(userId));
+        UserReturnDTO user = userConverter.createDTO(userService.getUser(userId));
 
         List<Comment> userCommentsTemp = commentService.getCommentDTOPageByUser(0,100, CommentService.CommentSortType.NEWEST , userId).getContent();
         List<CommentReturnDTO> userComments= commentConverter.createDTO(userCommentsTemp);
         List<PostReturnDTO> commentedPosts = new ArrayList<>();
         for(CommentReturnDTO comment : userComments){
-            commentedPosts.add(postConverter.createDTO(postService.getPostDTO(Math.toIntExact(comment.getPostId()))));
+            commentedPosts.add(postConverter.createDTO(postService.getPost(Math.toIntExact(comment.getPostId()))));
         }
         model.addAttribute("user" , user);
         model.addAttribute("userComments" , userComments);
@@ -118,7 +118,7 @@ public class UserProfileControllers {
             return "login";
         }
 
-        User user = userService.getUserDTO(authService.getLoggedUserDetails().getId());
+        User user = userService.getUser(authService.getLoggedUserDetails().getId());
         UserEditDTO userEditDTO = userConverter.createEditDTO(user);
         model.addAttribute("userEditDTO", userEditDTO);
 
