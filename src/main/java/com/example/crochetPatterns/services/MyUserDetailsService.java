@@ -23,14 +23,8 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        // Znajdź w bazie obiekt User o danym username
         User user = userService.getUserByUsername(username);
 
-        /*
-         * 1) Tworzymy listę ról/authority. Na start można na sztywno ustawić np. "ROLE_USER"
-         *    lub możesz mieć pole w encji User do przechowywania roli.
-         * 2) Zwracamy obiekt klasy, która implementuje UserDetails.
-         */
         return new LoggedUserDetails(
                 user.getId(),
                 user.getUsername(),

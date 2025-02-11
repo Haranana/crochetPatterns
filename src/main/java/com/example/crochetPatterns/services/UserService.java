@@ -21,7 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository, UserConverter userConverter) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -39,8 +39,7 @@ public class UserService {
     }
 
     public User getUser(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ElementNotFoundException("User not found: " + id));
+        return userRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("User not found: " + id));
     }
 
     public User getUserOrNull(Long id){
@@ -48,8 +47,7 @@ public class UserService {
     }
 
     public User getUser(int id){
-        return userRepository.findById(Integer.toUnsignedLong(id))
-                .orElseThrow(() -> new ElementNotFoundException("User not found: " + id));
+        return userRepository.findById(Integer.toUnsignedLong(id)).orElseThrow(() -> new ElementNotFoundException("User not found: " + id));
     }
 
     public boolean existsByUsername(String username) {
@@ -60,8 +58,8 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-
     public void updateUserProfile(UserEditDTO userEditDTO) {
+
         User user = userRepository.findById(userEditDTO.getId())
                 .orElseThrow(() -> new ElementNotFoundException("User not found: " + userEditDTO.getId()));
         user.setUsername(userEditDTO.getUsername());
@@ -79,6 +77,7 @@ public class UserService {
     }
 
     private String saveAvatarFile(MultipartFile avatarFile) {
+
         try {
             String originalFilename = avatarFile.getOriginalFilename();
             String uniqueName = System.currentTimeMillis() + "_" + originalFilename;
@@ -95,6 +94,7 @@ public class UserService {
     }
 
     public boolean changeUserPassword(UserPasswordChangeDTO dto, PasswordEncoder passwordEncoder) {
+
         Optional<User> optionalUser = userRepository.findById(dto.getId());
         if (optionalUser.isEmpty()) {
             throw new ElementNotFoundException("Użytkownik nie został znaleziony o id: " + dto.getId());

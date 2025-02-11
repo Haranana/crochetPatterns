@@ -42,6 +42,7 @@ public class PostService {
     }
 
     public void deletePost(Long postId) {
+
         if (!postRepository.existsById(postId)) {
             throw new ElementNotFoundException("Post not found: " + postId);
         }
@@ -49,6 +50,7 @@ public class PostService {
     }
 
     public String savePostPDF(PostCreateDTO postFormDTO){
+
         MultipartFile pdf = postFormDTO.getPdfFile();
         try {
             String originalFilename = pdf.getOriginalFilename();
@@ -66,6 +68,7 @@ public class PostService {
     }
 
     public String savePostPDF(PostEditDTO postEditDTO){
+
         MultipartFile pdf = postEditDTO.getPdfFile();
         try {
             String originalFilename = pdf.getOriginalFilename();
@@ -83,27 +86,31 @@ public class PostService {
     }
 
     public Page<Post> getPostDTOPage(int pageId, int pageSize, PostSortType postSortType){
+
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
         return postRepository.findAll(pageable);
     }
 
     public Post getPost(int id){
-        return postRepository.findById(Integer.toUnsignedLong(id))
-                .orElseThrow(() -> new ElementNotFoundException("Post not found: " + id));
+
+        return postRepository.findById(Integer.toUnsignedLong(id)).orElseThrow(() -> new ElementNotFoundException("Post not found: " + id));
     }
 
     public Page<Post> getPostPageByUser(int pageId, int pageSize, PostSortType postSortType, int userId){
+
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
         return postRepository.findByAuthorId(Integer.toUnsignedLong(userId), pageable);
     }
 
     public List<Post> findPostsByIds(List<Long> ids) {
+
         return postRepository.findAllById(ids);
     }
 
     public List<Integer> createPageNumbers(int page, int totalPages) {
+
         int numbers = 3;
         List<Integer> pageNumbers = new ArrayList<>();
         if(totalPages <= numbers * 2) {
@@ -156,6 +163,7 @@ public class PostService {
     }
 
     public void updateExistingPost(PostEditDTO postEditDTO){
+
         Post existingPost = postRepository.findById(postEditDTO.getId())
                 .orElseThrow(() -> new ElementNotFoundException("Post not found: " + postEditDTO.getId()));
         existingPost.setTitle(postEditDTO.getTitle());
@@ -180,21 +188,8 @@ public class PostService {
         postRepository.save(existingPost);
     }
 
-    public void updateExistingPost(PostCreateDTO postFormDTO, Long id) {
-        Long postId = id;
-        Post existingPost = postRepository.findById(postId)
-                .orElseThrow(() -> new ElementNotFoundException("Post not found: " + postId));
-        existingPost.setTitle(postFormDTO.getTitle());
-        existingPost.setDescription(postFormDTO.getDescription());
-        MultipartFile newFile = postFormDTO.getPdfFile();
-        if (newFile != null && !newFile.isEmpty()) {
-            String newPdfPath = savePostPDF(postFormDTO);
-            existingPost.setPdfFilePath(newPdfPath);
-        }
-        postRepository.save(existingPost);
-    }
-
     private Sort createSortObject(PostSortType sortType) {
+
         Sort defaultSort = Sort.by("id").ascending();
         switch (sortType) {
             case TITLE_ASC:
@@ -212,6 +207,7 @@ public class PostService {
     }
 
     public Page<Post> searchPosts(String keyword, int pageId, int pageSize, PostSortType postSortType) {
+
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(pageId, pageSize, sort);
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -221,12 +217,14 @@ public class PostService {
     }
 
     public Page<Post> findByTagId(Long tagId, int page, int size, PostSortType postSortType) {
+
         Sort sort = createSortObject(postSortType);
         Pageable pageable = PageRequest.of(page, size, sort);
         return postRepository.findByTagId(tagId, pageable);
     }
 
     public Page<Post> findAllSortedByLikesInMemory(List<Post> posts, int pageId, int pageSize) {
+
         List<Post> mutablePosts = new ArrayList<>(posts);
         mutablePosts.sort((p1, p2) -> Long.compare(likeService.countLikes(p2.getId()), likeService.countLikes(p1.getId())));
         int total = mutablePosts.size();
@@ -240,6 +238,7 @@ public class PostService {
     }
 
     public PostSortType mapSortParamToEnum(String sortParam) {
+
         return switch (sortParam) {
             case "titleAsc" -> PostSortType.TITLE_ASC;
             case "dateNewest" -> PostSortType.DATE_NEWEST;

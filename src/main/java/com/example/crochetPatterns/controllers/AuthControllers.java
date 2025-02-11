@@ -8,6 +8,7 @@ import com.example.crochetPatterns.mappers.UserConverter;
 import com.example.crochetPatterns.others.LoggedUserDetails;
 import com.example.crochetPatterns.repositories.UserRepository;
 import com.example.crochetPatterns.repositories.VerificationTokenRepository;
+import com.example.crochetPatterns.services.AuthService;
 import com.example.crochetPatterns.services.EmailService;
 import com.example.crochetPatterns.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,11 +40,12 @@ public class AuthControllers {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final UserConverter userConverter;
+    private final AuthService authService;
 
     @Autowired
     public AuthControllers(UserService userService, PasswordEncoder passwordEncoder,
                            VerificationTokenRepository verificationTokenRepository,
-                           UserRepository userRepository,
+                           UserRepository userRepository, AuthService authService,
                            EmailService emailService, UserConverter userConverter) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -51,6 +53,7 @@ public class AuthControllers {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.userConverter = userConverter;
+        this.authService = authService;
     }
 
     @GetMapping("/login")
@@ -69,7 +72,6 @@ public class AuthControllers {
             @Valid @ModelAttribute("userRegistrationDTO") UserRegistrationDTO registrationDTO,
             BindingResult bindingResult, Model model) {
 
-        // Sprawdź, czy nazwa użytkownika lub email są już zajęte
         if (userService.existsByUsername(registrationDTO.getUsername())) {
             bindingResult.rejectValue("username", "error.username", "Ta nazwa użytkownika jest już zajęta");
         }
@@ -81,26 +83,25 @@ public class AuthControllers {
             return "register";
         }
 
-        // Zakoduj hasło i utwórz użytkownika
-       // User user = userService.addNewUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword()));
+
         User user = userService.addNewUser(userConverter.createUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword())));
 
-        // Generuj token weryfikacyjny (ważny np. 1 dzień)
+        //generacja tokenu weryfikacji, domyslnie 1 dzien
         String token = UUID.randomUUID().toString();
         Timestamp expiryDate = Timestamp.from(LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC));
         VerificationToken verificationToken = new VerificationToken(token, user, expiryDate);
         verificationTokenRepository.save(verificationToken);
 
-        // Wyślij email z linkiem weryfikacyjnym
+        //wyslanie linka aktywacyjnego
         String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
         emailService.sendConfirmationEmail(user.getEmail(), confirmationUrl);
 
-        // Zamiast powrotu do mainMenu zwracamy nowy widok:
         return "afterRegister";
     }
 
     @GetMapping("/confirm")
     public String confirmRegistration(@RequestParam("token") String token, Model model) {
+
         Optional<VerificationToken> optionalToken = verificationTokenRepository.findByToken(token);
         if (optionalToken.isEmpty()) {
             model.addAttribute("message", "Niepoprawny token");
@@ -127,42 +128,42 @@ public class AuthControllers {
     // Endpoint wyświetlający formularz zmiany hasła
     @GetMapping("/editPassword")
     public String editPassword(Model model) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
             return "login";
         }
+
         LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
         UserPasswordChangeDTO dto = new UserPasswordChangeDTO();
         dto.setId(userDetails.getId());
         model.addAttribute("userPasswordChangeDTO", dto);
-        return "editPassword"; // nazwa szablonu Thymeleaf, np. editPassword.html
+        return "editPassword";
     }
 
     // Endpoint przetwarzający formularz zmiany hasła
     @PostMapping("/confirmEditPassword")
-    public String confirmEditPassword(@Valid @ModelAttribute("userPasswordChangeDTO") UserPasswordChangeDTO dto,
-                                      BindingResult bindingResult,
-                                      HttpServletRequest request,
-                                      Model model) {
+    public String confirmEditPassword(@Valid @ModelAttribute("userPasswordChangeDTO") UserPasswordChangeDTO dto, BindingResult bindingResult,
+                                      HttpServletRequest request, Model model) {
+
         if (bindingResult.hasErrors()) {
             return "editPassword";
         }
-        // Próba zmiany hasła
+
         if (!userService.changeUserPassword(dto, passwordEncoder)) {
             bindingResult.rejectValue("currentPassword", "error.currentPassword", "Aktualne hasło jest nieprawidłowe");
             return "editPassword";
         }
-        // Opcjonalnie – unieważniamy sesję po zmianie hasła
+
+        // uniewaznienie sesji i czyszczenie kontekstu bezpieczenstwa
         request.getSession().invalidate();
-        // Czyscimy kontekst bezpieczeństwa
         SecurityContextHolder.clearContext();
-        // Przekierowujemy użytkownika do strony logowania z informacją, że hasło zostało zmienione
+
         return "redirect:/login?passwordChanged";
     }
 
     @GetMapping("/afterRegister")
     public String afterRegister() {
-        // Zwracamy widok (szablon) informujący o wysłaniu maila weryfikacyjnego
         return "afterRegister";
     }
 }
