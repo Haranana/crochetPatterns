@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="#{showPost.name}">Komentarz usunięty</title>
-    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
     <button type="button" th:text="#{mainPageReturnLink}"
             onclick="window.location.href='http://localhost:8080/main'">
     </button>
-    <hr>
-</head>
-<body>
-<p th:text="#{deleteCommentConfirmed.info}">Komentarz zostal usuniety</p>
-<a th:href="@{/showPost(postId=${postId})}" th:text="#{global.ok}">Ok</a>
+</div>
+
+<div class="container">
+    <p th:text="#{deleteCommentConfirmed.info}">Komentarz został usunięty</p>
+    <a th:href="@{/showPost(postId=${postId})}" th:text="#{global.ok}">Ok</a>
+</div>
 </body>
 </html>

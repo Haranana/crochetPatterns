@@ -6,14 +6,20 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1 th:text="#{defaultError.header}">Błąd 500 - Wewnętrzny błąd serwera</h1>
 
-<!-- Komunikaty z wykorzystaniem kluczy do prefixów -->
-<p th:text="#{defaultError.messageLabel} + ' ' + ${message}">Wiadomość: </p>
-<p th:text="#{defaultError.urlLabel} + ' ' + ${url}">Żądany adres: </p>
-<p th:text="#{defaultError.statusLabel} + ' ' + ${status}">Status: </p>
+<div class="top-nav">
+    <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
 
-<!-- Link do strony głównej -->
-<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+<div class="container">
+    <h1 th:text="#{defaultError.header}">Błąd 500 - Wewnętrzny błąd serwera</h1>
+
+    <p th:text="#{defaultError.messageLabel} + ' ' + ${message}">Wiadomość: </p>
+    <p th:text="#{defaultError.urlLabel} + ' ' + ${url}">Żądany adres: </p>
+    <p th:text="#{defaultError.statusLabel} + ' ' + ${status}">Status: </p>
+
+    <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+</div>
+
 </body>
 </html>

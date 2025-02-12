@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="#{addedPost.name}">Post dodany</title>
-  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
   <button type="button" th:text="#{mainPageReturnLink}"
           onclick="window.location.href='http://localhost:8080/main'">
   </button>
-  <hr>
-</head>
-<body>
-<p>
-  <span th:text="#{addedPost.text}">Post został dodany pomyślnie!</span>
-</p>
-<a th:href="@{/main}" th:text="#{addedPost.menuReturn}">Powrót do menu głównego</a>
+</div>
+
+<div class="container">
+  <p th:text="#{addedPost.text}">Post został dodany pomyślnie!</p>
+  <a th:href="@{/main}" th:text="#{addedPost.menuReturn}">Powrót do menu głównego</a>
+</div>
 </body>
 </html>

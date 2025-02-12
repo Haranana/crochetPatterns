@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="#{showPost.name}">Usuń post</title>
-    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
     <button type="button" th:text="#{mainPageReturnLink}"
             onclick="window.location.href='http://localhost:8080/main'">
     </button>
-    <hr>
-</head>
-<body>
-<p th:text="#{deletePostConfirm.info}">Czy na pewno chcesz usunąć wpis?</p>
-<form th:action="@{/deletePostConfirmed}" method="post">
-    <input type="hidden" name="postId" th:value="${postId}" />
-    <button type="submit" th:text="#{deletePostConfirm.submit}">Tak, usuń post</button>
-</form>
+</div>
 
-<a th:href="@{/showPost(postId=${postId})}" th:text="#{global.cancel}">Anuluj</a>
+<div class="container">
+    <p th:text="#{deletePostConfirm.info}">Czy na pewno chcesz usunąć wpis?</p>
+
+    <form th:action="@{/deletePostConfirmed}" method="post">
+        <input type="hidden" name="postId" th:value="${postId}" />
+        <button type="submit" th:text="#{deletePostConfirm.submit}">Tak, usuń post</button>
+        <a th:href="@{/showPost(postId=${postId})}" th:text="#{global.cancel}">Anuluj</a>
+    </form>
+</div>
 </body>
 </html>

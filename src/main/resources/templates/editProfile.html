@@ -2,38 +2,42 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <!-- Tytuł już jest pobierany z userProfile.editTitle, pozostawiamy -->
     <title th:text="#{userProfile.editTitle}">Edycja profilu</title>
-    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
     <button type="button" th:text="#{mainPageReturnLink}"
             onclick="window.location.href='http://localhost:8080/main'">
     </button>
-    <hr>
-</head>
-<body>
-<h1 th:text="#{editProfile.header}">Edycja profilu</h1>
-<form th:action="@{/confirmEditProfile}" th:object="${userEditDTO}" method="post" enctype="multipart/form-data">
-    <input type="hidden" th:field="*{id}" />
+</div>
 
-    <div>
-        <label for="username" th:text="#{editProfile.usernameLabel}">Nazwa użytkownika:</label>
-        <input type="text" id="username" th:field="*{username}" />
-        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-    </div>
+<div class="container">
+    <h1 th:text="#{editProfile.header}">Edycja profilu</h1>
+    <form th:action="@{/confirmEditProfile}" th:object="${userEditDTO}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}" />
 
-    <div>
-        <label for="bio" th:text="#{editProfile.bioLabel}">Biografia:</label>
-        <textarea id="bio" th:field="*{bio}"></textarea>
-        <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></div>
-    </div>
+        <div>
+            <label for="username" th:text="#{editProfile.usernameLabel}">Nazwa użytkownika:</label>
+            <input type="text" id="username" th:field="*{username}" />
+            <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        </div>
 
-    <div>
-        <label for="avatarFile" th:text="#{editProfile.newAvatarLabel}">Nowy avatar (PNG/JPEG):</label>
-        <input type="file" id="avatarFile" th:field="*{avatarFile}" accept="image/png, image/jpeg" />
-        <div th:if="${#fields.hasErrors('avatarFile')}" th:errors="*{avatarFile}"></div>
-    </div>
+        <div>
+            <label for="bio" th:text="#{editProfile.bioLabel}">Biografia:</label>
+            <textarea id="bio" th:field="*{bio}" rows="4"></textarea>
+            <div class="error" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></div>
+        </div>
 
-    <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
-</form>
+        <div>
+            <label for="avatarFile" th:text="#{editProfile.newAvatarLabel}">Nowy avatar (PNG/JPEG):</label>
+            <input type="file" id="avatarFile" th:field="*{avatarFile}" accept="image/png, image/jpeg" />
+            <div class="error" th:if="${#fields.hasErrors('avatarFile')}" th:errors="*{avatarFile}"></div>
+        </div>
+
+        <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
+    </form>
+</div>
 </body>
 </html>

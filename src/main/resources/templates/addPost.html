@@ -2,52 +2,56 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <!-- Tytuł pobierany z pliku messages -->
-    <title th:text="#{addPost.name}"></title>
+    <title th:text="#{addPost.name}">Dodaj nowy post</title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
 
-    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <!-- Przycisk powrotu do strony głównej z użyciem klucza mainPageReturnLink -->
+<!-- Górny pasek nawigacyjny -->
+<div class="top-nav">
     <button type="button" th:text="#{mainPageReturnLink}"
             onclick="window.location.href='http://localhost:8080/main'">
     </button>
+</div>
+
+<div class="container">
+    <h1 th:text="#{addPost.name}">Dodaj nowy post</h1>
     <hr>
-</head>
-<body>
-<form th:action="@{/addingPost}" th:object="${postFormDTO}" method="post" enctype="multipart/form-data">
 
-    <p>
-        <label th:text="#{addPost.newPostSubject}"></label>
-        <input type="text" th:field="*{title}"/>
-        <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
-    </p>
+    <form th:action="@{/addingPost}" th:object="${postFormDTO}" method="post" enctype="multipart/form-data">
 
-    <p>
-        <label th:text="#{addPost.newPostText}"></label>
-        <input type="text" th:field="*{description}"/>
-        <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
-    </p>
+        <p>
+            <label th:text="#{addPost.newPostSubject}">Tytuł posta</label>
+            <input type="text" th:field="*{title}"/>
+            <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+        </p>
 
-    <p>
-        <label th:text="#{addPost.newPostPDF}"></label>
-        <input type="file" th:field="*{pdfFile}" accept="application/pdf"/>
-        <span class="error" th:if="${#fields.hasErrors('pdfFile')}" th:errors="*{pdfFile}"></span>
-    </p>
+        <p>
+            <label th:text="#{addPost.newPostText}">Treść posta</label>
+            <textarea th:field="*{description}" rows="3"></textarea>
+            <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+        </p>
 
-    <p>
-        <!-- Zamiana tekstu Wybierz tagi: na klucz w pliku messages -->
-        <label th:text="#{addPost.chooseTags}"></label><br>
-        <select multiple="multiple" th:field="*{tagIds}">
-            <option th:each="tag : ${allTags}"
-                    th:value="${tag.id}"
-                    th:text="${tag.name}">
-            </option>
-        </select>
-    </p>
+        <p>
+            <label th:text="#{addPost.newPostPDF}">Dołącz plik PDF</label>
+            <input type="file" th:field="*{pdfFile}" accept="application/pdf"/>
+            <span class="error" th:if="${#fields.hasErrors('pdfFile')}" th:errors="*{pdfFile}"></span>
+        </p>
 
-    <input type="hidden" th:field="*{authorId}" />
+        <p>
+            <label th:text="#{addPost.chooseTags}">Wybierz tagi</label><br>
+            <select multiple="multiple" th:field="*{tagIds}">
+                <option th:each="tag : ${allTags}"
+                        th:value="${tag.id}"
+                        th:text="${tag.name}">
+                </option>
+            </select>
+        </p>
 
-    <!-- Zamiana tekstu input submit na klucz w pliku messages (np. global.submit) -->
-    <input type="submit" th:value="#{global.submit}"/>
-</form>
+        <input type="hidden" th:field="*{authorId}" />
+
+        <input type="submit" th:value="#{global.submit}" />
+    </form>
+</div>
 </body>
 </html>

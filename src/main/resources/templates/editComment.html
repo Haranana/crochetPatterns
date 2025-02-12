@@ -6,21 +6,27 @@
   <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1 th:text="#{editComment.header}">Edytuj Komentarz</h1>
 
-<form th:object="${commentEditDTO}" th:action="@{/confirmEditComment}" method="post">
+<div class="top-nav">
+  <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
 
-  <input type="hidden" th:field="*{id}" />
-  <input type="hidden" th:field="*{postId}" />
+<div class="container">
+  <h1 th:text="#{editComment.header}">Edytuj Komentarz</h1>
 
-  <p>
-    <label for="text" th:text="#{editComment.newTextLabel}">Nowy tekst:</label>
-    <input type="text" id="text" th:field="*{text}"/>
-    <span class="error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
-  </p>
+  <form th:object="${commentEditDTO}" th:action="@{/confirmEditComment}" method="post">
 
-  <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
-</form>
+    <input type="hidden" th:field="*{id}" />
+    <input type="hidden" th:field="*{postId}" />
 
+    <p>
+      <label for="text" th:text="#{editComment.newTextLabel}">Nowy tekst:</label>
+      <input type="text" id="text" th:field="*{text}"/>
+      <span class="error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
+    </p>
+
+    <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
+  </form>
+</div>
 </body>
 </html>

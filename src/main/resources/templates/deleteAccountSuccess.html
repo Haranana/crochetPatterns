@@ -3,11 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="#{deleteAccountSuccess.title}">Konto usunięte</title>
-  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-<h1 th:text="#{deleteAccountSuccess.header}">Konto usunięte</h1>
-<p th:text="#{deleteAccountSuccess.info}">Twoje konto zostało pomyślnie usunięte.</p>
-<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+
+<div class="top-nav">
+  <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
+
+<div class="container">
+  <h1 th:text="#{deleteAccountSuccess.header}">Konto usunięte</h1>
+  <p th:text="#{deleteAccountSuccess.info}">Twoje konto zostało pomyślnie usunięte.</p>
+  <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+</div>
 </body>
 </html>

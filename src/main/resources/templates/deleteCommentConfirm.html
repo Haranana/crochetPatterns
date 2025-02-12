@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="#{showPost.name}">Usuń komentarz</title>
-  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
   <button type="button" th:text="#{mainPageReturnLink}"
           onclick="window.location.href='http://localhost:8080/main'">
   </button>
-  <hr>
-</head>
-<body>
-<p th:text="#{deleteCommentConfirm.info}">Czy na pewno chcesz usunąć Komentarz?</p>
-<form th:action="@{/deleteCommentConfirmed}" method="post">
-  <input type="hidden" name="commentId" th:value="${commentId}" />
-  <input type="hidden" name="postId" th:value="${postId}" />
-  <button type="submit" th:text="#{deleteCommentConfirm.submit}">Tak, usuń Komentarz</button>
-</form>
+</div>
 
-<a th:href="@{/showPost(postId=${postId})}" th:text="#{global.cancel}">Anuluj</a>
+<div class="container">
+  <p th:text="#{deleteCommentConfirm.info}">Czy na pewno chcesz usunąć komentarz?</p>
+
+  <form th:action="@{/deleteCommentConfirmed}" method="post">
+    <input type="hidden" name="commentId" th:value="${commentId}" />
+    <input type="hidden" name="postId" th:value="${postId}" />
+    <button type="submit" th:text="#{deleteCommentConfirm.submit}">Tak, usuń komentarz</button>
+    <a th:href="@{/showPost(postId=${postId})}" th:text="#{global.cancel}">Anuluj</a>
+  </form>
+</div>
 </body>
 </html>

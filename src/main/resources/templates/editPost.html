@@ -6,44 +6,50 @@
   <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1 th:text="#{editPost.header}">Edycja posta</h1>
 
-<form th:action="@{/confirmEditPost}"
-      th:object="${postEditDTO}"
-      method="post"
-      enctype="multipart/form-data">
+<div class="top-nav">
+  <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
 
-  <p>
-    <label for="title" th:text="#{editPost.titleLabel}">Tytuł:</label>
-    <input type="text" id="title" th:field="*{title}" />
-    <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
-  </p>
+<div class="container">
+  <h1 th:text="#{editPost.header}">Edycja posta</h1>
+  <form th:action="@{/confirmEditPost}"
+        th:object="${postEditDTO}"
+        method="post"
+        enctype="multipart/form-data">
 
-  <p>
-    <label for="description" th:text="#{editPost.descriptionLabel}">Opis:</label>
-    <textarea id="description" th:field="*{description}"></textarea>
-    <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
-  </p>
+    <p>
+      <label for="title" th:text="#{editPost.titleLabel}">Tytuł:</label>
+      <input type="text" id="title" th:field="*{title}" />
+      <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+    </p>
 
-  <p>
-    <label for="pdfFile" th:text="#{editPost.pdfFileLabel}">Nowy plik PDF (opcjonalnie):</label>
-    <input type="file" id="pdfFile" th:field="*{pdfFile}" accept="application/pdf" />
-  </p>
+    <p>
+      <label for="description" th:text="#{editPost.descriptionLabel}">Opis:</label>
+      <textarea id="description" th:field="*{description}"></textarea>
+      <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+    </p>
 
-  <p>
-    <label th:text="#{editPost.tagsLabel}">Tagi:</label><br>
-    <select multiple="multiple" th:field="*{tagIds}">
-      <option th:each="tag : ${allTags}"
-              th:value="${tag.id}"
-              th:text="${tag.name}"
-              th:selected="${postEditDTO.tagIds != null and postEditDTO.tagIds.contains(tag.id)}">
-      </option>
-    </select>
-  </p>
+    <p>
+      <label for="pdfFile" th:text="#{editPost.pdfFileLabel}">Nowy plik PDF (opcjonalnie):</label>
+      <input type="file" id="pdfFile" th:field="*{pdfFile}" accept="application/pdf" />
+    </p>
 
-  <input type="hidden" th:field="*{id}" />
+    <p>
+      <label th:text="#{editPost.tagsLabel}">Tagi:</label><br>
+      <select multiple="multiple" th:field="*{tagIds}">
+        <option th:each="tag : ${allTags}"
+                th:value="${tag.id}"
+                th:text="${tag.name}"
+                th:selected="${postEditDTO.tagIds != null and postEditDTO.tagIds.contains(tag.id)}">
+        </option>
+      </select>
+    </p>
 
-  <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
-</form>
+    <input type="hidden" th:field="*{id}" />
+
+    <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
+  </form>
+</div>
 </body>
 </html>

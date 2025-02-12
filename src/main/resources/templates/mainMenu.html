@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title th:text="#{mainMenu.name}">Menu Główne</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+
+<div class="top-nav">
     <button type="button" th:text="#{mainPageReturnLink}"
             onclick="window.location.href='http://localhost:8080/main'">
     </button>
@@ -13,24 +17,27 @@
     <button type="button" th:text="#{mainMenu.pl}"
             onclick="window.location.href='http://localhost:8080/main?lang=pl'">
     </button>
-    <hr>
-</head>
-<body>
-<h1 th:text="#{mainMenu.chooseAction}">Wybierz czynność</h1>
+</div>
 
-<button type="button" th:text="#{mainMenu.actionShowAllPosts}"
-        onclick="window.location.href='http://localhost:8080/allPosts'">
-</button> <br>
+<div class="container">
+    <h1 th:text="#{mainMenu.chooseAction}">Wybierz czynność</h1>
 
-<button type="button" th:text="#{mainMenu.actionAddPost}"
-        onclick="window.location.href='http://localhost:8080/addPost'">
-</button> <br>
+    <button type="button" th:text="#{mainMenu.actionShowAllPosts}"
+            onclick="window.location.href='http://localhost:8080/allPosts'">
+    </button>
+    <br><br>
 
-<a th:href="@{/myProfile}" th:text="#{mainMenu.actionShowProfile}"></a> <br>
+    <button type="button" th:text="#{mainMenu.actionAddPost}"
+            onclick="window.location.href='http://localhost:8080/addPost'">
+    </button>
+    <br><br>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit" th:text="#{global.logout}">Wyloguj się</button>
-</form>
+    <a th:href="@{/myProfile}" th:text="#{mainMenu.actionShowProfile}">Mój profil</a>
+    <br><br>
 
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" th:text="#{global.logout}">Wyloguj się</button>
+    </form>
+</div>
 </body>
 </html>

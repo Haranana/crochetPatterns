@@ -6,12 +6,19 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1 th:text="#{error404.header}">Błąd 404 - Nie znaleziono</h1>
 
-<p th:text="#{error404.messageLabel} + ' ' + ${message}">Wiadomość: </p>
-<p th:text="#{error404.urlLabel} + ' ' + ${url}">Żądany adres: </p>
-<p th:text="#{error404.statusLabel} + ' ' + ${status}">Status: </p>
+<div class="top-nav">
+    <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
 
-<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+<div class="container">
+    <h1 th:text="#{error404.header}">Błąd 404 - Nie znaleziono</h1>
+
+    <p th:text="#{error404.messageLabel} + ' ' + ${message}">Wiadomość: </p>
+    <p th:text="#{error404.urlLabel} + ' ' + ${url}">Żądany adres: </p>
+    <p th:text="#{error404.statusLabel} + ' ' + ${status}">Status: </p>
+
+    <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+</div>
 </body>
 </html>

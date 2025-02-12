@@ -4,97 +4,105 @@
     <meta charset="UTF-8">
     <title th:text="#{showAllPosts.name}">Wszystkie wpisy</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
-    <button type="button" th:text="#{mainPageReturnLink}"
-            onclick="window.location.href='http://localhost:8080/main'">
-    </button>
-    <hr>
 </head>
 <body>
 
-<!-- Formularz do wyszukiwania i sortowania -->
-<form action="/allPosts" method="get">
-    <input type="text" name="search" th:value="${search}"
-           th:placeholder="#{showAllPosts.searchPlaceholder}"/>
+<div class="top-nav">
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+</div>
 
-    <label th:text="#{showAllPosts.pageSizeLabel}">Rozmiar strony:</label>
-    <select name="size">
-        <option th:value="2" th:text="#{showAllPosts.pageSize2}" th:selected="${size == 2}">2</option>
-        <option th:value="5" th:text="#{showAllPosts.pageSize5}" th:selected="${size == 5}">5</option>
-        <option th:value="10" th:text="#{showAllPosts.pageSize10}" th:selected="${size == 10}">10</option>
-    </select>
+<div class="container">
+    <h1 th:text="#{showAllPosts.name}">Wszystkie wpisy</h1>
+    <hr>
 
-    <label th:text="#{showAllPosts.sortLabel}">Sortuj wg:</label>
-    <select name="sort">
-        <option th:value="titleAsc" th:text="#{showAllPosts.sortOptionTitleAsc}"
-                th:selected="${sort == 'titleAsc'}">Tytuł (A-Z)
-        </option>
-        <option th:value="dateNewest" th:text="#{showAllPosts.sortOptionNewest}"
-                th:selected="${sort == 'dateNewest'}">Najnowsze
-        </option>
-        <option th:value="dateOldest" th:text="#{showAllPosts.sortOptionOldest}"
-                th:selected="${sort == 'dateOldest'}">Najstarsze
-        </option>
-        <option th:value="likes" th:text="#{showAllPosts.sortOptionLikes}"
-                th:selected="${sort == 'likes'}">Polubienia
-        </option>
-    </select>
+    <!-- Formularz do wyszukiwania i sortowania -->
+    <form action="/allPosts" method="get">
+        <input type="text" name="search" th:value="${search}"
+               th:placeholder="#{showAllPosts.searchPlaceholder}" />
 
-    <button type="submit" th:text="#{showAllPosts.searchSortButton}">Szukaj/Sortuj</button>
-</form>
+        <label th:text="#{showAllPosts.pageSizeLabel}">Rozmiar strony:</label>
+        <select name="size">
+            <option th:value="2" th:text="#{showAllPosts.pageSize2}" th:selected="${size == 2}">2</option>
+            <option th:value="5" th:text="#{showAllPosts.pageSize5}" th:selected="${size == 5}">5</option>
+            <option th:value="10" th:text="#{showAllPosts.pageSize10}" th:selected="${size == 10}">10</option>
+        </select>
 
-<!-- Filtrowanie po tagach -->
-<form action="/allPosts" method="get">
-    <input type="hidden" name="size" th:value="${size}"/>
-    <input type="hidden" name="sort" th:value="${sort}"/>
-    <select name="tagId">
-        <option value="" th:text="#{showAllPosts.anyTag}">-- dowolny tag --</option>
-        <option th:each="tag : ${allTags}"
-                th:value="${tag.id}"
-                th:text="${tag.name}">
-        </option>
-    </select>
-    <button type="submit" th:text="#{showAllPosts.filterByTag}">Filtruj tag</button>
-</form>
+        <label th:text="#{showAllPosts.sortLabel}">Sortuj wg:</label>
+        <select name="sort">
+            <option th:value="titleAsc" th:text="#{showAllPosts.sortOptionTitleAsc}"
+                    th:selected="${sort == 'titleAsc'}">Tytuł (A-Z)
+            </option>
+            <option th:value="dateNewest" th:text="#{showAllPosts.sortOptionNewest}"
+                    th:selected="${sort == 'dateNewest'}">Najnowsze
+            </option>
+            <option th:value="dateOldest" th:text="#{showAllPosts.sortOptionOldest}"
+                    th:selected="${sort == 'dateOldest'}">Najstarsze
+            </option>
+            <option th:value="likes" th:text="#{showAllPosts.sortOptionLikes}"
+                    th:selected="${sort == 'likes'}">Polubienia
+            </option>
+        </select>
 
-<hr>
+        <button type="submit" th:text="#{showAllPosts.searchSortButton}">Szukaj/Sortuj</button>
+    </form>
 
-<!-- Lista postów -->
-<ul>
-    <li th:each="post : ${posts}">
-        <a th:href="@{/showPost(postId=${post.id})}">
-            <strong th:text="${post.title}">Tytuł wpisu</strong><br>
-            <span th:text="${post.description}">Opis wpisu</span>
-        </a>
-        <br>
-        <span th:text="${post.showableDate}">Data</span>
-        <br>
-        <span th:text="#{showAllPosts.likesCount}">Liczba polubień:</span>
-        <b th:text="${postLikesCountMap[post.id]}">0</b>
-        <br>
-        <!-- Like/Unlike -->
-        <div th:if="${userLikedPosts.contains(post.id)}">
-            <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
-                <button type="submit" th:text="#{showAllPosts.unlikeButton}">Unlike</button>
-            </form>
-        </div>
-        <div th:unless="${userLikedPosts.contains(post.id)}">
-            <form th:action="@{/post/{id}/like(id=${post.id})}" method="post">
-                <button type="submit" th:text="#{showAllPosts.likeButton}">Like</button>
-            </form>
-        </div>
-        <br>
-    </li>
-</ul>
+    <!-- Filtrowanie po tagach -->
+    <form action="/allPosts" method="get">
+        <input type="hidden" name="size" th:value="${size}"/>
+        <input type="hidden" name="sort" th:value="${sort}"/>
+        <input type="text" name="search" th:value="${search}" style="display:none;"/>
+        <select name="tagId">
+            <option value="" th:text="#{showAllPosts.anyTag}">-- dowolny tag --</option>
+            <option th:each="tag : ${allTags}"
+                    th:value="${tag.id}"
+                    th:text="${tag.name}">
+            </option>
+        </select>
+        <button type="submit" th:text="#{showAllPosts.filterByTag}">Filtruj tag</button>
+    </form>
 
-<!-- Nawigacja stron -->
-<span th:each="number : ${numbers}">
-    <a th:if="${number} != -1"
-       th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort}, search=${search})}"
-       th:text="${number + 1}">
-    </a>
-    <span th:unless="${number} != -1">...</span>
-</span>
+    <hr>
 
-<a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}">Powrót do menu</a>
+    <!-- Lista postów -->
+    <ul>
+        <li th:each="post : ${posts}">
+            <a th:href="@{/showPost(postId=${post.id})}">
+                <strong th:text="${post.title}">Tytuł wpisu</strong><br>
+                <span th:text="${post.description}">Opis wpisu</span>
+            </a>
+            <br>
+            <span th:text="${post.showableDate}">Data</span>
+            <br>
+            <span th:text="#{showAllPosts.likesCount}">Liczba polubień: </span>
+            <b th:text="${postLikesCountMap[post.id]}">0</b>
+            <br>
+            <!-- Like/Unlike -->
+            <div th:if="${userLikedPosts.contains(post.id)}">
+                <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
+                    <button type="submit" th:text="#{showAllPosts.unlikeButton}">Unlike</button>
+                </form>
+            </div>
+            <div th:unless="${userLikedPosts.contains(post.id)}">
+                <form th:action="@{/post/{id}/like(id=${post.id})}" method="post">
+                    <button type="submit" th:text="#{showAllPosts.likeButton}">Like</button>
+                </form>
+            </div>
+            <br>
+        </li>
+    </ul>
+
+    <!-- Nawigacja stron -->
+    <span th:each="number : ${numbers}">
+        <a th:if="${number} != -1"
+           th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort}, search=${search})}"
+           th:text="${number + 1}">1</a>
+        <span th:unless="${number} != -1">...</span>
+    </span>
+
+    <hr>
+    <a th:href="@{/main}" th:text="#{showAllPosts.menuReturn}">Powrót do menu</a>
+</div>
 </body>
 </html>
