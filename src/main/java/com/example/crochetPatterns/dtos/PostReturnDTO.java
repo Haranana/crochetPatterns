@@ -43,7 +43,7 @@ public class PostReturnDTO {
     private int creationTimeValue;
     private CreationTimeValueType  creationTimeValueType = CreationTimeValueType.HOUR;
 
-    private enum CreationTimeValueType{
+    public enum CreationTimeValueType{
         YEAR,
         MONTH,
         WEEK,
