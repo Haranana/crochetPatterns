@@ -2,14 +2,17 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title th:text="#{addedPost.name}"></title>
+  <title th:text="#{addedPost.name}">Post dodany</title>
   <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-  <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+  <button type="button" th:text="#{mainPageReturnLink}"
+          onclick="window.location.href='http://localhost:8080/main'">
+  </button>
+  <hr>
 </head>
 <body>
 <p>
-  <span th:text = "#{addedPost.text}"></span>
+  <span th:text="#{addedPost.text}">Post został dodany pomyślnie!</span>
 </p>
-<a th:href="@{/main}" th:text="#{addedPost.menuReturn}"></a>
+<a th:href="@{/main}" th:text="#{addedPost.menuReturn}">Powrót do menu głównego</a>
 </body>
 </html>

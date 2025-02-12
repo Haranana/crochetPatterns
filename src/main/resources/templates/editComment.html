@@ -2,26 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Edycja posta</title>
+  <title th:text="#{editComment.title}">Edycja komentarza</title>
   <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Edytuj Komentarz</h1>
+<h1 th:text="#{editComment.header}">Edytuj Komentarz</h1>
 
-<!-- Formularz związany z obiektem commentEditDTO -->
 <form th:object="${commentEditDTO}" th:action="@{/confirmEditComment}" method="post">
 
-  <!-- Ukryte pola, aby zachować id i postId między żądaniami -->
   <input type="hidden" th:field="*{id}" />
   <input type="hidden" th:field="*{postId}" />
 
   <p>
-    <label for="text">Nowy tekst:</label>
+    <label for="text" th:text="#{editComment.newTextLabel}">Nowy tekst:</label>
     <input type="text" id="text" th:field="*{text}"/>
     <span class="error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
   </p>
 
-  <button type="submit">Zapisz zmiany</button>
+  <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
 </form>
 
 </body>

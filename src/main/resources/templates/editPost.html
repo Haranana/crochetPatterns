@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Edycja posta</title>
+  <title th:text="#{editPost.title}">Edycja posta</title>
   <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Edycja posta</h1>
+<h1 th:text="#{editPost.header}">Edycja posta</h1>
 
 <form th:action="@{/confirmEditPost}"
       th:object="${postEditDTO}"
@@ -14,24 +14,24 @@
       enctype="multipart/form-data">
 
   <p>
-    <label for="title">Tytuł:</label>
+    <label for="title" th:text="#{editPost.titleLabel}">Tytuł:</label>
     <input type="text" id="title" th:field="*{title}" />
     <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
   </p>
 
   <p>
-    <label for="description">Opis:</label>
+    <label for="description" th:text="#{editPost.descriptionLabel}">Opis:</label>
     <textarea id="description" th:field="*{description}"></textarea>
     <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
   </p>
 
   <p>
-    <label for="pdfFile">Nowy plik PDF (opcjonalnie):</label>
+    <label for="pdfFile" th:text="#{editPost.pdfFileLabel}">Nowy plik PDF (opcjonalnie):</label>
     <input type="file" id="pdfFile" th:field="*{pdfFile}" accept="application/pdf" />
   </p>
 
   <p>
-    <label>Tagi:</label><br>
+    <label th:text="#{editPost.tagsLabel}">Tagi:</label><br>
     <select multiple="multiple" th:field="*{tagIds}">
       <option th:each="tag : ${allTags}"
               th:value="${tag.id}"
@@ -43,7 +43,7 @@
 
   <input type="hidden" th:field="*{id}" />
 
-  <button type="submit">Zapisz zmiany</button>
+  <button type="submit" th:text="#{global.saveChanges}">Zapisz zmiany</button>
 </form>
 </body>
 </html>

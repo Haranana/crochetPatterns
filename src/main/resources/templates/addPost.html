@@ -2,12 +2,19 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text = "#{addPost.name}"></title>
+    <!-- Tytuł pobierany z pliku messages -->
+    <title th:text="#{addPost.name}"></title>
+
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <!-- Przycisk powrotu do strony głównej z użyciem klucza mainPageReturnLink -->
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+    <hr>
 </head>
 <body>
 <form th:action="@{/addingPost}" th:object="${postFormDTO}" method="post" enctype="multipart/form-data">
+
     <p>
         <label th:text="#{addPost.newPostSubject}"></label>
         <input type="text" th:field="*{title}"/>
@@ -21,15 +28,15 @@
     </p>
 
     <p>
-        <label th:text = "#{addPost.newPostPDF}"></label>
+        <label th:text="#{addPost.newPostPDF}"></label>
         <input type="file" th:field="*{pdfFile}" accept="application/pdf"/>
         <span class="error" th:if="${#fields.hasErrors('pdfFile')}" th:errors="*{pdfFile}"></span>
     </p>
 
     <p>
-        <label>Wybierz tagi:</label><br>
+        <!-- Zamiana tekstu Wybierz tagi: na klucz w pliku messages -->
+        <label th:text="#{addPost.chooseTags}"></label><br>
         <select multiple="multiple" th:field="*{tagIds}">
-            <!-- each="tag : ${allTags}" – allTags to lista Tag przekazana w modelu -->
             <option th:each="tag : ${allTags}"
                     th:value="${tag.id}"
                     th:text="${tag.name}">
@@ -39,7 +46,8 @@
 
     <input type="hidden" th:field="*{authorId}" />
 
-    <input type="submit">
+    <!-- Zamiana tekstu input submit na klucz w pliku messages (np. global.submit) -->
+    <input type="submit" th:value="#{global.submit}"/>
 </form>
 </body>
 </html>

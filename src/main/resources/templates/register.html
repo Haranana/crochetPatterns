@@ -2,35 +2,37 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Rejestracja</title>
+    <title th:text="#{register.title}">Rejestracja</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" onclick="window.location.href='http://localhost:8080/main'">Strona główna</button>
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
     <hr>
 </head>
 <body>
-<h1>Rejestracja</h1>
+<h1 th:text="#{register.header}">Rejestracja</h1>
 <form th:object="${userRegistrationDTO}" th:action="@{/register}" method="post">
     <div>
-        <label for="username">Nazwa użytkownika:</label>
+        <label for="username" th:text="#{register.usernameLabel}">Nazwa użytkownika:</label>
         <input type="text" id="username" th:field="*{username}" />
         <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
     </div>
     <div>
-        <label for="email">Email:</label>
+        <label for="email" th:text="#{register.emailLabel}">Email:</label>
         <input type="email" id="email" th:field="*{email}" />
         <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
     </div>
     <div>
-        <label for="password">Hasło:</label>
+        <label for="password" th:text="#{register.passwordLabel}">Hasło:</label>
         <input type="password" id="password" th:field="*{password}" />
         <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
     </div>
     <div>
-        <label for="confirmPassword">Powtórz hasło:</label>
+        <label for="confirmPassword" th:text="#{register.confirmPasswordLabel}">Powtórz hasło:</label>
         <input type="password" id="confirmPassword" th:field="*{confirmPassword}" />
         <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
     </div>
-    <button type="submit">Zarejestruj się</button>
+    <button type="submit" th:text="#{register.submit}">Zarejestruj się</button>
 </form>
 </body>
 </html>

@@ -1,14 +1,13 @@
-<!-- deleteAccountSuccess.html -->
 <!DOCTYPE html>
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Konto usunięte</title>
+  <title th:text="#{deleteAccountSuccess.title}">Konto usunięte</title>
   <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
 </head>
 <body>
-<h1>Konto usunięte</h1>
-<p>Twoje konto zostało pomyślnie usunięte.</p>
-<a th:href="@{/main}">Powrót do strony głównej</a>
+<h1 th:text="#{deleteAccountSuccess.header}">Konto usunięte</h1>
+<p th:text="#{deleteAccountSuccess.info}">Twoje konto zostało pomyślnie usunięte.</p>
+<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
 </body>
 </html>

@@ -2,30 +2,34 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{mainMenu.name}"></title>
+    <title th:text="#{mainMenu.name}">Menu Główne</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
-    <button type="button" th:text="#{mainMenu.en}" onclick="window.location.href='http://localhost:8080/main?lang=en'"></button>
-    <button type="button" th:text="#{mainMenu.pl}" onclick="window.location.href='http://localhost:8080/main?lang=pl'"></button>
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+    <button type="button" th:text="#{mainMenu.en}"
+            onclick="window.location.href='http://localhost:8080/main?lang=en'">
+    </button>
+    <button type="button" th:text="#{mainMenu.pl}"
+            onclick="window.location.href='http://localhost:8080/main?lang=pl'">
+    </button>
     <hr>
-
 </head>
 <body>
-<h1 th:text="#{mainMenu.chooseAction}"/>
+<h1 th:text="#{mainMenu.chooseAction}">Wybierz czynność</h1>
+
 <button type="button" th:text="#{mainMenu.actionShowAllPosts}"
-        onclick="window.location.href='http://localhost:8080/allPosts'"></button> <br>
+        onclick="window.location.href='http://localhost:8080/allPosts'">
+</button> <br>
+
 <button type="button" th:text="#{mainMenu.actionAddPost}"
-        onclick="window.location.href='http://localhost:8080/addPost'"></button> <br>
+        onclick="window.location.href='http://localhost:8080/addPost'">
+</button> <br>
 
-<!---
-<a th:href="@{/userProfile(userId=${userId})}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
---->
+<a th:href="@{/myProfile}" th:text="#{mainMenu.actionShowProfile}"></a> <br>
 
-<!--- <img th:src="@{/images/defaultavatar.png}" alt="Przykładowy obraz" /> --->
-
-<a th:href="@{/myProfile}" th:text = "#{mainMenu.actionShowProfile}"></a> <br>
 <form th:action="@{/logout}" method="post">
-    <button type="submit">Wyloguj się</button>
+    <button type="submit" th:text="#{global.logout}">Wyloguj się</button>
 </form>
 
 </body>

@@ -2,18 +2,21 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title th:text="#{showPost.name}"></title>
+  <title th:text="#{showPost.name}">Usuń komentarz</title>
   <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-  <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+  <button type="button" th:text="#{mainPageReturnLink}"
+          onclick="window.location.href='http://localhost:8080/main'">
+  </button>
+  <hr>
 </head>
 <body>
-<p>Czy na pewno chcesz usunąć Komentarz?</p>
+<p th:text="#{deleteCommentConfirm.info}">Czy na pewno chcesz usunąć Komentarz?</p>
 <form th:action="@{/deleteCommentConfirmed}" method="post">
   <input type="hidden" name="commentId" th:value="${commentId}" />
   <input type="hidden" name="postId" th:value="${postId}" />
-  <button type="submit">Tak, usuń Komentarz</button>
+  <button type="submit" th:text="#{deleteCommentConfirm.submit}">Tak, usuń Komentarz</button>
 </form>
 
-<a th:href="@{/showPost(postId=${postId})}">Anuluj</a>
+<a th:href="@{/showPost(postId=${postId})}" th:text="#{global.cancel}">Anuluj</a>
 </body>
 </html>

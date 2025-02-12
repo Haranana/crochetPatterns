@@ -2,14 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Błąd 500 - Wewnętrzny błąd serwera</title>
+    <title th:text="#{defaultError.title}">Błąd 500 - Wewnętrzny błąd serwera</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Błąd 500 - Wewnętrzny błąd serwera</h1>
-<p th:text="'Wiadomość: ' + ${message}"></p>
-<p th:text="'Żądany adres: ' + ${url}"></p>
-<p th:text="'Status: ' + ${status}"></p>
-<a th:href="@{/main}">Powrót do strony głównej</a>
+<h1 th:text="#{defaultError.header}">Błąd 500 - Wewnętrzny błąd serwera</h1>
+
+<!-- Komunikaty z wykorzystaniem kluczy do prefixów -->
+<p th:text="#{defaultError.messageLabel} + ' ' + ${message}">Wiadomość: </p>
+<p th:text="#{defaultError.urlLabel} + ' ' + ${url}">Żądany adres: </p>
+<p th:text="#{defaultError.statusLabel} + ' ' + ${status}">Status: </p>
+
+<!-- Link do strony głównej -->
+<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
 </body>
 </html>

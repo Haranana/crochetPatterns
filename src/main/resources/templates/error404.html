@@ -2,14 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Błąd 404 - Nie znaleziono</title>
+    <title th:text="#{error404.title}">Błąd 404 - Nie znaleziono</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Błąd 404 - Nie znaleziono</h1>
-<p th:text="'Wiadomość: ' + ${message}"></p>
-<p th:text="'Żądany adres: ' + ${url}"></p>
-<p th:text="'Status: ' + ${status}"></p>
-<a th:href="@{/main}">Powrót do strony głównej</a>
+<h1 th:text="#{error404.header}">Błąd 404 - Nie znaleziono</h1>
+
+<p th:text="#{error404.messageLabel} + ' ' + ${message}">Wiadomość: </p>
+<p th:text="#{error404.urlLabel} + ' ' + ${url}">Żądany adres: </p>
+<p th:text="#{error404.statusLabel} + ' ' + ${status}">Status: </p>
+
+<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
 </body>
 </html>

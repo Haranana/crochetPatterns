@@ -2,13 +2,18 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Weryfikacja konta</title>
+    <!-- Tytuł strony -->
+    <title th:text="#{afterRegister.title}">Weryfikacja konta</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <hr>
 </head>
 <body>
-<h1>Rejestracja przebiegła pomyślnie!</h1>
-<p>Sprawdź swoją skrzynkę pocztową i kliknij w link aktywacyjny, aby włączyć konto.</p>
-<a th:href="@{/main}">Powrót do strony głównej</a>
+<!-- Nagłówek i treść komunikatu -->
+<h1 th:text="#{afterRegister.successTitle}">Rejestracja przebiegła pomyślnie!</h1>
+<p th:text="#{afterRegister.info}">
+    Sprawdź swoją skrzynkę pocztową i kliknij w link aktywacyjny, aby włączyć konto.
+</p>
+<!-- Link powrotu do głównej -->
+<a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
 </body>
 </html>

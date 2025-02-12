@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <title th:text="#{userProfile.title}">Profil użytkownika</title>
     <link href="/css/style.css" rel="stylesheet" />
-    <button type="button" onclick="window.location.href='/main'">Strona główna</button>
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='/main'">
+    </button>
     <hr>
 </head>
 <body>
 <div class="user-profile">
     <h1 th:text="${user.username}">Nazwa użytkownika</h1>
-    <!-- Avatar – zakładamy, że wartość user.avatar jest np. "/images/defaultavatar.png" lub ścieżką do nowego avatara -->
     <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <p th:text="${user.bio}">Biografia użytkownika</p>
 
-    <!-- Linki do edycji profilu, zmiany hasła i usunięcia konta wyświetlamy tylko, gdy isViewedByAuthor jest true -->
     <div th:if="${isViewedByAuthor}">
-        <a th:href="@{/editProfile}">Edytuj profil</a>
-        <a th:href="@{/editPassword}">Zmień hasło</a>
-        <a th:href="@{/deleteAccount}">Usuń konto</a>
+        <a th:href="@{/editProfile}" th:text="#{userProfile.editProfileLink}">Edytuj profil</a>
+        <a th:href="@{/editPassword}" th:text="#{userProfile.changePasswordLink}">Zmień hasło</a>
+        <a th:href="@{/deleteAccount}" th:text="#{userProfile.deleteAccountLink}">Usuń konto</a>
     </div>
 
     <hr>

@@ -2,23 +2,26 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{showPost.name}">Komentarze użytkownika</title>
+    <title th:text="#{showUserComments.title}">Komentarze użytkownika</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
     <hr>
 </head>
 <body>
-<!-- Wyświetlenie profilu z avatarem -->
 <div class="user-profile">
     <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;" />
     <span th:text="${user.username}">Nazwa użytkownika</span>
 </div>
 <hr>
+
 <span th:each="comment, iterStat : ${userComments}">
     <a th:href="@{/showPost(postId=${commentedPosts[iterStat.index].id})}" th:text="${comment.text}">Tekst komentarza</a>
     <br>
     <hr>
 </span>
+
 <a th:href="@{/userPosts(userId=${user.id})}" th:text="#{userProfile.posts}">Wpisy</a>
 <a th:href="@{/userProfile(userId=${user.id})}" th:text="#{userProfile.bio}">Biografia</a>
 </body>

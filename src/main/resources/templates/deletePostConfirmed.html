@@ -2,12 +2,16 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{showPost.name}"></title>
+    <title th:text="#{showPost.name}">Post usunięty</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+    <hr>
 </head>
 <body>
-<p>Wpis zostal usuniety</p>
-<a th:href="@{/allPosts}">Ok</a>
+<p th:text="#{deletePostConfirmed.info}">Wpis zostal usuniety</p>
+<a th:href="@{/allPosts}" th:text="#{global.ok}">Ok</a>
 </body>
 </html>
+>

@@ -2,42 +2,46 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{showPost.name}"></title>
+    <!-- Zamieniamy showPost.name na klucz dedykowany do logowania -->
+    <title th:text="#{login.title}">Logowanie</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button>
+
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
     <hr>
 </head>
 <body>
-<h1>Logowanie</h1>
+<h1 th:text="#{login.header}">Logowanie</h1>
 <form th:action="@{/login/process}" method="post">
     <div>
-        <label for="username">Nazwa użytkownika:</label>
+        <label for="username" th:text="#{login.usernameLabel}">Nazwa użytkownika:</label>
         <input type="text" id="username" name="username" required autofocus>
     </div>
     <div>
-        <label for="password">Hasło:</label>
+        <label for="password" th:text="#{login.passwordLabel}">Hasło:</label>
         <input type="password" id="password" name="password" required>
     </div>
     <div>
-        <label for="remember-me">Zapamiętaj mnie:</label>
+        <label for="remember-me" th:text="#{login.rememberMeLabel}">Zapamiętaj mnie:</label>
         <input type="checkbox" id="remember-me" name="remember-me">
     </div>
     <div>
-        <button type="submit">Zaloguj</button>
+        <button type="submit" th:text="#{login.submit}">Zaloguj</button>
     </div>
 </form>
 
-<!-- Sekcja komunikatów (np. błąd logowania) -->
+<!-- Sekcja komunikatów o błędzie lub wylogowaniu -->
 <div th:if="${param.error}">
-    <p style="color:red;">Nieprawidłowe dane logowania!</p>
+    <p style="color:red;" th:text="#{login.error}">Nieprawidłowe dane logowania!</p>
 </div>
 <div th:if="${param.logout}">
-    <p style="color:green;">Pomyślnie wylogowano!</p>
+    <p style="color:green;" th:text="#{login.loggedOut}">Pomyślnie wylogowano!</p>
 </div>
 
 <!-- Link do rejestracji -->
 <hr>
-<a th:href="@{/register}">Zarejestruj się</a>
+<a th:href="@{/register}" th:text="#{login.registerLink}">Zarejestruj się</a>
 
 </body>
 </html>

@@ -2,27 +2,29 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text = "#{addPost.name}"></title>
+    <title th:text="#{addPost.name}">Dodaj komentarz</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainPageReturnLink}" onclick="window.location.href='http://localhost:8080/main'"></button> <hr>
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+    <hr>
 </head>
 <body>
 
-<a th:href="@{/showPost(postId=${postId})}">Powrot do Wpisu</a> <br>
+<a th:href="@{/showPost(postId=${postId})}" th:text="#{writeComment.backToPost}">Powrót do Wpisu</a> <br>
 
 <form th:action="@{/addingComment}" th:object="${commentCreateDTO}" method="post">
-
     <p>
-        <label th:text="#{addPost.newPostSubject}"></label>
+        <!-- Można użyć klucza np. writeComment.newCommentLabel -->
+        <label th:text="#{writeComment.newCommentLabel}">Napisz komentarz:</label>
         <input type="text" th:field="*{text}"/>
         <span class="error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
     </p>
 
     <input type="hidden" th:field="*{postId}" />
-
     <input type="hidden" th:field="*{authorId}" />
 
-    <input type="submit">
+    <input type="submit" th:value="#{global.submit}" />
 </form>
 </body>
 </html>
