@@ -1,37 +1,64 @@
 package com.example.crochetPatterns.repositories;
 
+import com.example.crochetPatterns.entities.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @DataJpaTest
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
-    @Test
-    void shouldFindByEmailDomain() {
+    @BeforeEach
+    void setUp() {
         // given
+        User user = new User();
+        user.setUsername("johnDoe");
+        user.setEmail("john@example.com"); // @Email
+        user.setPassword("secret123");      // @NotEmpty
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 
-        /* example:
-        User user1 = new User();
-        user1.setUsername("alice");
-        user1.setEmail("alice@google.com");
-        userRepository.save(user1);
-
-        User user2 = new User();
-        user2.setUsername("bob");
-        user2.setEmail("bob@yahoo.com");
-        userRepository.save(user2);
-
+    @Test
+    @DisplayName("findUserIdByUsername() - powinno zwrócić ID użytkownika lub null gdy brak")
+    void shouldFindUserIdByUsername() {
         // when
-        List<User> googleUsers = userRepository.findAllByEmailDomain("google.com");
+        Long id = userRepository.findUserIdByUsername("johnDoe");
+        Long unknown = userRepository.findUserIdByUsername("unknownUser");
 
         // then
-        // np. asercja
-        // assertThat(googleUsers).hasSize(1).extracting(User::getUsername).contains("alice");
+        assertNotNull(id);
+        assertNull(unknown);
+    }
 
-         */
+    @Test
+    @DisplayName("existsByUsername() - true jeśli istnieje, false jeśli nie")
+    void shouldCheckUsernameExists() {
+        // when
+        boolean ex1 = userRepository.existsByUsername("johnDoe");
+        boolean ex2 = userRepository.existsByUsername("nope");
+
+        // then
+        assertTrue(ex1);
+        assertFalse(ex2);
+    }
+
+    @Test
+    @DisplayName("existsByEmail() - true jeśli istnieje, false jeśli nie")
+    void shouldCheckEmailExists() {
+        // when
+        boolean ex1 = userRepository.existsByEmail("john@example.com");
+        boolean ex2 = userRepository.existsByEmail("random@example.com");
+
+        // then
+        assertTrue(ex1);
+        assertFalse(ex2);
     }
 }
