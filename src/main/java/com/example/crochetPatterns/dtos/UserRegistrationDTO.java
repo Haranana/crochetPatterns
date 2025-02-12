@@ -1,6 +1,5 @@
 package com.example.crochetPatterns.dtos;
 
-
 import com.example.crochetPatterns.Validation.FieldMatch;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -13,7 +12,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldMatch(first = "password", second = "confirmPassword", message = "Hasło i potwierdzenie hasła muszą być takie same")
+@FieldMatch(first = "password", second = "confirmPassword", message = "{user.passwordsMismatch}")
 public class UserRegistrationDTO {
 
     @NotEmpty(message = "{user.usernameEmpty}")

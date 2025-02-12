@@ -10,18 +10,18 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldMatch(first = "newPassword", second = "confirmNewPassword", message = "Nowe hasła muszą być takie same")
+@FieldMatch(first = "newPassword", second = "confirmNewPassword", message = "{user.newPasswordsMismatch}")
 public class UserPasswordChangeDTO {
 
     private Long id;
 
-    @NotEmpty(message = "Pole z aktualnym hasłem nie może być puste")
+    @NotEmpty(message = "{user.currentPasswordEmpty}")
     private String currentPassword;
 
-    @NotEmpty(message = "Nowe hasło nie może być puste")
-    @Size(min = 6, message = "Nowe hasło musi mieć co najmniej 6 znaków")
+    @NotEmpty(message = "{user.newPasswordEmpty}")
+    @Size(min = 6, message = "{user.newPasswordTooShort}")
     private String newPassword;
 
-    @NotEmpty(message = "Potwierdzenie hasła nie może być puste")
+    @NotEmpty(message = "{user.confirmNewPasswordEmpty}")
     private String confirmNewPassword;
 }

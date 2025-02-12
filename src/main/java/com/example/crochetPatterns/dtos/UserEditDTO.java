@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class UserEditDTO {
 
-    @NotNull(message = "Brak identyfikatora użytkownika")
+    @NotNull(message = "{user.idNotNull}")
     private Long id;
 
     @NotEmpty(message = "{user.usernameEmpty}")
@@ -24,6 +24,6 @@ public class UserEditDTO {
     @Size(max = 4000, message = "{user.bioTooLong}")
     private String bio;
 
-    @avatarOrNullFileConstraint(message = "niepoprawny avatar uzytkownika")
+    @avatarOrNullFileConstraint(message = "{user.avatarIncorrect}")
     private MultipartFile avatarFile;
 }
