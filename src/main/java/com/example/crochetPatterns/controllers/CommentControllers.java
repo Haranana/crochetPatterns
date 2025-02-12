@@ -45,12 +45,12 @@ public class CommentControllers {
 
         model.addAttribute("postId" , postId);
         model.addAttribute("authorId" , userDetails.getId());
-        model.addAttribute("commentFormDTO" , commentCreateDTO);
+        model.addAttribute("commentCreateDTO" , commentCreateDTO);
         return "writeComment";
     }
 
     @PostMapping("/addingComment")
-    public String addingComment(@Valid @ModelAttribute("commentFormDTO") CommentCreateDTO commentCreateDTO, BindingResult bindingResult, Model model) {
+    public String addingComment(@Valid @ModelAttribute("commentCreateDTO") CommentCreateDTO commentCreateDTO, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("postId", commentCreateDTO.getPostId());

@@ -125,23 +125,19 @@ public class AuthControllers {
         return "login";
     }
 
-    // Endpoint wyświetlający formularz zmiany hasła
     @GetMapping("/editPassword")
     public String editPassword(Model model) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+        if(!authService.isLogged()){
             return "login";
         }
 
-        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
         UserPasswordChangeDTO dto = new UserPasswordChangeDTO();
-        dto.setId(userDetails.getId());
+        dto.setId(authService.getLoggedUserDetails().getId());
         model.addAttribute("userPasswordChangeDTO", dto);
         return "editPassword";
     }
 
-    // Endpoint przetwarzający formularz zmiany hasła
     @PostMapping("/confirmEditPassword")
     public String confirmEditPassword(@Valid @ModelAttribute("userPasswordChangeDTO") UserPasswordChangeDTO dto, BindingResult bindingResult,
                                       HttpServletRequest request, Model model) {

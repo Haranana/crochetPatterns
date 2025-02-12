@@ -180,14 +180,12 @@ public class UserProfileControllers {
 
     @PostMapping("/post/{postId}/unlike")
     public String unlikePost(@PathVariable("postId") Long postId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof LoggedUserDetails)) {
+
+        if(!authService.isLogged()){
             return "redirect:/login";
         }
-        LoggedUserDetails userDetails = (LoggedUserDetails) auth.getPrincipal();
-        Long userId = userDetails.getId();
 
-        likeService.unlikePost(userId, postId);
+        likeService.unlikePost(authService.getLoggedUserDetails().getId(), postId);
 
         return "redirect:/showPost?postId=" + postId;
     }
