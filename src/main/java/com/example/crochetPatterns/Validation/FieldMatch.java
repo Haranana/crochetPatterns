@@ -13,11 +13,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE })
 @Retention(RUNTIME)
 public @interface FieldMatch {
-    String message() default "Pola nie są zgodne!";
+    String message() default "Fields do not match";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
-    // Nazwy pól do porównania
     String first();
     String second();
 

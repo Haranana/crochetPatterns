@@ -21,6 +21,10 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

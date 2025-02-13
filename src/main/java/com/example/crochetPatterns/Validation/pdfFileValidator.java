@@ -12,6 +12,6 @@ public class pdfFileValidator implements ConstraintValidator<pdfFileConstraint ,
 
     @Override
     public boolean isValid(MultipartFile value, ConstraintValidatorContext constraintValidatorContext) {
-        return "application/pdf".equals(value.getContentType()) && value.getSize()<5000000;
+        return "application/pdf".equals(value.getContentType()) && value.getSize()<25000000;
     }
 }

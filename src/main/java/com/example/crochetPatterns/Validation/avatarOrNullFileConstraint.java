@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface avatarOrNullFileConstraint {
-    String message() default "Plik avataru musi być PNG lub JPEG i nie przekraczać 5MB.";
+    String message() default "Incorrect file";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

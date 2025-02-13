@@ -153,15 +153,9 @@ public class UserProfileControllers {
             throw new AccessDeniedException("Access Denied");
         }
 
-        //TODO zamienic w final realease
-        /*
-        //usuniecie konta, uniewaznienie sesji i kontekstu bezpieczenstwa
         userService.deleteUser(userId);
         request.getSession().invalidate();
         SecurityContextHolder.clearContext();
-        */
-
-        System.out.println("Konto usunieto");
 
         return "deleteAccountSuccess";
     }

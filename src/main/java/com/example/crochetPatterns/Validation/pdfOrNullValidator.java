@@ -13,6 +13,6 @@ public class pdfOrNullValidator implements ConstraintValidator<pdfOrNullFileCons
             return true;
         }
 
-        return "application/pdf".equals(value.getContentType()) && value.getSize()<5000000;
+        return "application/pdf".equals(value.getContentType()) && value.getSize()<25000000;
     }
 }

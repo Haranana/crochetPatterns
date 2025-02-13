@@ -17,7 +17,6 @@
     <h1 th:text="#{showAllPosts.name}">Wszystkie wpisy</h1>
     <hr>
 
-    <!-- Formularz do wyszukiwania i sortowania -->
     <form action="/allPosts" method="get">
         <input type="text" name="search" th:value="${search}"
                th:placeholder="#{showAllPosts.searchPlaceholder}" />
@@ -48,7 +47,6 @@
         <button type="submit" th:text="#{showAllPosts.searchSortButton}">Szukaj/Sortuj</button>
     </form>
 
-    <!-- Filtrowanie po tagach -->
     <form action="/allPosts" method="get">
         <input type="hidden" name="size" th:value="${size}"/>
         <input type="hidden" name="sort" th:value="${sort}"/>
@@ -65,12 +63,11 @@
 
     <hr>
 
-    <!-- Lista postów -->
     <ul>
         <li th:each="post : ${posts}">
             <a th:href="@{/showPost(postId=${post.id})}">
                 <strong th:text="${post.title}">Tytuł wpisu</strong><br>
-                <span th:text="${post.description}">Opis wpisu</span>
+                <!-- <span th:text="${post.description}">Opis wpisu</span> -->
             </a>
             <br>
             <span th:text="${post.showableDate}">Data</span>
@@ -78,7 +75,7 @@
             <span th:text="#{showAllPosts.likesCount}">Liczba polubień: </span>
             <b th:text="${postLikesCountMap[post.id]}">0</b>
             <br>
-            <!-- Like/Unlike -->
+
             <div th:if="${userLikedPosts.contains(post.id)}">
                 <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
                     <button type="submit" th:text="#{showAllPosts.unlikeButton}">Unlike</button>
@@ -93,7 +90,6 @@
         </li>
     </ul>
 
-    <!-- Nawigacja stron -->
     <span th:each="number : ${numbers}">
         <a th:if="${number} != -1"
            th:href="@{/allPosts(size=${size}, page=${number}, sort=${sort}, search=${search})}"

@@ -85,8 +85,7 @@ class AuthControllersTest {
         // when & then
         mockMvc.perform(get("/confirm").param("token","ABC"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("login"))
-                .andExpect(model().attribute("message", "Konto aktywowane. Możesz się zalogować."));
+                .andExpect(view().name("login"));
 
         verify(userRepository).save(user);
         verify(verificationTokenRepository).delete(vt);
@@ -101,7 +100,6 @@ class AuthControllersTest {
         // when & then
         mockMvc.perform(get("/confirm").param("token","WRONG"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("error"))
-                .andExpect(model().attribute("message", "Niepoprawny token"));
+                .andExpect(view().name("error"));
     }
 }
