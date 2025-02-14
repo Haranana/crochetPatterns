@@ -49,16 +49,14 @@ class UserProfileControllersTest {
     private LikeService likeService;
 
     @BeforeEach
-    void setUp() {
-        // ...
-    }
+    void setUp() {}
 
     @Test
     @DisplayName("/myProfile - gdy użytkownik zalogowany -> widok showUserProfile")
     void shouldShowUserProfileWhenLogged() throws Exception {
-        // given
+
         given(authService.isLogged()).willReturn(true);
-        // Zakładamy, że user ma ID=5
+
         LoggedUserDetails loggedUser = new LoggedUserDetails(5L, "john", "secret", true);
         given(authService.getLoggedUserDetails()).willReturn(loggedUser);
 
@@ -66,11 +64,11 @@ class UserProfileControllersTest {
         userDto.setId(5L);
         userDto.setUsername("john");
         given(userService.getUser(eq(5L))).willReturn(null); // w sumie userService.getUser() przyjmuje int, ale na wszelki wypadek...
-        // ewentualnie:
+
         willReturn(null).given(userService).getUser(anyInt());
         given(userConverter.createDTO(any())).willReturn(userDto);
 
-        // when & then
+
         mockMvc.perform(get("/myProfile"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("showUserProfile"))
@@ -81,10 +79,10 @@ class UserProfileControllersTest {
     @Test
     @DisplayName("/myProfile - gdy użytkownik niezalogowany -> redirect do login")
     void shouldRedirectToLoginIfNotLogged() throws Exception {
-        // given
+
         given(authService.isLogged()).willReturn(false);
 
-        // when & then
+
         mockMvc.perform(get("/myProfile"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"));
@@ -93,8 +91,7 @@ class UserProfileControllersTest {
     @Test
     @DisplayName("/userProfile?userId=X - sprawdzanie isViewedByAuthor")
     void shouldShowUserProfileWithIsViewedByAuthor() throws Exception {
-        // given
-        // scenariusz 1: zalogowany user (ID=10), param userId=10 => isViewedByAuthor=true
+
         UserReturnDTO userDto = new UserReturnDTO();
         userDto.setId(10L);
         userDto.setUsername("alice");
@@ -106,7 +103,7 @@ class UserProfileControllersTest {
         LoggedUserDetails logDet = new LoggedUserDetails(10L, "alice", "xxx", true);
         given(authService.getLoggedUserDetails()).willReturn(logDet);
 
-        // when & then
+
         mockMvc.perform(get("/userProfile").param("userId", "10"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("showUserProfile"))

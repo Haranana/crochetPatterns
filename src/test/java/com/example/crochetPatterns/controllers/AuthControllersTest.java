@@ -70,7 +70,7 @@ class AuthControllersTest {
     @Test
     @DisplayName("GET /confirm?token=ABC - gdy token poprawny i nie wygasł -> logika aktywuje usera i usuwa token, widok login z message")
     void shouldConfirmRegistration() throws Exception {
-        // given
+
         User user = new User();
         user.setId(1L);
         user.setEnabled(false);
@@ -82,7 +82,7 @@ class AuthControllersTest {
 
         given(verificationTokenRepository.findByToken("ABC")).willReturn(Optional.of(vt));
 
-        // when & then
+
         mockMvc.perform(get("/confirm").param("token","ABC"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"));
@@ -94,12 +94,12 @@ class AuthControllersTest {
     @Test
     @DisplayName("GET /confirm?token=WRONG - gdy token nieznany -> widok error z message")
     void shouldShowErrorForUnknownToken() throws Exception {
-        // given
+
         given(verificationTokenRepository.findByToken("WRONG")).willReturn(Optional.empty());
 
-        // when & then
+
         mockMvc.perform(get("/confirm").param("token","WRONG"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("error"));
+                .andExpect(view().name("defaultError"));
     }
 }

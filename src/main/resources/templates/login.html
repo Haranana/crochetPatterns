@@ -12,13 +12,12 @@
             onclick="window.location.href='http://localhost:8080/main'">
     </button>
 </div>
-
 <div class="container">
     <h1 th:text="#{login.header}">Logowanie</h1>
 
     <form th:action="@{/login/process}" method="post">
         <div>
-            <label for="username" th:text="#{login.usernameLabel}">Nazwa użytkownika:</label>
+            <label for="username" th:text="#{login.usernameLabel}">Nazwa użytkownika :</label>
             <input type="text" id="username" name="username" required autofocus>
         </div>
         <div>
@@ -26,7 +25,7 @@
             <input type="password" id="password" name="password" required>
         </div>
         <div>
-            <label for="remember-me" th:text="#{login.rememberMeLabel}">Zapamiętaj mnie:</label>
+            <label for="remember-me" th:text="#{login.rememberMeLabel}">Zapamiętaj mnie :</label>
             <input type="checkbox" id="remember-me" name="remember-me">
         </div>
         <button type="submit" th:text="#{login.submit}">Zaloguj</button>

@@ -18,18 +18,16 @@ class TagRepositoryTest {
     @BeforeEach
     void setUp() {
         Tag tag = new Tag();
-        tag.setName("existingTag"); // @NotEmpty
+        tag.setName("existingTag");
         tagRepository.save(tag);
     }
 
     @Test
     @DisplayName("findByName() - istniejący tag -> zwraca, brak -> null")
     void shouldFindByName() {
-        // when
         Tag found = tagRepository.findByName("existingTag");
         Tag notFound = tagRepository.findByName("nonExistingTag");
 
-        // then
         assertNotNull(found);
         assertEquals("existingTag", found.getName());
         assertNull(notFound);

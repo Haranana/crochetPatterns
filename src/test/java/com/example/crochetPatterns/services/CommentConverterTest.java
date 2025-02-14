@@ -34,15 +34,12 @@ class CommentConverterTest {
     private CommentConverter commentConverter;
 
     @BeforeEach
-    void setUp() {
-        // Możemy wstępnie ustawić pewne zachowania mocków, jeśli będą wspólne dla wielu testów.
-        // Ale często robimy to w samych metodach testowych.
-    }
+    void setUp() {}
 
     @Test
-    @DisplayName("Powinien utworzyć Comment z CommentReturnDTO (happy path)")
+    @DisplayName("Powinien utworzyć Comment z CommentReturnDTO")
     void shouldCreateCommentFromCommentReturnDTO() {
-        // given
+
         CommentReturnDTO dto = new CommentReturnDTO();
         dto.setText("Text of comment");
         dto.setAuthorId(10L);
@@ -57,10 +54,10 @@ class CommentConverterTest {
         given(userService.getUserOrNull(10L)).willReturn(mockUser);
         given(postService.getPost(20)).willReturn(mockPost);
 
-        // when
+
         Comment comment = commentConverter.createComment(dto);
 
-        // then
+
         assertNotNull(comment);
         assertEquals("Text of comment", comment.getText());
         assertEquals(10L, comment.getAuthor().getId());
@@ -68,9 +65,9 @@ class CommentConverterTest {
     }
 
     @Test
-    @DisplayName("Powinien utworzyć Comment z CommentCreateDTO (happy path)")
+    @DisplayName("Powinien utworzyć Comment z CommentCreateDTO")
     void shouldCreateCommentFromCommentCreateDTO() {
-        // given
+
         CommentCreateDTO dto = new CommentCreateDTO();
         dto.setText("Another comment");
         dto.setAuthorId(5L);
@@ -85,10 +82,10 @@ class CommentConverterTest {
         given(userService.getUserOrNull(5L)).willReturn(mockUser);
         given(postService.getPost(7)).willReturn(mockPost);
 
-        // when
+
         Comment comment = commentConverter.createComment(dto);
 
-        // then
+
         assertNotNull(comment);
         assertEquals("Another comment", comment.getText());
         assertEquals(5L, comment.getAuthor().getId());
@@ -96,9 +93,9 @@ class CommentConverterTest {
     }
 
     @Test
-    @DisplayName("Powinien utworzyć CommentReturnDTO z Comment (happy path)")
+    @DisplayName("Powinien utworzyć CommentReturnDTO z Comment")
     void shouldCreateDTOFromComment() {
-        // given
+
         Comment comment = new Comment();
         comment.setId(100L);
         comment.setText("Test comment");
@@ -111,16 +108,15 @@ class CommentConverterTest {
         author.setId(123L);
         comment.setAuthor(author);
 
-        // when
+
         CommentReturnDTO dto = commentConverter.createDTO(comment);
 
-        // then
+
         assertNotNull(dto);
         assertEquals(100L, dto.getId());
         assertEquals("Test comment", dto.getText());
         assertEquals(999L, dto.getPostId());
         assertEquals(123L, dto.getAuthorId());
-        // tu można też sprawdzić pole showableDate, ale jest ono zależne od bieżącego czasu
-        // i updateShowableDate() wywołujemy wewnątrz createDTO
+
     }
 }

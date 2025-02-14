@@ -55,25 +55,25 @@ class PostControllersTest {
     @Test
     @DisplayName("GET /showPost?postId=1 -> widok showPost z modelem")
     void shouldShowPost() throws Exception {
-        // given
+
         Post mockPost = new Post();
         mockPost.setId(1L);
         mockPost.setTitle("Title");
-        // Zwrot posta
+
         given(postService.getPost(1)).willReturn(mockPost);
 
         PostReturnDTO postReturnDTO = new PostReturnDTO();
         postReturnDTO.setId(1L);
         postReturnDTO.setTitle("Title");
-        postReturnDTO.setAuthorId(123L); // Ustawienie authorId
-        // Zwrot DTO posta
+        postReturnDTO.setAuthorId(123L);
+
         given(postConverter.createDTO(mockPost)).willReturn(postReturnDTO);
 
-        // Stub komentarzy:
+
         given(commentService.getCommentDTOPageByPost(anyInt(), anyInt(), any(), anyInt()))
                 .willReturn(new PageImpl<>(Collections.emptyList()));
 
-        // Stuby userService i userConverter
+
         User mockUser = new User();
         mockUser.setId(123L);
         mockUser.setAvatar("/images/defaultavatar.png");
@@ -88,7 +88,7 @@ class PostControllersTest {
 
         given(userConverter.createDTO(mockUser)).willReturn(mockUserDTO);
 
-        // when & then
+
         mockMvc.perform(get("/showPost").param("postId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("showPost"))
@@ -99,13 +99,12 @@ class PostControllersTest {
     @Test
     @DisplayName("GET /allPosts -> widok showAllPosts")
     void shouldReturnAllPosts() throws Exception {
-        // given
+
         Page<Post> emptyPage = new PageImpl<>(Collections.emptyList());
         given(postService.getPostDTOPage(anyInt(), anyInt(), any())).willReturn(emptyPage);
-        // tagService.findAllTags() dla atrybutu allTags
         given(tagService.findAllTags()).willReturn(Collections.emptyList());
 
-        // when & then
+
         mockMvc.perform(get("/allPosts"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("showAllPosts"))

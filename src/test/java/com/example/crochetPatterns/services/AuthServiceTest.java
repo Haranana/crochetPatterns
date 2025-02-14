@@ -26,14 +26,11 @@ class AuthServiceTest {
         SecurityContext mockCtx = mock(SecurityContext.class);
         given(mockCtx.getAuthentication()).willReturn(mockAuth);
 
-        // Mockowanie statyczne SecurityContextHolder
         try (MockedStatic<SecurityContextHolder> mockedStatic = mockStatic(SecurityContextHolder.class)) {
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockCtx);
 
-            // when
             boolean result = authService.isLogged();
 
-            // then
             assertTrue(result);
         }
     }
@@ -41,7 +38,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("isLogged() - gdy brak auth lub principal nie LoggedUserDetails -> false")
     void shouldReturnFalseIfNotLogged() {
-        // Przypadek 1: brak auth
+
         try (MockedStatic<SecurityContextHolder> mockedStatic = mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockCtx = mock(SecurityContext.class);
             given(mockCtx.getAuthentication()).willReturn(null);
@@ -50,7 +47,6 @@ class AuthServiceTest {
             assertFalse(authService.isLogged());
         }
 
-        // Przypadek 2: principal to np. String
         try (MockedStatic<SecurityContextHolder> mockedStatic = mockStatic(SecurityContextHolder.class)) {
             Authentication mockAuth = mock(Authentication.class);
             given(mockAuth.isAuthenticated()).willReturn(true);
@@ -67,7 +63,6 @@ class AuthServiceTest {
     @Test
     @DisplayName("getLoggedUserDetails() - zwraca principal jako LoggedUserDetails")
     void shouldReturnLoggedUserDetails() {
-        // given
         Authentication mockAuth = mock(Authentication.class);
         LoggedUserDetails principal = new LoggedUserDetails(5L, "user", "pass", true);
         given(mockAuth.getPrincipal()).willReturn(principal);
@@ -78,10 +73,8 @@ class AuthServiceTest {
         try (MockedStatic<SecurityContextHolder> mockedStatic = mockStatic(SecurityContextHolder.class)) {
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockCtx);
 
-            // when
             LoggedUserDetails result = authService.getLoggedUserDetails();
 
-            // then
             assertEquals(principal, result);
         }
     }

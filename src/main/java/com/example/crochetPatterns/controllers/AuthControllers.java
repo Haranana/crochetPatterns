@@ -71,7 +71,6 @@ public class AuthControllers {
             BindingResult bindingResult, Model model) {
 
         if (userService.existsByUsername(registrationDTO.getUsername())) {
-            // Komunikat pobierany z pliku validation/validationMessages.properties lub validation/validationMessages_pl.properties
             bindingResult.rejectValue("username", "error.username");
         }
         if (userService.existsByEmail(registrationDTO.getEmail())) {
@@ -86,13 +85,13 @@ public class AuthControllers {
                 userConverter.createUser(registrationDTO, passwordEncoder.encode(registrationDTO.getPassword()))
         );
 
-        // Generacja tokenu weryfikacji – domyślnie 1 dzień
+        //generacja tokenu weryfikacji– domyslnie 1 dzień
         String token = UUID.randomUUID().toString();
         Timestamp expiryDate = Timestamp.from(LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC));
         VerificationToken verificationToken = new VerificationToken(token, user, expiryDate);
         verificationTokenRepository.save(verificationToken);
 
-        // Wysłanie linka aktywacyjnego
+
         String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
         emailService.sendConfirmationEmail(user.getEmail(), confirmationUrl);
 
@@ -101,17 +100,17 @@ public class AuthControllers {
 
     @GetMapping("/confirm")
     public String confirmRegistration(@RequestParam("token") String token, Model model) {
+
         Optional<VerificationToken> optionalToken = verificationTokenRepository.findByToken(token);
         if (optionalToken.isEmpty()) {
-            // Komunikat pobierany z pliku lang/messages.properties lub lang/messages_pl.properties
             model.addAttribute("message", "error.token.invalid");
-            return "error";
+            return "defaultError";
         }
 
         VerificationToken verificationToken = optionalToken.get();
         if (verificationToken.getExpiryDate().before(new Timestamp(System.currentTimeMillis()))) {
             model.addAttribute("message", "error.token.expired");
-            return "error";
+            return "defaultError";
         }
 
         User user = verificationToken.getUser();

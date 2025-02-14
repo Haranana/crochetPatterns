@@ -36,12 +36,11 @@ class CommentControllersTest {
 
     @BeforeEach
     void setUpSecurity() {
-        // Tworzymy obiekt LoggedUserDetails z id=10, username="testUser", password="password", enabled=true
         LoggedUserDetails principal = new LoggedUserDetails(10L, "testUser", "password", true);
-        // Ustawiamy token uwierzytelniania z tym principal
-        TestingAuthenticationToken authToken = new TestingAuthenticationToken(principal, null, "ROLE_USER");
+
+        TestingAuthenticationToken authToken = new TestingAuthenticationToken(principal, null, "ROLE_USER"); // ustawienie token uwierzytelniania z tym principal
         authToken.setAuthenticated(true);
-        // Ustawiamy SecurityContext
+
         SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 
@@ -51,14 +50,14 @@ class CommentControllersTest {
         mockMvc.perform(get("/writeComment").param("postId", "10"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("writeComment"))
-                .andExpect(model().attribute("postId", 10))         // int
-                .andExpect(model().attribute("authorId", 10L));     // long
+                .andExpect(model().attribute("postId", 10))
+                .andExpect(model().attribute("authorId", 10L));
     }
 
     @Test
     @DisplayName("GET /editComment?commentId=5 -> widok editComment z atrybutem commentEditDTO")
     void shouldShowEditCommentForm() throws Exception {
-        // given
+
         Comment comment = new Comment();
         comment.setId(5L);
         willReturn(comment).given(commentService).getCommentDTO(5);
@@ -67,7 +66,7 @@ class CommentControllersTest {
         dto.setId(5L);
         given(commentConverter.createEditDTOFromComment(comment)).willReturn(dto);
 
-        // when & then
+
         mockMvc.perform(get("/editComment").param("commentId", "5"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editComment"))

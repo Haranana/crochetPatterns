@@ -31,44 +31,42 @@ class CommentRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // given - tworzymy User z wymaganymi polami
+
         testUser = new User();
         testUser.setUsername("testuser");
         testUser.setEmail("test@example.com");
-        testUser.setPassword("secret123");  // @NotEmpty
+        testUser.setPassword("secret123");
         testUser.setEnabled(true);
         userRepository.save(testUser);
 
-        // tworzymy Post z wymaganymi polami
-        testPost = new Post();
+
+        testPost =new Post();
         testPost.setTitle("Sample Post");
-        testPost.setPdfFilePath("dummy.pdf"); // @NotEmpty
-        testPost.setAuthor(testUser);         // @NotNull
+        testPost.setPdfFilePath("dummy.pdf");
+        testPost.setAuthor(testUser);
         postRepository.save(testPost);
 
-        // tworzymy i zapisujemy kilka komentarzy
-        Comment c1 = new Comment();
+
+        Comment c1= new Comment();
         c1.setAuthor(testUser);
         c1.setPost(testPost);
-        c1.setText("First comment"); // @NotEmpty
+        c1.setText("First comment");
         commentRepository.save(c1);
 
         Comment c2 = new Comment();
         c2.setAuthor(testUser);
         c2.setPost(testPost);
-        c2.setText("Second comment"); // @NotEmpty
+        c2.setText("Second comment");
         commentRepository.save(c2);
     }
 
     @Test
     @DisplayName("findByAuthorId() - powinno zwrócić stronicowaną listę komentarzy danego autora")
     void shouldFindByAuthorId() {
-        // when
-        Page<Comment> result = commentRepository.findByAuthorId(
-                testUser.getId(), PageRequest.of(0, 10)
+
+        Page<Comment> result = commentRepository.findByAuthorId(testUser.getId(), PageRequest.of(0, 10)
         );
 
-        // then
         assertEquals(2, result.getTotalElements());
         List<Comment> content = result.getContent();
         assertEquals("First comment", content.get(0).getText());
@@ -78,12 +76,11 @@ class CommentRepositoryTest {
     @Test
     @DisplayName("findByPostId() - powinno zwrócić komentarze przypisane do danego postu")
     void shouldFindByPostId() {
-        // when
+
         Page<Comment> page = commentRepository.findByPostId(
                 testPost.getId(), PageRequest.of(0, 5)
         );
 
-        // then
         assertEquals(2, page.getTotalElements());
         assertTrue(page.getContent().stream()
                 .allMatch(c -> c.getPost().equals(testPost)));
@@ -92,12 +89,10 @@ class CommentRepositoryTest {
     @Test
     @DisplayName("findByAuthor(User author, Pageable) - powinno znaleźć komentarze po obiekcie User")
     void shouldFindByAuthorObject() {
-        // when
         Page<Comment> page = commentRepository.findByAuthor(
                 testUser, PageRequest.of(0, 5)
         );
 
-        // then
         assertEquals(2, page.getTotalElements());
         assertTrue(page.getContent().stream()
                 .allMatch(c -> c.getAuthor().equals(testUser)));

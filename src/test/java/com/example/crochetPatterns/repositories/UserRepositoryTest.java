@@ -20,8 +20,8 @@ class UserRepositoryTest {
         // given
         User user = new User();
         user.setUsername("johnDoe");
-        user.setEmail("john@example.com"); // @Email
-        user.setPassword("secret123");      // @NotEmpty
+        user.setEmail("john@example.com");
+        user.setPassword("secret123");
         user.setEnabled(true);
         userRepository.save(user);
     }
@@ -29,11 +29,9 @@ class UserRepositoryTest {
     @Test
     @DisplayName("findUserIdByUsername() - powinno zwrócić ID użytkownika lub null gdy brak")
     void shouldFindUserIdByUsername() {
-        // when
         Long id = userRepository.findUserIdByUsername("johnDoe");
         Long unknown = userRepository.findUserIdByUsername("unknownUser");
 
-        // then
         assertNotNull(id);
         assertNull(unknown);
     }
@@ -41,11 +39,9 @@ class UserRepositoryTest {
     @Test
     @DisplayName("existsByUsername() - true jeśli istnieje, false jeśli nie")
     void shouldCheckUsernameExists() {
-        // when
         boolean ex1 = userRepository.existsByUsername("johnDoe");
         boolean ex2 = userRepository.existsByUsername("nope");
 
-        // then
         assertTrue(ex1);
         assertFalse(ex2);
     }
@@ -53,11 +49,9 @@ class UserRepositoryTest {
     @Test
     @DisplayName("existsByEmail() - true jeśli istnieje, false jeśli nie")
     void shouldCheckEmailExists() {
-        // when
         boolean ex1 = userRepository.existsByEmail("john@example.com");
         boolean ex2 = userRepository.existsByEmail("random@example.com");
 
-        // then
         assertTrue(ex1);
         assertFalse(ex2);
     }

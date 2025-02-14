@@ -26,21 +26,18 @@ class TagConverterTest {
 
     @Test
     void shouldCreateTagFromTagReturnDTO() {
-        // given
         TagReturnDTO dto = new TagReturnDTO();
         dto.setName("testTag");
 
-        // when
         Tag tag = tagConverter.createTag(dto);
 
-        // then
         assertNotNull(tag);
         assertEquals("testTag", tag.getName());
     }
 
     @Test
     void shouldCreateTagReturnDTOFromTag() {
-        // given
+
         Tag tag = new Tag();
         tag.setId(10L);
         tag.setName("tagName");
@@ -52,10 +49,9 @@ class TagConverterTest {
         set.add(p2);
         tag.setPosts(set);
 
-        // when
+
         TagReturnDTO dto = tagConverter.createDTO(tag);
 
-        // then
         assertNotNull(dto);
         assertEquals(10L, dto.getId());
         assertEquals("tagName", dto.getName());

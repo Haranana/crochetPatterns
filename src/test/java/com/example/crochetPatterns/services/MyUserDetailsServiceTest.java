@@ -23,14 +23,11 @@ class MyUserDetailsServiceTest {
     private MyUserDetailsService myUserDetailsService;
 
     @BeforeEach
-    void setUp() {
-        // ...
-    }
+    void setUp() {}
 
     @Test
     @DisplayName("loadUserByUsername() - gdy użytkownik istnieje -> zwraca LoggedUserDetails")
     void shouldReturnUserDetailsIfUserExists() {
-        // given
         User mockUser = new User();
         mockUser.setId(10L);
         mockUser.setUsername("john");
@@ -39,10 +36,8 @@ class MyUserDetailsServiceTest {
 
         given(userService.getUserByUsername("john")).willReturn(mockUser);
 
-        // when
         var result = myUserDetailsService.loadUserByUsername("john");
 
-        // then
         assertNotNull(result);
         assertTrue(result instanceof LoggedUserDetails);
         LoggedUserDetails lud = (LoggedUserDetails) result;

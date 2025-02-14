@@ -39,6 +39,7 @@
 
 
 
+
     <div>
         <span th:text="#{showPost.likesCount}">Liczba polubień: </span>
         <b th:text="${likeCount}">0</b>
@@ -74,6 +75,8 @@
 
     <hr>
 
+
+
     <div th:each="comment, iterStat : ${postComments}" style="margin-bottom: 15px;">
         <div style="margin-bottom: 5px;">
             <div th:if="${commentsAuthors[iterStat.index].id != 0}">
@@ -108,6 +111,7 @@
             <span th:case="*"></span>
         </span>
         <span th:text="#{showPost.past}">temu</span>
+
 
         <div th:if="${isLogged and comment.authorId == loggedUserId}" style="margin-top: 5px;">
             <a th:href="@{/editComment(commentId=${comment.id})}" th:text="#{showPost.editCommentLink}">Edytuj</a> |

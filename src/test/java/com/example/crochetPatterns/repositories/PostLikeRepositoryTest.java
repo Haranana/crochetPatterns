@@ -18,7 +18,6 @@ class PostLikeRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // given - dodajemy kilka polubień do bazy
         PostLike pl1 = new PostLike(1L, 10L);
         PostLike pl2 = new PostLike(2L, 10L);
         PostLike pl3 = new PostLike(3L, 20L);
@@ -31,12 +30,10 @@ class PostLikeRepositoryTest {
     @Test
     @DisplayName("countByPostId() - powinno zwrócić liczbę polubień dla konkretnego postId")
     void shouldCountLikesByPostId() {
-        // when
         long count10 = postLikeRepository.countByPostId(10L);
         long count20 = postLikeRepository.countByPostId(20L);
         long count999 = postLikeRepository.countByPostId(999L);
 
-        // then
         assertEquals(2, count10);   // userId=1 i userId=2 lubią postId=10
         assertEquals(1, count20);   // userId=3 lubi postId=20
         assertEquals(0, count999);
@@ -45,12 +42,10 @@ class PostLikeRepositoryTest {
     @Test
     @DisplayName("existsByUserIdAndPostId() - sprawdza czy polubienie istnieje")
     void shouldCheckIfLikeExists() {
-        // when
         boolean ex1 = postLikeRepository.existsByUserIdAndPostId(1L, 10L);
         boolean ex2 = postLikeRepository.existsByUserIdAndPostId(2L, 10L);
         boolean ex3 = postLikeRepository.existsByUserIdAndPostId(99L, 10L);
 
-        // then
         assertTrue(ex1);
         assertTrue(ex2);
         assertFalse(ex3);

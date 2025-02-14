@@ -25,7 +25,6 @@ class VerificationTokenRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // given
         User user = new User();
         user.setUsername("jane");
         user.setEmail("jane@example.com");
@@ -36,18 +35,16 @@ class VerificationTokenRepositoryTest {
         VerificationToken token = new VerificationToken();
         token.setToken("ABC123");
         token.setUser(user);
-        token.setExpiryDate(Timestamp.from(Instant.now().plusSeconds(3600))); // np. +1h
+        token.setExpiryDate(Timestamp.from(Instant.now().plusSeconds(3600)));
         verificationTokenRepository.save(token);
     }
 
     @Test
-    @DisplayName("findByToken() - istniejący token -> Optional z obiektem, brak -> Optional.empty()")
+    @DisplayName("findByToken() - istniejący token, optional z obiektem, brak optional.empty()")
     void shouldFindByToken() {
-        // when
         Optional<VerificationToken> found = verificationTokenRepository.findByToken("ABC123");
         Optional<VerificationToken> notFound = verificationTokenRepository.findByToken("XYZ999");
 
-        // then
         assertTrue(found.isPresent());
         assertEquals("ABC123", found.get().getToken());
 

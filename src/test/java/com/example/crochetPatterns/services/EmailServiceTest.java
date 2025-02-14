@@ -23,23 +23,17 @@ class EmailServiceTest {
     private EmailService emailService;
 
     @BeforeEach
-    void setUp() {
-        // ...
-    }
+    void setUp() {}
 
     @Test
     @DisplayName("sendConfirmationEmail() - wysyła maila z odpowiednim tematem i treścią")
     void shouldSendConfirmationEmail() {
-        // given
         String to = "user@example.com";
         String confirmationUrl = "http://example.com/confirm?token=abc";
 
-        // when
         emailService.sendConfirmationEmail(to, confirmationUrl);
 
-        // then
-        // Tworzymy ArgumentCaptor, by przechwycić wysłaną wiadomość
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class); //argument captor do przechwytywania wiadomosci
         verify(mailSender).send(captor.capture());
 
         SimpleMailMessage sentMsg = captor.getValue();

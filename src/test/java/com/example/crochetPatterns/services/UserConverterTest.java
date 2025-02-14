@@ -29,22 +29,19 @@ class UserConverterTest {
     private UserConverter userConverter;
 
     @BeforeEach
-    void setUp() {
-        // inicjalizacja
-    }
+    void setUp() {}
 
     @Test
     void shouldCreateUserFromUserRegistrationDTO() {
-        // given
         UserRegistrationDTO dto = new UserRegistrationDTO();
         dto.setUsername("testUser");
         dto.setEmail("test@example.com");
         String encodedPassword = "encodedPW";
 
-        // when
+
         User user = userConverter.createUser(dto, encodedPassword);
 
-        // then
+
         assertNotNull(user);
         assertEquals("testUser", user.getUsername());
         assertEquals("test@example.com", user.getEmail());
@@ -55,7 +52,7 @@ class UserConverterTest {
 
     @Test
     void shouldCreateUserFromUserReturnDTO() {
-        // given
+
         UserReturnDTO userReturnDTO = new UserReturnDTO();
         userReturnDTO.setUsername("bob");
         userReturnDTO.setEmail("bob@example.com");
@@ -66,16 +63,16 @@ class UserConverterTest {
         userReturnDTO.setPostIds(Collections.singletonList(1L));
         userReturnDTO.setCommentIds(Collections.singletonList(2L));
 
-        // załóżmy że serwisy zwrócą listy z obiektami
+
         given(postService.findPostsByIds(Collections.singletonList(1L)))
                 .willReturn(Collections.emptyList());
         given(commentService.findCommentsByIds(Collections.singletonList(2L)))
                 .willReturn(Collections.emptyList());
 
-        // when
+
         User user = userConverter.createUser(userReturnDTO);
 
-        // then
+
         assertNotNull(user);
         assertEquals("bob", user.getUsername());
         assertEquals("bob@example.com", user.getEmail());

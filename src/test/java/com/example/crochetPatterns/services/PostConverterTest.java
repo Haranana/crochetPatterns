@@ -34,9 +34,7 @@ class PostConverterTest {
     private PostConverter postConverter;
 
     @BeforeEach
-    void setUp() {
-        // Inicjalizacja w razie potrzeby
-    }
+    void setUp() {}
 
     @Test
     @DisplayName("Powinien poprawnie stworzyć Post z PostCreateDTO (happy path)")
@@ -59,10 +57,8 @@ class PostConverterTest {
         given(userService.getUser(10L)).willReturn(userMock);
         given(tagService.findTagsByIds(Set.of(1L, 2L))).willReturn(Set.of(tag1, tag2));
 
-        // when
         Post post = postConverter.createPost(dto, "path/to/pdf");
 
-        // then
         assertNotNull(post);
         assertEquals("Test title", post.getTitle());
         assertEquals("Desc", post.getDescription());
@@ -74,7 +70,6 @@ class PostConverterTest {
     @Test
     @DisplayName("Powinien utworzyć PostReturnDTO z Post (happy path)")
     void shouldCreateDTOFromPost() {
-        // given
         Post post = new Post();
         post.setId(5L);
         post.setTitle("PostTitle");
@@ -90,10 +85,8 @@ class PostConverterTest {
         tag.setId(111L);
         post.setTags(Set.of(tag));
 
-        // when
         PostReturnDTO dto = postConverter.createDTO(post);
 
-        // then
         assertNotNull(dto);
         assertEquals(5L, dto.getId());
         assertEquals("PostTitle", dto.getTitle());
