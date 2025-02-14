@@ -2,17 +2,42 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{mainMenu.name}"></title>
+    <title th:text="#{mainMenu.name}">Menu Główne</title>
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
-    <button type="button" th:text="#{mainMenu.en}" onclick="window.location.href='http://localhost:8080/main?lang=en'"></button>
-    <button type="button" th:text="#{mainMenu.pl}" onclick="window.location.href='http://localhost:8080/main?lang=pl'"></button>
-
 </head>
 <body>
-<h1 th:text="#{mainMenu.chooseAction}"/>
-<button type="button" th:text="#{mainMenu.actionShowAllPosts}"
-        onclick="window.location.href='http://localhost:8080/allPosts'"></button>
-<button type="button" th:text="#{mainMenu.actionAddPost}"
-        onclick="window.location.href='http://localhost:8080/addPost'"></button>
+
+<div class="top-nav">
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+    <button type="button" th:text="#{mainMenu.en}"
+            onclick="window.location.href='http://localhost:8080/main?lang=en'">
+    </button>
+    <button type="button" th:text="#{mainMenu.pl}"
+            onclick="window.location.href='http://localhost:8080/main?lang=pl'">
+    </button>
+</div>
+
+<div class="container">
+    <h1 th:text="#{mainMenu.chooseAction}">Wybierz czynność</h1>
+
+    <button type="button" th:text="#{mainMenu.actionShowAllPosts}"
+            onclick="window.location.href='http://localhost:8080/allPosts'">
+    </button>
+    <br><br>
+
+    <button type="button" th:text="#{mainMenu.actionAddPost}"
+            onclick="window.location.href='http://localhost:8080/addPost'">
+    </button>
+    <br><br>
+
+    <a th:href="@{/myProfile}" th:text="#{mainMenu.actionShowProfile}">Mój profil</a>
+    <br><br>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" th:text="#{global.logout}">Wyloguj się</button>
+    </form>
+</div>
 </body>
 </html>

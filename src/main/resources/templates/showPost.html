@@ -1,15 +1,126 @@
 <!DOCTYPE html>
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="#{showPost.name}"></title>
-  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <title th:text="#{showPost.name}">Wpis</title>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
 </head>
 <body>
-<strong th:text="${post.subject}"></strong> <br>
-<span th:text="${post.text}"></span> <br>
-<span th:text="${post.showableDate}"></span> <br> <br>
 
-<a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}"></a>
+<div class="top-nav">
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+</div>
+
+<div class="container">
+    <div th:if="${isViewedByAuthor}">
+        <a th:href="@{/editPost(postId=${post.id})}" th:text="#{showPost.editPostLink}">Edytuj Post</a>
+        <a th:href="@{/deletePost(postId=${post.id})}" th:text="#{showPost.deletePostLink}">Usuń Post</a>
+    </div>
+
+    <h1 th:text="${post.title}">Tytuł wpisu</h1>
+    <div style="margin-bottom: 10px;">
+        <img th:src="@{${postAuthor.avatar}}" alt="Avatar autora"
+             style="max-width:50px; max-height:50px; margin-right: 10px;"/>
+        <a th:href="@{/userProfile(userId=${postAuthor.id})}"
+           th:text="${postAuthor.username}">Autor</a>
+    </div>
+    <p>
+        <span th:text="${post.showableDate}">Data</span>
+    </p> <br>
+
+    <p th:text="${post.description}">Opis wpisu</p> <br>
+
+    <a th:if="${post.pdfFilePath != null}"
+       th:href="@{/posts/{id}/pdf(id=${post.id})}"
+       target="_blank"
+       th:text="#{showPost.downloadPDF}">Pobierz PDF</a> <br> <br>
+
+
+
+
+    <div>
+        <span th:text="#{showPost.likesCount}">Liczba polubień: </span>
+        <b th:text="${likeCount}">0</b>
+    </div>
+    <div th:if="${isLogged}">
+        <div th:if="${userLiked}">
+            <form th:action="@{/post/{id}/unlike(id=${post.id})}" method="post">
+                <button type="submit" th:text="#{showAllPosts.unlikeButton}">Unlike</button>
+            </form>
+        </div>
+        <div th:unless="${userLiked}">
+            <form th:action="@{/post/{id}/like(id=${post.id})}" method="post">
+                <button type="submit" th:text="#{showAllPosts.likeButton}">Like</button>
+            </form>
+        </div>
+    </div> <br>
+
+    <div>
+        <strong th:text="#{showPost.tagsLabel}">Tagi:</strong>
+        <span th:if="${#lists.isEmpty(postTagNames)}" th:text="#{showPost.noTags}">Brak</span>
+        <ul th:if="${!#lists.isEmpty(postTagNames)}">
+            <li th:each="tagName : ${postTagNames}" th:text="${tagName}">TagName</li>
+        </ul>
+    </div> <br>
+
+
+    <div style="margin: 10px 0;">
+        <a th:if="${isLogged}"
+           th:href="@{/writeComment(postId=${post.id})}" th:text="#{showPost.addCommentLink}">Dodaj komentarz</a>
+        <a th:unless="${isLogged}"
+           th:href="@{/login}" th:text="#{showPost.loginToComment}">Zaloguj się, aby dodać komentarz</a>
+    </div>
+
+    <hr>
+
+
+
+    <div th:each="comment, iterStat : ${postComments}" style="margin-bottom: 15px;">
+        <div style="margin-bottom: 5px;">
+            <div th:if="${commentsAuthors[iterStat.index].id != 0}">
+                <img th:src="@{${commentsAuthors[iterStat.index].avatar}}"
+                     alt="Avatar"
+                     style="max-width:30px; max-height:30px; margin-right:5px;"/>
+                <a th:href="@{/userProfile(userId=${commentsAuthors[iterStat.index].id})}"
+                   th:text="${commentsAuthors[iterStat.index].username}">Komentator</a>
+            </div>
+            <div th:unless="${commentsAuthors[iterStat.index].id != 0}">
+                <span th:text="#{showPost.deletedUser}">[user deleted]</span>
+            </div>
+        </div>
+
+        <p th:text="${comment.text}">Treść komentarza</p>
+        <span th:text="${comment.creationTimeValue}">X</span>
+        <span th:switch="${comment.creationTimeValueType}">
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).YEAR}"
+                  th:text="#{showAllPosts.year}">lat</span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).MONTH}"
+                  th:text="#{showAllPosts.month}">miesięcy</span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).WEEK}"
+                  th:text="#{showAllPosts.week}">tygodni</span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).DAY}"
+                  th:text="#{showAllPosts.day}">dni</span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).HOUR}"
+                  th:text="#{showAllPosts.hour}">godzin</span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).MINUTE}"
+                  th:text="#{showAllPosts.minute}">minut</span>
+            <span th:case="${T(com.example.crochetPatterns.dtos.CommentReturnDTO.CreationTimeValueType).SECOND}"
+                  th:text="#{showAllPosts.second}">sekund</span>
+            <span th:case="*"></span>
+        </span>
+        <span th:text="#{showPost.past}">temu</span>
+
+
+        <div th:if="${isLogged and comment.authorId == loggedUserId}" style="margin-top: 5px;">
+            <a th:href="@{/editComment(commentId=${comment.id})}" th:text="#{showPost.editCommentLink}">Edytuj</a> |
+            <a th:href="@{/deleteComment(commentId=${comment.id}, postId=${post.id})}" th:text="#{showPost.deleteCommentLink}">Usuń</a>
+        </div>
+    </div>
+
+    <hr>
+    <a th:href="@{/allPosts}" th:text="#{showPost.allPostsReturn}">Powrót do listy wpisów</a>
+</div>
 </body>
 </html>

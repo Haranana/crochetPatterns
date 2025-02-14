@@ -2,13 +2,20 @@
 <html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title th:text="#{addedPost.name}"></title>
-  <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+  <title th:text="#{addedPost.name}">Post dodany</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<p>
-  <span th:text = "#{addedPost.text}"></span>
-</p>
-<a th:href="@{/main}" th:text="#{addedPost.menuReturn}"></a>
+
+<div class="top-nav">
+  <button type="button" th:text="#{mainPageReturnLink}"
+          onclick="window.location.href='http://localhost:8080/main'">
+  </button>
+</div>
+
+<div class="container">
+  <p th:text="#{addedPost.text}">Post został dodany pomyślnie!</p>
+  <a th:href="@{/main}" th:text="#{addedPost.menuReturn}">Powrót do menu głównego</a>
+</div>
 </body>
 </html>

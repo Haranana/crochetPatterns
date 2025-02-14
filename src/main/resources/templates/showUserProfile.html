@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{userProfile.title}">Profil użytkownika</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="top-nav">
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='/main'">
+    </button>
+</div>
+
+<div class="container">
+    <div class="user-profile">
+        <h1 th:text="${user.username}">Nazwa użytkownika</h1>
+        <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;"/>
+        <p th:text="${user.bio}">Biografia użytkownika</p>
+    </div>
+
+    <div th:if="${isViewedByAuthor}">
+        <a th:href="@{/editProfile}" th:text="#{userProfile.editProfileLink}">Edytuj profil</a>
+        <a th:href="@{/editPassword}" th:text="#{userProfile.changePasswordLink}">Zmień hasło</a>
+        <a th:href="@{/deleteAccount}" th:text="#{userProfile.deleteAccountLink}">Usuń konto</a>
+    </div>
+
+    <hr>
+    <a th:href="@{/userPosts(userId=${user.id})}" th:text="#{userProfile.posts}">Wpisy użytkownika</a>
+    <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze użytkownika</a>
+</div>
+</body>
+</html>

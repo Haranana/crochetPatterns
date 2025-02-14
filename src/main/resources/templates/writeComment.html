@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{addPost.name}">Dodaj komentarz</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+</div>
+
+<div class="container">
+    <a th:href="@{/showPost(postId=${postId})}" th:text="#{writeComment.backToPost}">Powrót do Wpisu</a>
+    <hr>
+
+    <form th:action="@{/addingComment}" th:object="${commentCreateDTO}" method="post">
+        <p>
+            <label th:text="#{writeComment.newCommentLabel}">Napisz komentarz:</label>
+            <textarea th:field="*{text}" rows="3"></textarea>
+            <span class="error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
+        </p>
+
+        <input type="hidden" th:field="*{postId}" />
+        <input type="hidden" th:field="*{authorId}" />
+
+        <input type="submit" th:value="#{global.submit}" />
+    </form>
+</div>
+</body>
+</html>

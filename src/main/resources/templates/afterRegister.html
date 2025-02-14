@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{afterRegister.title}">Weryfikacja konta</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div class="top-nav">
+    <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
+
+<div class="container">
+    <h1 th:text="#{afterRegister.successTitle}">Rejestracja przebiegła pomyślnie!</h1>
+    <p th:text="#{afterRegister.info}">
+        Sprawdź swoją skrzynkę pocztową i kliknij w link aktywacyjny, aby włączyć konto.
+    </p>
+    <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót do strony głównej</a>
+</div>
+</body>
+</html>

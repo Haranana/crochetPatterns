@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{showUserPosts.title}">Wpisy użytkownika</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="top-nav">
+    <button type="button" th:text="#{mainPageReturnLink}"
+            onclick="window.location.href='http://localhost:8080/main'">
+    </button>
+</div>
+
+<div class="container">
+    <div class="user-profile">
+        <img th:src="@{${user.avatar}}" alt="Avatar użytkownika" style="max-width:150px; max-height:150px;"/>
+        <span th:text="${user.username}">Nazwa użytkownika</span>
+    </div>
+    <hr>
+
+    <div th:each="post : ${userPosts}">
+        <a th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}">Tytuł wpisu</a>
+        <hr>
+    </div>
+
+    <a th:href="@{/userComments(userId=${user.id})}" th:text="#{userProfile.comments}">Komentarze</a>
+    <a th:href="@{/userProfile(userId=${user.id})}" th:text="#{userProfile.bio}">Biografia</a>
+</div>
+</body>
+</html>

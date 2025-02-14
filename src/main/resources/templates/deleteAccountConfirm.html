@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="#{deleteAccountConfirm.title}">Potwierdź usunięcie konta</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div class="top-nav">
+  <a th:href="@{/main}" th:text="#{global.mainReturnLink}">Powrót</a>
+</div>
+
+<div class="container">
+  <h1 th:text="#{deleteAccountConfirm.header}">Usuwanie konta</h1>
+  <p th:text="#{deleteAccountConfirm.info}">
+    Czy na pewno chcesz usunąć swoje konto? To działanie jest nieodwracalne.
+  </p>
+
+  <form th:action="@{/deleteAccountConfirmed}" method="post">
+    <input type="hidden" name="userId" th:value="${userId}"/>
+    <button type="submit" th:text="#{deleteAccountConfirm.submit}">Tak, usuń konto</button>
+    <a th:href="@{/userProfile(userId=${userId})}" th:text="#{global.cancel}">Anuluj</a>
+  </form>
+</div>
+</body>
+</html>

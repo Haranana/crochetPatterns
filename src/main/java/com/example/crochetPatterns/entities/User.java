@@ -1,14 +1,13 @@
 package com.example.crochetPatterns.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -19,46 +18,42 @@ import java.util.Set;
 @AllArgsConstructor
 public class User {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Column(name = "username" , nullable = false , length = 30)
-        private String username;
+    @Column(name = "username" , nullable = false , length = 30)
+    @NotEmpty(message = "{user.usernameEmpty}")
+    @Size(max = 50 , message = "{user.usernameTooLong}")
+    private String username;
 
-        @Column(name = "email" , nullable = false , length = 100)
-        private String email;
+    @Column(name = "email" , nullable = false , length = 100)
+    @Email(message = "{user.emailIncorrect}")
+    private String email;
 
-        @Column(name = "password_hash" , nullable = false)
-        private String password_hash;
+    @Column(name = "password_hash" , nullable = false)
+    @NotEmpty(message =  "{user.passwordHashEmpty}")
+    private String password;
 
-        @Column(name = "avatar" , nullable = true)
-        private String avatar;
+    @Column(name = "avatar" , nullable = true)
+    private String avatar;
 
-        @Column(name = "bio" , nullable = true , columnDefinition = "TEXT")
-        private String bio;
+    @Column(name = "bio" , nullable = true , columnDefinition = "TEXT")
+    @Size(max = 4000 , message = "{user.bioTooLong}")
+    private String bio;
 
-        @CreationTimestamp
-        @Column(name = "creation_date", updatable = false, nullable = false)
-        private Timestamp creationDate;
+    @CreationTimestamp
+    @Column(name = "creation_date", updatable = false, nullable = false)
+    @PastOrPresent(message = "{user.dateIsFuture}")
+    private Timestamp creationDate;
 
-        @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<Post> posts = new ArrayList<>();
+    @Column(nullable = false)
+    private boolean enabled;  // domyslnie false (automatycznie w bazie danych)
 
-        @OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 
-        public User(String username, String email, String password_hash, String avatar, String bio) {
-            this.username = username;
-            this.email = email;
-            this.password_hash = password_hash;
-            this.avatar = avatar;
-            this.bio = bio;
-        }
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
-        public User(String username, String email, String password_hash) {
-            this.username = username;
-            this.email = email;
-            this.password_hash = password_hash;
-        }
 }

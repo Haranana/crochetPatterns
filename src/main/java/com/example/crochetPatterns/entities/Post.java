@@ -1,6 +1,7 @@
 package com.example.crochetPatterns.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,39 +16,47 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString(exclude = {"tags", "comments" , "author" , "additionalInfo"})
 @AllArgsConstructor
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "title" , nullable = false)
+    @NotEmpty(message = "{post.titleEmpty}")
+    @Size(max = 100 , message = "{post.titleTooLong}")
     private String title;
 
     @Column(name = "description" , nullable = true , columnDefinition = "TEXT")
+    @Size(max = 10000 , message = "{post.descriptionTooLong}")
     private String description;
 
     @Column(name = "content_pdf" , nullable = true)
-    private String pdfFile;
+    @NotEmpty(message = "{post.emptyURL}")
+    private String pdfFilePath;
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
+    @PastOrPresent(message = "{post.dateIsFuture}")
     private Timestamp creationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
+    @NotNull
     private User author;
 
-    @OneToMany(mappedBy = "post_tags", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "post_tags",
+            joinColumns = { @JoinColumn(name = "post_id") },
+            inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "additional_info", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private AdditionalInfo additionalInfo;
-
-    
 }
+

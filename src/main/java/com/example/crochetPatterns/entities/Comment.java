@@ -1,8 +1,10 @@
 package com.example.crochetPatterns.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import java.sql.Timestamp;
 
@@ -11,12 +13,12 @@ import java.sql.Timestamp;
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString(exclude = {"post" , "author"})
 @AllArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Positive(message = "{number.notPositive}")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
@@ -26,11 +28,13 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private User author;
 
-    @Column(name = "text" , nullable = false)
-    private String title;
+    @Column(name = "text", nullable = false)
+    @NotEmpty(message = "{comment.empty}")
+    @Size(max = 1000, message = "{comment.tooLong}")
+    private String text;
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
+    @PastOrPresent(message = "{comment.dateIsFuture}")
     private Timestamp creationDate;
-
 }
